@@ -6,3 +6,4 @@ scraped_data.csv
 _targets/
 *.tar
 *.vhdx
+urls.txt
