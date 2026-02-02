@@ -71,6 +71,7 @@ Implementing tamper-evident lineage, deterministic transformations, and reproduc
 ---
 
 ## 📂 Repository Structure
+```
 resilient-rap-framework/
 │
 ├── core/
@@ -95,3 +96,4 @@ resilient-rap-framework/
 ├── Dockerfile
 ├── requirements.txt
 └── README.md
+```
