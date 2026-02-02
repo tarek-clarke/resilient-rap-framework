@@ -76,21 +76,23 @@ resilient-rap-framework/
 │
 ├── core/
 │   └── ingestion/
-│       └── base_ingestor.py        # Domain-agnostic ingestion interface
+│       └── base_ingestor.py
 │
 ├── adapters/
 │   ├── pricing/
-│   │   └── ingestion_pricing.py    # Pricing-specific ingestion logic
+│   │   └── ingestion_pricing.py
 │   ├── sports/
-│   │   └── ingestion_sports.py     # Sports telemetry ingestion logic
+│   │   └── ingestion_sports.py
 │   └── clinical/
-│       └── ingestion_clinical.py   # Clinical telemetry ingestion logic
+│       └── ingestion_clinical.py
 │
 ├── validation/
-│   ├── cross_domain_tests/         # Tests demonstrating generalizability
-│   ├── stress_tests/               # High-frequency ingestion stress tests
-│   └── reproducibility_tests/      # Deterministic output validation
+│   ├── cross_domain_tests/
+│   ├── stress_tests/
+│   └── reproducibility_tests/
 │
-├── Dockerfile                      # Reproducible environment
-├── requirements.txt                # Python dependency manifest
-└── notebooks/                      # Exploratory analysis & prototype work
+├── notebooks/
+│
+├── Dockerfile
+├── requirements.txt
+└── README.md
