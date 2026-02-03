@@ -42,6 +42,7 @@ python3 -u tools/replay_stream.py | python3 -u tools/tui_replayer.py
 1.  **Normal State (Green):** Telemetry streams at 50Hz (Speed, RPM, Heart Rate).
 2.  **Chaos Injection (Red):** At ~3 seconds, the stream changes `speed_kph` to `speed_kmh` (simulating an upstream API change).
 3.  **Self-Healing (Yellow → Green):** The agent detects the drift, semantically infers the alias, patches the schema map, and resumes ingestion in <20ms.
+<img width="1146" height="413" alt="image" src="https://github.com/user-attachments/assets/98fff2e6-2f66-46fa-809a-f47b9c9acf34" />
 
 ---
 
