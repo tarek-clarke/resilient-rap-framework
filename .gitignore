@@ -8,5 +8,3 @@ _targets/
 *.vhdx
 urls.txt
 *.csv
-*.parquet
-*.jsonl

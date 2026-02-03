@@ -22,14 +22,13 @@ services:
       # --- THE G: DRIVE SYNC ---
       # Maps "G:\Docker\scraping project" (Host) -> "/root/Web-Scraping-Demo" (Container)
       # This allows the container to see your scripts and save screenshots directly to your drive.
-      - "/mnt/g/Docker/scraping project:/root/Web-Scraping-Demo"
-
+       - "/mnt/g/Docker/scraping project:/app"
       # Windows Driver Bridge
       - /usr/lib/wsl/lib/libdxcore.so:/usr/lib/libdxcore.so
       - /usr/lib/wsl/lib/libd3d12.so:/usr/lib/libd3d12.so
 
     # Sets the default folder to your project root
-    working_dir: /root/Web-Scraping-Demo
+    working_dir: /app
     
     security_opt:
       - seccomp:unconfined
