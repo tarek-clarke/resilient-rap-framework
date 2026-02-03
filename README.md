@@ -6,7 +6,7 @@
 
 ## 📌 Project Overview
 
-This repository contains the technical foundation for my PhD research (TalTech, 2026). It implements a **Resilient Reproducible Analytical Pipeline (RAP)** designed to operate across multiple high-frequency data environments, including:
+This repository contains the technical foundation for my PhD research proposal. It implements a **Resilient Reproducible Analytical Pipeline (RAP)** designed to operate across multiple high-frequency data environments, including:
 
 - **Pricing telemetry** (web-scraped economic indicators)  
 - **Sports telemetry** (IMU/GPS/HR/HRV data)  
