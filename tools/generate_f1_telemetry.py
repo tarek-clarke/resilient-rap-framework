@@ -283,23 +283,39 @@ def generate_full_grid_session(config):
 
 
 # ---------------------------------------------------------
-# Write CSV
+# Write CSV (Docker → Windows compatible)
 # ---------------------------------------------------------
 def write_csv(samples, output_path: Path):
     output_path.parent.mkdir(parents=True, exist_ok=True)
+
     fieldnames = list(samples[0].keys())
     with output_path.open("w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(samples)
 
+    print("\n✔ Telemetry saved successfully")
+    print(f"   Inside container: {output_path}")
+    print("   Absolute path:    {output_path.resolve()}")
+    print("   Expected Windows: G:\\Docker\\scraping project\\data\\f1_synthetic\\session_grid_physio.csv")
+
 
 # ---------------------------------------------------------
 # Main
 # ---------------------------------------------------------
 if __name__ == "__main__":
-    config = load_config("data/f1_synthetic/race_config_grid.json")
+    # Base directory = repo root (one level up from tools/)
+    script_dir = Path(__file__).resolve().parent
+    repo_root = script_dir.parent
+
+    config_path = repo_root / "data" / "f1_synthetic" / "race_config_grid.json"
+    out_path = repo_root / "data" / "f1_synthetic" / "session_grid_physio.csv"
+
+    print(f"Using config: {config_path}")
+    print(f"Will write to: {out_path}")
+
+    config = load_config(str(config_path))
     samples = generate_full_grid_session(config)
-    out_path = Path("data/f1_synthetic/session_grid_physio.csv")
     write_csv(samples, out_path)
-    print(f"Wrote {len(samples)} samples to {out_path}")
+
+    print(f"Generated {len(samples)} telemetry samples.")
