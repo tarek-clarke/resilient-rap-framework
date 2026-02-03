@@ -26,17 +26,15 @@ Originally conceived to address data fragility in National Statistical Offices (
 
 To validate the framework's resilience, this repository includes a **Terminal User Interface (TUI)** that streams high-frequency F1 telemetry and injects a "Schema Break" (Drift) in real-time.
 
-### How to Run the Demo
-**1. Prerequisites:**
-```bash
-pip install pandas fastf1 rich
-```
+### ⚡ Quickstart (Run in < 30s)
+Copy and paste this entire block into your terminal to install dependencies and launch the chaos stream immediately:
 
-**2. Launch the Pipeline:**
-*(Note: The `-u` flag is required to unbuffer the pipe stream for real-time visualization)*
 ```bash
+# 1. Install the visualization & data libraries
+pip install pandas fastf1 rich
+
+# 2. Run the pipeline (The -u flag is critical for real-time piping)
 python3 -u tools/replay_stream.py | python3 -u tools/tui_replayer.py
-```
 
 ### What You Will See
 1.  **Normal State (Green):** Telemetry streams at 50Hz (Speed, RPM, Heart Rate).
