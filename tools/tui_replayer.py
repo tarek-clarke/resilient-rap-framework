@@ -1,3 +1,18 @@
+import sys
+import json
+import time
+from rich.console import Console
+from rich.layout import Layout
+from rich.live import Live
+from rich.panel import Panel
+from rich.table import Table
+from rich.text import Text
+from rich.align import Align
+from rich import box
+
+# Initialize Console
+console = Console()
+
 class ResilientDashboard:
     def __init__(self):
         self.logs = []
@@ -72,7 +87,6 @@ class ResilientDashboard:
             for bad_key, good_key in self.schema_map.items():
                 if bad_key in packet:
                     packet[good_key] = packet.pop(bad_key)
-                    # We don't alert here. We just fix it.
             
             # STEP 2: DETECT NEW DRIFT
             if "speed_kmh" in packet and "speed_kmh" not in self.schema_map:
@@ -100,3 +114,22 @@ class ResilientDashboard:
             
         except json.JSONDecodeError:
             return None
+
+# --- EXECUTION LOGIC (This was missing) ---
+dashboard = ResilientDashboard()
+
+def run():
+    layout = dashboard.make_layout()
+    
+    with Live(layout, refresh_per_second=10, screen=True):
+        for line in sys.stdin:
+            packet = dashboard.process_packet(line)
+            if packet:
+                layout["telemetry"].update(dashboard.generate_telemetry_table(packet))
+                layout["logs"].update(dashboard.generate_log_panel())
+
+if __name__ == "__main__":
+    try:
+        run()
+    except KeyboardInterrupt:
+        pass
