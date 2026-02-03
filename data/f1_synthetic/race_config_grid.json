@@ -1,0 +1,52 @@
+{
+  "circuit": {
+    "name": "Silverstone",
+    "lap_length_m": 5300,
+    "num_laps": 15,
+    "lap_time_s": 92.5,
+    "sample_rate_hz": 10
+  },
+
+  "environment": {
+    "weather": "clear",
+    "track_temp_c": 32,
+    "grip_factor": 1.0
+  },
+
+  "drs_zones": [
+    { "start_m": 800, "end_m": 1200 },
+    { "start_m": 2500, "end_m": 2900 }
+  ],
+
+  "drivers": [
+    { "id": "VER", "team": "Red Bull", "base_pace_factor": 1.00, "variability": 0.015, "pit_laps": [8] },
+    { "id": "PER", "team": "Red Bull", "base_pace_factor": 1.015, "variability": 0.020, "pit_laps": [9] },
+
+    { "id": "HAM", "team": "Mercedes", "base_pace_factor": 1.010, "variability": 0.018, "pit_laps": [8] },
+    { "id": "RUS", "team": "Mercedes", "base_pace_factor": 1.012, "variability": 0.017, "pit_laps": [10] },
+
+    { "id": "LEC", "team": "Ferrari", "base_pace_factor": 1.008, "variability": 0.020, "pit_laps": [9] },
+    { "id": "SAI", "team": "Ferrari", "base_pace_factor": 1.009, "variability": 0.019, "pit_laps": [10] },
+
+    { "id": "NOR", "team": "McLaren", "base_pace_factor": 1.005, "variability": 0.022, "pit_laps": [8] },
+    { "id": "PIA", "team": "McLaren", "base_pace_factor": 1.006, "variability": 0.021, "pit_laps": [9] },
+
+    { "id": "ALO", "team": "Aston Martin", "base_pace_factor": 1.020, "variability": 0.025, "pit_laps": [10] },
+    { "id": "STR", "team": "Aston Martin", "base_pace_factor": 1.030, "variability": 0.030, "pit_laps": [9] },
+
+    { "id": "GAS", "team": "Alpine", "base_pace_factor": 1.035, "variability": 0.028, "pit_laps": [8] },
+    { "id": "OCO", "team": "Alpine", "base_pace_factor": 1.033, "variability": 0.027, "pit_laps": [9] },
+
+    { "id": "BOT", "team": "Kick Sauber", "base_pace_factor": 1.040, "variability": 0.030, "pit_laps": [10] },
+    { "id": "ZHO", "team": "Kick Sauber", "base_pace_factor": 1.045, "variability": 0.032, "pit_laps": [9] },
+
+    { "id": "MAG", "team": "Haas", "base_pace_factor": 1.050, "variability": 0.035, "pit_laps": [8] },
+    { "id": "HUL", "team": "Haas", "base_pace_factor": 1.048, "variability": 0.034, "pit_laps": [9] },
+
+    { "id": "TSU", "team": "RB", "base_pace_factor": 1.038, "variability": 0.030, "pit_laps": [10] },
+    { "id": "RIC", "team": "RB", "base_pace_factor": 1.039, "variability": 0.029, "pit_laps": [9] },
+
+    { "id": "SAR", "team": "Williams", "base_pace_factor": 1.060, "variability": 0.040, "pit_laps": [8] },
+    { "id": "ALB", "team": "Williams", "base_pace_factor": 1.055, "variability": 0.038, "pit_laps": [9] }
+  ]
+}
