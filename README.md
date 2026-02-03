@@ -15,7 +15,7 @@ Traditional pipelines rely on brittle selectors, rigid schemas, or domain-specif
 This research proposes a Resilient RAP Framework grounded in:
 • Software reliability engineering (Pareto-focused resilience)
 • Tamper-evident processing (auditability and lineage)
-• Cross-domain generalizability (pricing → sports → clinical)
+• Cross-domain generalizability (pricing to sports to clinical)
 • Reproducibility (deterministic outputs across environments)
 The framework introduces a domain-agnostic ingestion interface (BaseIngestor) and a set of domain adapters that implement environment-specific extraction, validation, and normalization logic. This enables a single architecture to operate across volatile, heterogeneous, or safety-critical data sources.
 ---
@@ -23,7 +23,7 @@ Technical Architecture
 The system is structured as a modular, extensible RAP. The major components are:
 1. Core Ingestion Interface
 Implemented in Python as BaseIngestor.
-Defines the ingestion contract: connect → extract → parse → validate → normalize.
+Defines the ingestion contract: connect -> extract -> parse -> validate -> normalize.
 2. Pricing Adapter
 Uses BeautifulSoup and regex to extract semi-structured pricing signals from web pages.
 3. Sports Adapter
@@ -49,14 +49,14 @@ Applying Pareto-focused resilience by reinforcing the “vital few” failure po
 Implementing tamper-evident lineage, deterministic transformations, and reproducible environments.
 ---
 Synthetic Telemetry Generation Module (Sports Domain)
-The sports telemetry subsystem includes a fully configurable synthetic data generator capable of producing multi-driver, high-frequency, dual-domain telemetry for motorsport environments.
+The sports telemetry subsystem includes a fully configurable synthetic data generator capable of producing multi-driver, high-frequency, dual-domain telemetry for motorsport-style environments.
 This module is used to validate the RAP framework under conditions of:
 • High sampling rates
 • Multi-entity concurrency
 • Schema drift
-• Physiological and mechanical signal coupling
+• Coupled physiological and mechanical signals
 • Event-driven volatility (pit stops, sector transitions, load spikes)
-The generator mirrors the complexity of real IMU, GPS, HR, and HRV pipelines used in elite sport and human-performance monitoring.
+The generator is designed to mirror the complexity of real IMU, GPS, HR, and HRV pipelines used in elite sport and human-performance monitoring.
 ---
 What the Generator Produces
 The generator outputs a single, timestamp-sorted CSV representing a full race session across an entire grid. Each row contains:
@@ -84,10 +84,9 @@ Event modeling includes:
 • Variability factors (pace, stress sensitivity, noise)
 • DRS zones
 • Lap-phase dynamics
-This produces a dual-domain dataset ideal for testing ingestion, normalization, schema drift handling, and resilience mechanisms.
+This produces a dual-domain dataset suitable for testing ingestion, normalization, schema drift handling, and resilience mechanisms.
 ---
 Synthetic Data Directory Structure
-Copyable version:
 data/
 f1_synthetic/
 race_config_grid.json
@@ -99,7 +98,7 @@ generate_f1_telemetry.py
 The generator is fully config-driven and can be extended to support:
 • Multi-session generation (FP1, FP2, Quali, Race)
 • Weather effects
-• Tire degradation
+• Tyre degradation
 • Fatigue modeling
 • Stochastic event injection (lockups, errors, near-misses)
 ---
@@ -112,4 +111,6 @@ This adapter implements the BaseIngestor contract:
 • validate
 • normalize
 • emit domain-standardized records
-This allows the sports domain to serve as a controlled proving ground for the broader RAP architecture before extending to clinical telemetry (FHIR and HL7) and pricing telemetry (web-scraped economic indicators).
+The sports domain serves as a controlled proving ground for the broader RAP architecture before extending to:
+• Clinical telemetry (FHIR and HL7 physiological streams)
+• Pricing telemetry (web-scraped economic indicators)
