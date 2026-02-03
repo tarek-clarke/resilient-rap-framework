@@ -121,15 +121,14 @@ dashboard = ResilientDashboard()
 def run():
     layout = dashboard.make_layout()
     
+    # FIX: Initialize the screen with empty data so it doesn't look broken
+    # while waiting for the first packet
+    layout["telemetry"].update(dashboard.generate_telemetry_table(None))
+    layout["logs"].update(dashboard.generate_log_panel())
+    
     with Live(layout, refresh_per_second=10, screen=True):
         for line in sys.stdin:
             packet = dashboard.process_packet(line)
             if packet:
                 layout["telemetry"].update(dashboard.generate_telemetry_table(packet))
                 layout["logs"].update(dashboard.generate_log_panel())
-
-if __name__ == "__main__":
-    try:
-        run()
-    except KeyboardInterrupt:
-        pass
