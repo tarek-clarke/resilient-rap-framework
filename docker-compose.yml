@@ -22,7 +22,8 @@ services:
       # --- THE G: DRIVE SYNC ---
       # Maps "G:\Docker\scraping project" (Host) -> "/root/Web-Scraping-Demo" (Container)
       # This allows the container to see your scripts and save screenshots directly to your drive.
-       - "/mnt/g/Docker/scraping project:/app"
+      - "/mnt/g/Docker/scraping project/resilient-rap-framework:/app"
+
       # Windows Driver Bridge
       - /usr/lib/wsl/lib/libdxcore.so:/usr/lib/libdxcore.so
       - /usr/lib/wsl/lib/libd3d12.so:/usr/lib/libd3d12.so
