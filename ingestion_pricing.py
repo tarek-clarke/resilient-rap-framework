@@ -1,4 +1,4 @@
-from core.ingestion.base_ingestor import BaseIngestor
+from base_ingestor import BaseIngestor
 from bs4 import BeautifulSoup
 import requests
 import re
