@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this software in your research or systems, please cite it as below."
+authors:
+- family-names: "Clarke"
+  given-names: "Tarek"
+  # This links the work to your upcoming academic role
+  affiliation: "Tallinn University of Technology (Incoming)"
+  # If you have an ORCID iD, add it here:
+  # orcid: "https://orcid.org/0000-0000-0000-0000"
+title: "Resilient RAP Framework: A Self-Healing Analytical Pipeline for High-Frequency Telemetry"
+version: 0.1.0-alpha
+doi: 10.5281/zenodo.123456 # (Optional: You can get a real DOI later via Zenodo)
+date-released: 2026-02-03
+url: "https://github.com/tarek-clarke/resilient-rap-framework"
+license: MIT
+keywords:
+  - "data-engineering"
+  - "sports-analytics"
+  - "clinical-informatics"
+  - "schema-inference"
+  - "resilience-engineering"
+  - "autonomous-agents"
+abstract: >-
+  A domain-agnostic framework for ensuring data integrity in high-velocity, 
+  volatile telemetry environments. It implements a heuristic control plane 
+  for identifying and repairing schema drift in real-time, validated against 
+  synthetic F1 racing data and clinical HL7 streams.
