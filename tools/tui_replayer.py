@@ -11,7 +11,7 @@ from rich.text import Text
 from rich.align import Align
 from rich import box
 
-# FIX 1: Force Terminal Mode (Critical for Docker/Pipes)
+# FIX 1: Force Terminal Mode (Critical for Docker)
 console = Console(force_terminal=True)
 
 class ResilientDashboard:
@@ -103,13 +103,15 @@ class ResilientDashboard:
 dashboard = ResilientDashboard()
 
 def run():
+    # Define layout LOCALLY inside the function
     layout = dashboard.make_layout()
+    
     # Initialize empty
     layout["telemetry"].update(dashboard.generate_telemetry_table(None))
     layout["logs"].update(dashboard.generate_log_panel())
     
-    # PASS THE CONSOLE TO LIVE
-    with Live(layout, refresh_per_second=10, screen=True, console=console):
+    # FIX 2: screen=False ensures it works in Docker/Pipes
+    with Live(layout, refresh_per_second=10, screen=False, console=console):
         for line in sys.stdin:
             packet = dashboard.process_packet(line)
             if packet:
@@ -120,6 +122,5 @@ if __name__ == "__main__":
     try:
         run()
     except Exception as e:
-        # LOG CRASH TO FILE
         with open("crash.log", "w") as f:
             f.write(traceback.format_exc())
