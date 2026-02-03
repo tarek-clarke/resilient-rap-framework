@@ -48,7 +48,7 @@ The system is structured as a modular, extensible RAP:
 | **Resilience Layer** | Logging, lineage, error capture | Ensuring fault tolerance and traceability |
 | **Reproducibility** | Docker, pinned dependencies | Guaranteeing deterministic execution across years |
 
-This architecture supports the PhD’s three-paper structure:
+This architecture supports the proposed three-stage research agenda:
 
 1. **Sports telemetry application paper**  
 2. **Clinical telemetry application paper**  
