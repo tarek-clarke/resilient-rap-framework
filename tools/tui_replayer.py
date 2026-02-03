@@ -1,18 +1,3 @@
-# tools/viral_tui.py
-import sys
-import json
-import time
-from rich.console import Console
-from rich.layout import Layout
-from rich.live import Live
-from rich.panel import Panel
-from rich.table import Table
-from rich.text import Text
-from rich.align import Align
-from rich import box
-
-console = Console()
-
 class ResilientDashboard:
     def __init__(self):
         self.logs = []
@@ -20,6 +5,10 @@ class ResilientDashboard:
         self.status_color = "green"
         self.processed_count = 0
         self.drifts_healed = 0
+        
+        # THIS IS THE MEMORY (The "Fix")
+        # Maps bad_key -> good_key
+        self.schema_map = {} 
 
     def make_layout(self):
         layout = Layout()
@@ -30,7 +19,6 @@ class ResilientDashboard:
         return layout
 
     def generate_telemetry_table(self, data):
-        # Create a sleek table for the "Live Feed"
         table = Table(title="🏎️  LIVE F1 TELEMETRY FEED (50Hz)", expand=True, box=box.ROUNDED, border_style="blue")
         table.add_column("Metric", style="dim")
         table.add_column("Value", justify="right", style="bold white")
@@ -40,7 +28,7 @@ class ResilientDashboard:
             return table
 
         # Speed Logic
-        speed = data.get('speed_kph', data.get('speed_kmh', 0))
+        speed = data.get('speed_kph', 0)
         speed_color = "green" if speed < 300 else "red blink"
         
         # Heart Rate Logic
@@ -59,9 +47,8 @@ class ResilientDashboard:
         )
 
     def generate_log_panel(self):
-        # Create the "System Health" log
         log_text = Text()
-        for log in self.logs[-12:]: # Show last 12 logs
+        for log in self.logs[-12:]:
             log_text.append(log + "\n")
         
         status_panel = Panel(
@@ -70,8 +57,6 @@ class ResilientDashboard:
             border_style=self.status_color,
             height=3
         )
-        
-        stats_text = f"Packets: {self.processed_count}\nHealed: {self.drifts_healed}"
         
         return Layout(
             Panel(log_text, title="SYSTEM LOGS", border_style="white"),
@@ -82,23 +67,32 @@ class ResilientDashboard:
             packet = json.loads(line)
             self.processed_count += 1
             
-            # SIMULATE THE HEALING LOGIC
-            # In a real app, the BaseIngestor does this. 
-            # For the visual demo, we simulate the detection here.
+            # STEP 1: APPLY KNOWN FIXES (The "Memory")
+            # If we learned a fix previously, apply it silently
+            for bad_key, good_key in self.schema_map.items():
+                if bad_key in packet:
+                    packet[good_key] = packet.pop(bad_key)
+                    # We don't alert here. We just fix it.
             
-            if "speed_kmh" in packet:
-                # CHAOS DETECTED
+            # STEP 2: DETECT NEW DRIFT
+            if "speed_kmh" in packet and "speed_kmh" not in self.schema_map:
+                # NEW ERROR -> TRIGGER RED ALERT
                 self.system_status = "⚠️ DRIFT DETECTED"
                 self.status_color = "red blink"
-                self.logs.append(f"[red]Alert: Schema mismatch 'speed_kmh'[/]")
+                self.logs.append(f"[red bold]ALERT: Schema mismatch 'speed_kmh'[/]")
+                self.logs.append(f"[yellow]Agent: Analyzing semantics...[/]")
                 
-                # "Heal" it visually
-                time.sleep(0.05) 
-                self.logs.append(f"[yellow]Agent: Semantic Match > 95%. Patching...[/]")
-                packet['speed_kph'] = packet['speed_kmh'] # Normalize for display
+                # Simulate "Thinking" time (0.5s)
+                time.sleep(0.5) 
+                
+                # THE FIX
+                self.schema_map["speed_kmh"] = "speed_kph"  # Learn the fix
+                packet["speed_kph"] = packet.pop("speed_kmh") # Apply fix
                 self.drifts_healed += 1
                 
-                # Reset Status
+                self.logs.append(f"[green bold]SUCCESS: Alias created. Resuming.[/]")
+                
+                # Return to Green
                 self.system_status = "ACTIVE"
                 self.status_color = "green"
             
@@ -106,21 +100,3 @@ class ResilientDashboard:
             
         except json.JSONDecodeError:
             return None
-
-dashboard = ResilientDashboard()
-
-def run():
-    layout = dashboard.make_layout()
-    
-    with Live(layout, refresh_per_second=10, screen=True):
-        for line in sys.stdin:
-            packet = dashboard.process_packet(line)
-            if packet:
-                layout["telemetry"].update(dashboard.generate_telemetry_table(packet))
-                layout["logs"].update(dashboard.generate_log_panel())
-
-if __name__ == "__main__":
-    try:
-        run()
-    except KeyboardInterrupt:
-        pass
