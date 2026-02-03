@@ -56,11 +56,11 @@ This module is used to validate the RAP framework under conditions of:
 • Schema drift
 • Coupled physiological and mechanical signals
 • Event-driven volatility (pit stops, sector transitions, load spikes)
-The generator is designed to mirror the complexity of real IMU, GPS, HR, and HRV pipelines used in elite sport and human-performance monitoring.
+The generator mirrors the complexity of real IMU, GPS, HR, and HRV pipelines used in elite sport and human-performance monitoring.
 ---
 What the Generator Produces
 The generator outputs a single, timestamp-sorted CSV representing a full race session across an entire grid. Each row contains:
-Mechanical (car) telemetry:
+Mechanical (car) telemetry
 • speed_kph
 • throttle_pct
 • brake_pct
@@ -71,15 +71,15 @@ Mechanical (car) telemetry:
 • distance_m
 • lap_number
 • is_pit_stop
-Physiological (driver) telemetry:
+Physiological (driver) telemetry
 • heart_rate_bpm
 • hrv_ms
 • skin_conductance
 • respiration_rate
 • stress_index
-Event modeling includes:
+Event modeling
 • Pit stops (car stopped plus physiological recovery)
-• Sector-dependent load (for example, high-G corners)
+• Sector-dependent load
 • Driver-specific physiological baselines
 • Variability factors (pace, stress sensitivity, noise)
 • DRS zones
@@ -87,30 +87,3 @@ Event modeling includes:
 This produces a dual-domain dataset suitable for testing ingestion, normalization, schema drift handling, and resilience mechanisms.
 ---
 Synthetic Data Directory Structure
-data/
-f1_synthetic/
-race_config_grid.json
-session_grid_physio.csv
----
-Generator Location
-tools/
-generate_f1_telemetry.py
-The generator is fully config-driven and can be extended to support:
-• Multi-session generation (FP1, FP2, Quali, Race)
-• Weather effects
-• Tyre degradation
-• Fatigue modeling
-• Stochastic event injection (lockups, errors, near-misses)
----
-Integration with the RAP Framework
-Synthetic telemetry feeds directly into:
-adapters/sports/ingestion_sports.py
-This adapter implements the BaseIngestor contract:
-• extract
-• parse
-• validate
-• normalize
-• emit domain-standardized records
-The sports domain serves as a controlled proving ground for the broader RAP architecture before extending to:
-• Clinical telemetry (FHIR and HL7 physiological streams)
-• Pricing telemetry (web-scraped economic indicators)
