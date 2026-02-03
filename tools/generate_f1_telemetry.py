@@ -15,12 +15,13 @@ def load_config(path: str):
 
 
 # ---------------------------------------------------------
-# Generate telemetry for a single lap
+# Generate telemetry for a single lap for a single driver
 # ---------------------------------------------------------
-def generate_lap_profile(config, lap_number: int):
-    lap_time_s = config["lap_time_s"]
-    sample_rate_hz = config["sample_rate_hz"]
-    lap_length_m = config["lap_length_m"]
+def generate_lap_profile(config, driver, lap_number: int):
+    circuit = config["circuit"]
+    lap_time_s = circuit["lap_time_s"]
+    sample_rate_hz = circuit["sample_rate_hz"]
+    lap_length_m = circuit["lap_length_m"]
 
     samples = []
     total_samples = int(lap_time_s * sample_rate_hz)
@@ -34,11 +35,11 @@ def generate_lap_profile(config, lap_number: int):
     distance_per_sample = lap_length_m / total_samples
 
     # Driver parameters
-    pace_factor = config["driver"]["base_pace_factor"]
-    variability = config["driver"]["variability"]
+    pace_factor = driver["base_pace_factor"]
+    variability = driver["variability"]
 
     # DRS zones
-    drs_zones = config["events"]["drs_zones"]
+    drs_zones = config["drs_zones"]
 
     for i in range(total_samples):
         t = i / sample_rate_hz
@@ -108,6 +109,8 @@ def generate_lap_profile(config, lap_number: int):
 
         samples.append({
             "timestamp": timestamp.isoformat(),
+            "driver_id": driver["id"],
+            "team": driver["team"],
             "lap_number": lap_number,
             "lap_time_ms": lap_time_ms,
             "distance_m": round(distance_m, 2),
@@ -117,20 +120,26 @@ def generate_lap_profile(config, lap_number: int):
             "gear": gear,
             "rpm": rpm,
             "drs": drs,
-            "sector": sector,
-            "driver_id": config["driver"]["id"]
+            "sector": sector
         })
 
     return samples
 
 
 # ---------------------------------------------------------
-# Generate full session
+# Generate full session for all drivers
 # ---------------------------------------------------------
-def generate_session(config):
+def generate_full_grid_session(config):
     all_samples = []
-    for lap in range(1, config["num_laps"] + 1):
-        all_samples.extend(generate_lap_profile(config, lap))
+    num_laps = config["circuit"]["num_laps"]
+
+    for driver in config["drivers"]:
+        for lap in range(1, num_laps + 1):
+            lap_samples = generate_lap_profile(config, driver, lap)
+            all_samples.extend(lap_samples)
+
+    # Sort by timestamp across all drivers
+    all_samples.sort(key=lambda x: x["timestamp"])
     return all_samples
 
 
@@ -150,8 +159,8 @@ def write_csv(samples, output_path: Path):
 # Main
 # ---------------------------------------------------------
 if __name__ == "__main__":
-    config = load_config("data/f1_synthetic/race_config.json")
-    samples = generate_session(config)
-    out_path = Path("data/f1_synthetic/session_01.csv")
+    config = load_config("data/f1_synthetic/race_config_grid.json")
+    samples = generate_full_grid_session(config)
+    out_path = Path("data/f1_synthetic/session_grid.csv")
     write_csv(samples, out_path)
     print(f"Wrote {len(samples)} samples to {out_path}")
