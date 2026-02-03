@@ -7,3 +7,6 @@ _targets/
 *.tar
 *.vhdx
 urls.txt
+*.csv
+*.parquet
+*.jsonl
