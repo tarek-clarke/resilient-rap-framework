@@ -15,11 +15,13 @@ For the **Architectural Whitepaper**, **Research Roadmap**, and deep-dives on **
 
 👉 [**tarekclarke.substack.com**](https://tarekclarke.substack.com)
 
-### 🚀 Current Research Status (Feb 2026)
-- **Industrial Validation:** 240 unique environments / 473 total clones in the last 48 hours.
-- **Audience:** 44% Senior/Executive engagement via private engineering channels.
-- **Phase 1:** Resilient ingestion baseline (Stable).
-- **Phase 2:** Automated Schema Reconciliation (In Development).
+## 🚀 Current Research & Traction (Feb 2026)
+
+This framework is currently undergoing industrial validation and academic review.
+- **Metric:** 240 unique environments / 473 total clones (trailing 48 hours).
+- **Engagement:** 44% Senior/Executive profile views via LinkedIn/Dark Social.
+- **Status:** Phase 1 (Resilient Ingestion) is stable. Phase 2 (Auto-Reconciliation) is in active development.
+- **Affiliation:** Doctoral research in collaboration with Tallinn University of Technology (TalTech).
   
 ## ❤️ Support This Research
 This framework is a core part of my PhD research proposal on data resilience at Tallinn University of Technology. If this code is helping you solve schema drift or ingestion challenges, consider becoming a sponsor to fund the compute and development of this open-source prototype.
