@@ -20,7 +20,7 @@ For the **Architectural Whitepaper**, **Research Roadmap**, and deep-dives on **
 - **Audience:** 44% Senior/Executive engagement via private engineering channels.
 - **Phase 1:** Resilient ingestion baseline (Stable).
 - **Phase 2:** Automated Schema Reconciliation (In Development).
-- 
+  
 ## ❤️ Support This Research
 This framework is a core part of my PhD research proposal on data resilience at Tallinn University of Technology. If this code is helping you solve schema drift or ingestion challenges, consider becoming a sponsor to fund the compute and development of this open-source prototype.
 
