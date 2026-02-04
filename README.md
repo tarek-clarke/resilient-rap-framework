@@ -20,6 +20,9 @@ The framework demonstrates how a **domain-agnostic ingestion architecture** can 
 
 Originally conceived to address data fragility in National Statistical Offices (NSOs), the project serves as a **generalizable pipeline-engineering framework** validated across multiple operational domains.
 
+The logic is as follows:
+<img width="1604" height="1154" alt="image" src="https://github.com/user-attachments/assets/7fcd3a83-9782-4da7-babf-a5022a31f3f3" />
+
 ---
 
 ## 🏎️ Live Demo: The F1 Chaos Stream
