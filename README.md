@@ -6,6 +6,14 @@
 
 **A domain-agnostic framework for autonomous schema drift resolution in high-velocity telemetry.**
 
+# 🛡️ Resilient RAP Framework
+
+**Part of a PhD research proposal for a project at Tallinn University of Technology (TalTech)**
+
+This framework is being developed to solve the "Contract of Trust" problem in high-velocity telemetry. 
+For the **Architectural Whitepaper**, **Research Roadmap**, and deep-dives on **Self-Healing Data**, subscribe to the Substack:
+
+👉 [**tarekclarke.substack.com**](https://tarekclarke.substack.com)
 ---
 
 ## 📌 Project Overview
@@ -145,14 +153,7 @@ url: "[https://github.com/tarek-clarke/resilient-rap-framework](https://github.c
 ## ⚖️ License
 MIT License. Free for academic and research use.
 
-# 🛡️ Resilient RAP Framework
 
-**Part of a PhD research proposal for a project at Tallinn University of Technology (TalTech)**
-
-This framework is being developed to solve the "Contract of Trust" problem in high-velocity telemetry. 
-For the **Architectural Whitepaper**, **Research Roadmap**, and deep-dives on **Self-Healing Data**, subscribe to the Substack:
-
-👉 [**tarekclarke.substack.com**](https://tarekclarke.substack.com)
 
 
 ## ❤️ Support This Research
