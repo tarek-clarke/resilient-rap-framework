@@ -156,3 +156,4 @@ url: "[https://github.com/tarek-clarke/resilient-rap-framework](https://github.c
 
 ## ⚖️ License
 MIT License. Free for academic and research use.
+<img src="https://static.scarf.sh/a.png?x-pxid=YOUR_PIXEL_ID" referrerpolicy="no-referrer-when-downgrade" />
