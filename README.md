@@ -14,6 +14,10 @@ This framework is being developed to solve the "Contract of Trust" problem in hi
 For the **Architectural Whitepaper**, **Research Roadmap**, and deep-dives on **Self-Healing Data**, subscribe to the Substack:
 
 👉 [**tarekclarke.substack.com**](https://tarekclarke.substack.com)
+
+## ❤️ Support This Research
+This framework is a core part of my PhD research proposal on data resilience at Tallinn University of Technology. If this code is helping you solve schema drift or ingestion challenges, consider becoming a sponsor to fund the compute and development of this open-source prototype.
+
 ---
 
 ## 📌 Project Overview
@@ -152,9 +156,3 @@ url: "[https://github.com/tarek-clarke/resilient-rap-framework](https://github.c
 
 ## ⚖️ License
 MIT License. Free for academic and research use.
-
-
-
-
-## ❤️ Support This Research
-This framework is a core part of my PhD research proposal on data resilience at Tallinn University of Technology. If this code is helping you solve schema drift or ingestion challenges, consider becoming a sponsor to fund the compute and development of this open-source prototype.
