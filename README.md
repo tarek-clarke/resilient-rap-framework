@@ -1,7 +1,7 @@
 # Resilient RAP Framework: Self-Healing Data Pipelines
 
 ![Status](https://img.shields.io/badge/Status-Prototype-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
+![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-yellow)
 
 **A domain-agnostic framework for autonomous schema drift resolution in high-velocity telemetry.**
@@ -183,7 +183,4 @@ If you are interested in applying the Resilient RAP framework to your telemetry 
 * **LinkedIn:** https://www.linkedin.com/in/tarekclarke
 
 
-
-## ⚖️ License
-MIT License. Free for academic and research use.
 <img src="https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd" referrerpolicy="no-referrer-when-downgrade" />
