@@ -40,29 +40,32 @@ The framework demonstrates how a **domain-agnostic ingestion architecture** can 
 Originally conceived to address data fragility in National Statistical Offices (NSOs), the project serves as a **generalizable pipeline-engineering framework** validated across multiple operational domains.
 
 The logic is as follows:
-<img width="1604" height="1154" alt="image" src="https://github.com/user-attachments/assets/7fcd3a83-9782-4da7-babf-a5022a31f3f3" />
+<img width="1604" height="1154" alt="Architectural Diagram" src="[https://github.com/user-attachments/assets/7fcd3a83-9782-4da7-babf-a5022a31f3f3](https://github.com/user-attachments/assets/7fcd3a83-9782-4da7-babf-a5022a31f3f3)" />
 
 ---
 
 ## 🏎️ Live Demo: The F1 Chaos Stream
 
-To validate the framework's resilience, this repository includes a **Terminal User Interface (TUI)** that streams high-frequency F1 telemetry and injects a "Schema Break" (Drift) in real-time.
+To validate the framework's resilience, this repository includes a **Terminal User Interface (TUI)** that simulates high-frequency F1 telemetry and injects "Schema Drift" (messy sensor tags) in real-time.
 
 ### ⚡ Quickstart (Run in < 30s)
-Copy and paste this entire block into your terminal to install dependencies and launch the chaos stream immediately:
+Copy and paste this entire block into your terminal to install dependencies and launch the chaos simulation immediately:
 
 ```bash
 # 1. Install the visualization & data libraries
-pip install pandas fastf1 rich
+pip install pandas rich sentence-transformers
 
-# 2. Run the pipeline (The -u flag is critical for real-time piping)
-python3 -u tools/replay_stream.py | python3 -u tools/tui_replayer.py
+# 2. Run the Resilient TUI (Self-contained simulation)
+python tools/tui_replayer.py
 ```
+
 ### What You Will See
-1.  **Normal State (Green):** Telemetry streams at 50Hz (Speed, RPM, Heart Rate).
-2.  **Chaos Injection (Red):** At ~3 seconds, the stream changes `speed_kph` to `speed_kmh` (simulating an upstream API change).
-3.  **Self-Healing (Yellow → Green):** The agent detects the drift, semantically infers the alias, patches the schema map, and resumes ingestion in <20ms.
-<img width="1146" height="413" alt="image" src="https://github.com/user-attachments/assets/98fff2e6-2f66-46fa-809a-f47b9c9acf34" />
+1.  **Normal State:** Telemetry streams (Speed, RPM, Heart Rate).
+2.  **Chaos Injection:** The simulation injects non-standard tags like `hr_watch_01` or `brk_tmp_fr`.
+3.  **Self-Healing (Green Panel):** The "Autonomous Repair" agent detects the drift, semantically infers the alias using a BERT model, patches the schema map, and resumes ingestion seamlessly.
+
+<img width="1146" height="413" alt="TUI Dashboard Screenshot" src="[https://github.com/user-attachments/assets/98fff2e6-2f66-46fa-809a-f47b9c9acf34](https://github.com/user-attachments/assets/98fff2e6-2f66-46fa-809a-f47b9c9acf34)" />
+
 ---
 
 ## 📄 Abstract
@@ -87,10 +90,10 @@ The system is structured as a modular, extensible RAP:
 | Component | Technology | Purpose |
 |----------|------------|---------|
 | **Core Ingestion Interface** | Python (`BaseIngestor`) | Domain-agnostic ingestion contract (connect → extract → parse → validate → normalize) |
-| **Pricing Adapter** | BeautifulSoup, regex | Extracting semi-structured pricing signals from web pages |
-| **Sports Adapter** | JSON APIs, pandas | Ingesting IMU/GPS/HR/HRV telemetry from athlete monitoring systems |
+| **Semantic Reconciliation** | BERT / Transformers | Auto-mapping messy inputs to a Gold Standard schema (Self-Healing) |
+| **Sports Adapter** | JSON / Simulation | Ingesting IMU/GPS/HR/HRV telemetry from athlete monitoring systems |
 | **Clinical Adapter** | FHIR/HL7 APIs | Ingesting physiological observations from clinical telemetry systems |
-| **Resilience Layer** | Logging, lineage | Ensuring fault tolerance and traceability (Self-Healing Logic) |
+| **Resilience Layer** | Logging, lineage | Ensuring fault tolerance and traceability (Audit Logs) |
 | **Reproducibility** | Docker, pinned deps | Guaranteeing deterministic execution across years |
 
 This architecture supports a proposed three-stage research agenda:
@@ -119,25 +122,24 @@ Implementing tamper-evident lineage, deterministic transformations, and reproduc
 ```
 resilient-rap-framework/
 │
-├── core/
-│   └── ingestion/
-│       └── base_ingestor.py      # The Abstract Interface
+├── modules/
+│   ├── base_ingestor.py      # The Abstract Interface
+│   └── translator.py         # Semantic Reconciliation Engine (BERT)
 │
 ├── adapters/
-│   ├── pricing/                  # Economic Data Adapter
-│   ├── sports/                   # Telemetry Adapter (Active Demo)
-│   └── clinical/                 # FHIR Adapter (Planned)
+│   ├── pricing/              # Economic Data Adapter
+│   ├── sports/               # Telemetry Adapter (Active Demo)
+│   └── clinical/             # FHIR Adapter (Planned)
 │
 ├── tools/
-│   ├── replay_stream.py          # Chaos Generator (The "Hose")
-│   ├── tui_replayer.py           # Visualization Dashboard (The "Screen")
-│   └── generate_f1_telemetry.py  # Synthetic Data Engine
+│   ├── tui_replayer.py       # Visualization Dashboard (The "Screen")
+│   ├── test_translator.py    # Unit tests for Semantic Mapping
+│   └── debug_pipeline.py     # Diagnostic scripts
 │
 ├── data/
 │   └── f1_synthetic/
-│       └── session_grid_physio.csv
+│       └── race_config_grid.json
 │
-├── Dockerfile
 ├── requirements.txt
 └── README.md
 ```
@@ -158,9 +160,9 @@ authors:
     affiliation: "Independent Researcher"
 title: "Resilient RAP Framework: A Self-Healing Analytical Pipeline"
 date-released: 2026-02-03
-url: "[https://github.com/tarek-clarke/resilient-rap-framework](https://github.com/tarek-clarke/resilient-rap-framework)"
+url: "https://github.com/tarek-clarke/resilient-rap-framework"
 ```
 
 ## ⚖️ License
 MIT License. Free for academic and research use.
-<img src="https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd" referrerpolicy="no-referrer-when-downgrade" />
+<img src="[https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd](https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd)" referrerpolicy="no-referrer-when-downgrade" />

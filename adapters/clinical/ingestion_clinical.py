@@ -1,55 +1,70 @@
-from core.base_ingestor import BaseIngestor
-import requests
-import pandas as pd
-
+"""
+ICU Clinical Adapter (File-Based Simulation)
+--------------------------------------------
+1. Connects to 'patient_metadata.json' (Simulating Hospital ADT System)
+2. Streams Messy Vitals (Simulating Monitor Drift)
+"""
+import json
+import random
+from modules.base_ingestor import BaseIngestor
 
 class ClinicalIngestor(BaseIngestor):
-    """
-    Adapter for ingesting clinical telemetry (HR, SpO2, RR, BP).
-    Designed for FHIR/HL7-like APIs.
-    """
+    def __init__(self, source_name="ICU_Bed_04", target_schema=None):
+        if not target_schema:
+            target_schema = [
+                "Heart Rate (bpm)", 
+                "SpO2 (%)", 
+                "Systolic BP (mmHg)", 
+                "Diastolic BP (mmHg)", 
+                "Resp Rate (/min)"
+            ]
+        super().__init__(source_name, target_schema)
+        self.config_path = "data/clinical_synthetic/patient_metadata.json"
+        self.patient_info = {}
 
-    def __init__(self, api_url: str):
-        super().__init__(source_name="clinical_telemetry")
-        self.api_url = api_url
-
-    # ---------------------------------------------------------
     def connect(self):
-        self.session = requests.Session()
+        """Load patient metadata to simulate connecting to the Hospital Network."""
+        try:
+            with open(self.config_path, 'r') as f:
+                all_beds = json.load(f)
+            
+            # Find our specific bed or default to the first one
+            self.patient_info = all_beds.get(self.source_name, all_beds.get("ICU_Bed_04"))
+            self.record_lineage(f"connected_to_bed_{self.source_name}")
+            
+        except FileNotFoundError:
+            print("Warning: Patient DB not found. Using anonymous profile.")
+            self.patient_info = {"patient_id": "UNKNOWN", "protocol": "Default"}
 
-    # ---------------------------------------------------------
     def extract_raw(self):
-        response = self.session.get(self.api_url, timeout=10)
-        response.raise_for_status()
-        return response.json()
+        # Pass the patient info to the parser
+        return self.patient_info
 
-    # ---------------------------------------------------------
     def parse(self, raw):
-        # Expecting FHIR-like structure
-        return raw.get("observations", raw)
+        parsed_data = []
+        
+        # Get Patient ID from the loaded JSON (or default)
+        p_id = raw.get("patient_id", "ANON")
+        
+        # Generate 10 packets of "Live" data
+        for i in range(10):
+            row = {}
+            row['patient_id'] = p_id
+            
+            # --- CHAOS INJECTION (Messy Vitals Tags) ---
+            # The AI Model must map these messy keys to the Gold Standard
+            row['pulse_ox_fingertip'] = random.randint(60, 100)  # -> Heart Rate
+            row['o2_sat_percent'] = random.randint(92, 99)       # -> SpO2
+            row['bp_sys_art_line'] = random.randint(110, 140)    # -> Systolic
+            row['bp_dia_cuff'] = random.randint(60, 90)          # -> Diastolic
+            row['breaths_pm_vent'] = random.randint(12, 20)      # -> Resp Rate
+            
+            parsed_data.append(row)
+            
+        return parsed_data
 
-    # ---------------------------------------------------------
     def validate(self, parsed):
-        for obs in parsed:
-            if "timestamp" not in obs:
-                raise ValueError("Missing timestamp in clinical observation")
+        pass
 
-            if "hr" in obs and not (20 <= obs["hr"] <= 240):
-                raise ValueError("Heart rate out of physiological range")
-
-            if "spo2" in obs and not (50 <= obs["spo2"] <= 100):
-                raise ValueError("SpO2 out of physiological range")
-
-    # ---------------------------------------------------------
     def normalize(self, parsed):
-        normalized = []
-        for obs in parsed:
-            normalized.append({
-                "timestamp": pd.to_datetime(obs["timestamp"]),
-                "hr": obs.get("hr"),
-                "spo2": obs.get("spo2"),
-                "rr": obs.get("rr"),
-                "bp_sys": obs.get("bp", {}).get("systolic"),
-                "bp_dia": obs.get("bp", {}).get("diastolic"),
-            })
-        return normalized
+        return parsed
