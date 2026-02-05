@@ -171,6 +171,19 @@ date-released: 2026-02-03
 url: "[https://github.com/tarek-clarke/resilient-rap-framework](https://github.com/tarek-clarke/resilient-rap-framework)"
 ```
 
+---
+
+## 📬 Contact & Collaboration
+
+I am currently developing this framework as part of my PhD research at **Tallinn University of Technology (TalTech)**. 
+
+If you are interested in applying the Resilient RAP framework to your telemetry stack or discussing research opportunities:
+
+* **Email:** [tclarke91@proton.me](mailto:tclarke91@proton.me)
+* **LinkedIn:** [https://www.linkedin.com/in/tarekclarke]
+
+
+
 ## ⚖️ License
 MIT License. Free for academic and research use.
 <img src="https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd" referrerpolicy="no-referrer-when-downgrade" />
