@@ -12,7 +12,7 @@
 **Part of a PhD research proposal for a project at Tallinn University of Technology (TalTech)**
 
 This framework is being developed to solve the "Contract of Trust" problem in high-velocity telemetry. 
-For the **Architectural Whitepaper**, **Research Roadmap**, and deep-dives on **Self-Healing Data**, subscribe to the Substack:
+For the Architectural Whitepaper, Research Roadmap, and deep-dives on Self-Healing Data, subscribe to the Substack:
 
 👉 [**tarekclarke.substack.com**](https://tarekclarke.substack.com)
 
