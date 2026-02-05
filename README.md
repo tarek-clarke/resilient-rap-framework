@@ -16,6 +16,9 @@ For the **Architectural Whitepaper**, **Research Roadmap**, and deep-dives on **
 
 👉 [**tarekclarke.substack.com**](https://tarekclarke.substack.com)
 
+
+> **Note:** This repository is actively tracked for usage patterns to support my PhD research.
+
 ## 🚀 Current Research & Traction (Feb 2026)
 
 This framework is currently undergoing industrial validation and academic review.
