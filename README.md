@@ -21,7 +21,7 @@ This framework is currently undergoing industrial validation and academic review
 - **Metric:** 240 unique environments / 473 total clones (trailing 48 hours).
 - **Engagement:** 44% Senior/Executive profile views via LinkedIn/Dark Social.
 - **Status:** Phase 1 (Resilient Ingestion) is stable. Phase 2 (Auto-Reconciliation) is in active development.
-  
+  [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Ftarek-clarke%2Fresilient-rap-framework&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=views&edge_flat=false)](https://hits.seeyoufarm.com)
 ## ❤️ Support This Research
 This framework is a core part of my PhD research proposal on data resilience at Tallinn University of Technology. If this code is helping you solve schema drift or ingestion challenges, consider becoming a sponsor to fund the compute and development of this open-source prototype.
 
