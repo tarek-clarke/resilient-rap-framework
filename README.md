@@ -3,6 +3,7 @@
 ![Status](https://img.shields.io/badge/Status-Prototype-blue)
 ![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-yellow)
+[![Analytics](https://img.shields.io/badge/Analytics-Tracked_via_Scarf-blue)](https://about.scarf.sh)
 
 **A domain-agnostic framework for autonomous schema drift resolution in high-velocity telemetry.**
 
