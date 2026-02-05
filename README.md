@@ -22,7 +22,7 @@ For the **Architectural Whitepaper**, **Research Roadmap**, and deep-dives on **
 ## 🚀 Current Research & Traction (Feb 2026)
 
 This framework is currently undergoing industrial validation and academic review.
-- **Metric:** 240 unique environments / 473 total clones (trailing 48 hours).
+- **Metric:** 256 unique environments / 588 total clones (in the first 48 hours).
 - **Engagement:** 44% Senior/Executive profile views via LinkedIn/Dark Social.
 - **Status:** Phase 1 (Resilient Ingestion) is stable. Phase 2 (Auto-Reconciliation) is in active development
    
