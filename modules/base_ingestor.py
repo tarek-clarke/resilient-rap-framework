@@ -1,162 +1,143 @@
 """
-Base Ingestor Module
---------------------
-
-This abstract class defines the ingestion contract for all domain-specific
-adapters in the Resilient RAP Framework. Each adapter (sports, clinical,
-pricing, etc.) must implement these methods to ensure consistent behavior
-across domains.
-
-The base class handles:
-- lifecycle orchestration
-- logging hooks
-- lineage tracking
-- resilience scaffolding
-- error handling structure
-
-Domain adapters handle:
-- extraction logic
-- parsing rules
-- domain-specific validation
-- normalization rules
+Resilient RAP Framework: Base Ingestor
+--------------------------------------
+Core Orchestrator with Semantic Reconciliation and Reproducible Lineage.
 """
 
 from abc import ABC, abstractmethod
 from datetime import datetime
 import pandas as pd
-
+import json
+from modules.translator import SemanticTranslator
 
 class BaseIngestor(ABC):
     """
-    Abstract base class for ingestion modules.
-    Domain-specific adapters must implement all abstract methods.
+    Abstract base class for all domain adapters.
+    Implements the 'Resilience' and 'Reproducibility' layers of the RAP.
     """
 
-    def __init__(self, source_name: str):
+    def __init__(self, source_name: str, target_schema: list):
         self.source_name = source_name
         self.lineage = []
         self.errors = []
+        self.last_resolutions = [] # Hook for TUI/Live visualization
+        
+        # Initialize the Semantic Translator (ML Engine)
+        self.translator = SemanticTranslator(target_schema)
 
-    # ----------------------------------------------------------------------
-    # 1. CONNECTION
-    # ----------------------------------------------------------------------
+    # --- Abstract Methods (To be implemented by adapters) ---
     @abstractmethod
-    def connect(self):
-        """
-        Establish a connection to the data source.
-        Could be an API, file, stream, sensor feed, or webpage.
-        """
-        pass
+    def connect(self): pass
 
-    # ----------------------------------------------------------------------
-    # 2. RAW EXTRACTION
-    # ----------------------------------------------------------------------
     @abstractmethod
-    def extract_raw(self):
-        """
-        Pull raw data from the source.
-        Returns unprocessed content (HTML, JSON, bytes, CSV text, etc.).
-        """
-        pass
+    def extract_raw(self): pass
 
-    # ----------------------------------------------------------------------
-    # 3. PARSING
-    # ----------------------------------------------------------------------
     @abstractmethod
-    def parse(self, raw):
-        """
-        Convert raw content into structured Python objects.
-        Example: extract fields, timestamps, sensor values, etc.
-        """
-        pass
+    def parse(self, raw): pass
 
-    # ----------------------------------------------------------------------
-    # 4. VALIDATION
-    # ----------------------------------------------------------------------
     @abstractmethod
-    def validate(self, parsed):
-        """
-        Apply domain-specific validation rules.
-        Example: physiological plausibility, schema checks, ranges.
-        """
-        pass
+    def validate(self, parsed): pass
 
-    # ----------------------------------------------------------------------
-    # 5. NORMALIZATION
-    # ----------------------------------------------------------------------
     @abstractmethod
-    def normalize(self, parsed):
-        """
-        Standardize units, timestamps, sampling rates, and formats.
-        Output should be ready for DataFrame conversion.
-        """
-        pass
+    def normalize(self, parsed): pass
 
-    # ----------------------------------------------------------------------
-    # 6. DATAFRAME CONVERSION
-    # ----------------------------------------------------------------------
+    # --- Concrete Framework Methods ---
+
     def to_dataframe(self, normalized):
-        """
-        Convert normalized structured data into a pandas DataFrame.
-        Domain adapters may override if needed.
-        """
+        """Converts structured data to Pandas DataFrame."""
         return pd.DataFrame(normalized)
 
-    # ----------------------------------------------------------------------
-    # 7. LINEAGE TRACKING
-    # ----------------------------------------------------------------------
-    def record_lineage(self, stage: str):
+    def apply_semantic_layer(self, df: pd.DataFrame):
         """
-        Append a lineage entry for reproducibility.
+        Autonomous Reconciliation Layer.
+        Maps messy telemetry labels to the Gold Standard schema.
         """
-        self.lineage.append({
+        mapping = {}
+        resolutions = []
+
+        for col in df.columns:
+            standard_name, confidence = self.translator.resolve(col)
+            
+            if standard_name:
+                mapping[col] = standard_name
+                # Document the match for the Audit Log and TUI
+                resolution_entry = {
+                    "raw_field": col,
+                    "target_field": standard_name,
+                    "confidence": round(float(confidence), 2),
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+                resolutions.append(resolution_entry)
+
+        # Update state for external TUI access
+        self.last_resolutions = resolutions
+        
+        # Record into formal lineage for reproducibility
+        if resolutions:
+            self.record_lineage("semantic_alignment", metadata=resolutions)
+            
+        return df.rename(columns=mapping)
+
+    def record_lineage(self, stage: str, metadata: dict = None):
+        """Records a step in the data lifecycle for the audit trail."""
+        entry = {
             "stage": stage,
             "timestamp": datetime.utcnow().isoformat(),
             "source": self.source_name
-        })
+        }
+        if metadata:
+            entry["details"] = metadata
+        self.lineage.append(entry)
 
-    # ----------------------------------------------------------------------
-    # 8. ERROR HANDLING
-    # ----------------------------------------------------------------------
-    def record_error(self, stage: str, error: Exception):
-        """
-        Capture errors without breaking the ingestion pipeline.
-        """
+    def record_error(self, stage: str, e: Exception):
+        """Captures pipeline failures without crashing the process."""
         self.errors.append({
             "stage": stage,
-            "error": str(error),
+            "error": str(e),
             "timestamp": datetime.utcnow().isoformat()
         })
 
-    # ----------------------------------------------------------------------
-    # 9. ORCHESTRATION PIPELINE
-    # ----------------------------------------------------------------------
+    def export_audit_log(self, path="data/reproducibility_audit.json"):
+        """Saves the complete lineage to a JSON file for PhD-level auditing."""
+        audit_data = {
+            "framework_version": "1.0-resilient",
+            "source": self.source_name,
+            "lineage_trail": self.lineage,
+            "error_log": self.errors
+        }
+        with open(path, "w") as f:
+            json.dump(audit_data, f, indent=4)
+
+    # --- The Orchestration Loop ---
+
     def run(self):
         """
-        Full ingestion lifecycle:
-        connect → extract_raw → parse → validate → normalize → dataframe
+        Executes the full RAP lifecycle.
+        connect -> extract -> parse -> validate -> normalize -> SEMANTIC FIX -> export
         """
         try:
-            self.record_lineage("connect")
+            self.record_lineage("pipeline_start")
+            
             self.connect()
-
-            self.record_lineage("extract_raw")
             raw = self.extract_raw()
-
-            self.record_lineage("parse")
+            
+            self.record_lineage("parsing")
             parsed = self.parse(raw)
-
-            self.record_lineage("validate")
+            
             self.validate(parsed)
-
-            self.record_lineage("normalize")
+            
+            self.record_lineage("normalization")
             normalized = self.normalize(parsed)
-
-            self.record_lineage("to_dataframe")
+            
             df = self.to_dataframe(normalized)
-
+            
+            # The Resilience Gatekeeper
+            self.record_lineage("reconciliation_layer_active")
+            df = self.apply_semantic_layer(df)
+            
+            self.record_lineage("pipeline_complete")
             return df
 
         except Exception as e:
-            self.record_error("run", e)
+            self.record_error("runtime_failure", e)
             raise e

@@ -1,10 +1,25 @@
-user_data/
+# --- Virtual Environments & Python Internals ---
+.venv/
+venv/
 __pycache__/
-*.png
-*.html
+*.pyc
+
+# --- Data & Scraped Content (Keep the repo clean) ---
+data/
+user_data/
 scraped_data.csv
-_targets/
-*.tar
-*.vhdx
 urls.txt
 *.csv
+_targets/
+
+# --- Large Binary & Virtualization Files ---
+*.vhdx
+*.tar
+*.vhdx
+
+# --- Research/Build Artifacts ---
+*.png
+*.html
+*.json
+!requirements.txt
+!config/schema.json
