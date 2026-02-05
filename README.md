@@ -182,5 +182,7 @@ If you are interested in applying the Resilient RAP framework to your telemetry 
 * **Email:** [tclarke91@proton.me](mailto:tclarke91@proton.me)
 * **LinkedIn:** https://www.linkedin.com/in/tarekclarke
 
+## ⚖️ License
+Distributed under the Apache License 2.0. See LICENSE for more information.
 
 <img src="https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd" referrerpolicy="no-referrer-when-downgrade" />
