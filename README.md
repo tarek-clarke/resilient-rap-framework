@@ -33,15 +33,15 @@ This framework is a core part of my PhD research proposal on data resilience at 
 
 ## 📌 Project Overview
 
-This repository contains the technical foundation for a **PhD research proposal** focusing on Resilient Reproducible Analytical Pipelines (RAP). It implements a "Self-Healing" ingestion framework designed to operate across multiple high-frequency data environments, including:
+This repository contains the technical foundation for a PhD research proposal focusing on Resilient Reproducible Analytical Pipelines (RAP). It implements a "Self-Healing" ingestion framework designed to operate across multiple high-frequency data environments, including:
 
 - **Pricing telemetry** (web-scraped economic indicators)
 - **Sports telemetry** (IMU/GPS/HR/HRV data)
 - **Clinical telemetry** (FHIR/HL7 physiological streams)
 
-The framework demonstrates how a **domain-agnostic ingestion architecture** can be adapted to volatile, schema-drifting, or safety-critical environments through modular adapters and reproducible engineering principles.
+The framework demonstrates how a domain-agnostic ingestion architecture can be adapted to volatile, schema-drifting, or safety-critical environments through modular adapters and reproducible engineering principles.
 
-Originally conceived to address data fragility in National Statistical Offices (NSOs), the project serves as a **generalizable pipeline-engineering framework** validated across multiple operational domains.
+Originally conceived to address data fragility in National Statistical Offices (NSOs), the project serves as a generalizable pipeline-engineering framework validated across multiple operational domains.
 
 The logic is as follows:
 <img width="1604" height="1154" alt="Architectural Diagram" src="https://github.com/user-attachments/assets/7fcd3a83-9782-4da7-babf-a5022a31f3f3" />
@@ -50,7 +50,7 @@ The logic is as follows:
 
 ## 🏎️ Live Demo: The F1 Chaos Stream
 
-To validate the framework's resilience, this repository includes a **Terminal User Interface (TUI)** that simulates high-frequency F1 telemetry and injects "Schema Drift" (messy sensor tags) in real-time.
+To validate the framework's resilience, this repository includes a Terminal User Interface (TUI) that simulates high-frequency F1 telemetry and injects "Schema Drift" (messy sensor tags) in real-time.
 
 ### ⚡ Quickstart (Run in < 30s)
 Copy and paste this entire block into your terminal to install dependencies and launch the chaos simulation immediately:
@@ -71,7 +71,7 @@ python tools/tui_replayer.py
 <img width="2170" height="984" alt="image" src="https://github.com/user-attachments/assets/d74174ff-7321-46a5-961e-defce5a9ee94" />
 
 ### 🏥 Domain Generalizability: ICU Patient Monitoring
-To validate the framework's "Zero-Shot" capabilities, the exact same ingestion agent was connected to a simulated **HL7/FHIR Clinical Stream** without retraining.
+To validate the framework's "Zero-Shot" capabilities, the exact same ingestion agent was connected to a simulated HL7/FHIR Clinical Stream without retraining.
 
 **Observation:** The system successfully mapped non-standard vendor tags (e.g., `pulse_ox_fingertip`) to the clinical gold standard (`Heart Rate`) using the same vector-space logic used for F1 telemetry.
 
@@ -82,16 +82,16 @@ To validate the framework's "Zero-Shot" capabilities, the exact same ingestion a
 
 ## 📄 Abstract
 
-National Statistical Offices, sports performance teams, and clinical monitoring systems all face a common challenge: **high-frequency data pipelines break easily** when upstream schemas drift, sensors fail, or interfaces change.
+National Statistical Offices, sports performance teams, and clinical monitoring systems all face a common challenge: high-frequency data pipelines break easily when upstream schemas drift, sensors fail, or interfaces change.
 
-Traditional pipelines rely on brittle selectors or rigid schemas. When these fail, organizations experience **data blackouts**, delayed decision-making, and loss of situational awareness.
+Traditional pipelines rely on brittle selectors or rigid schemas. When these fail, organizations experience data blackouts, delayed decision-making, and loss of situational awareness.
 
-This research proposes a **Resilient RAP Framework** grounded in:
+This research proposes a Resilient RAP Framework grounded in:
 - **Software Reliability Engineering:** Pareto-focused resilience for the "vital few" failure points.
 - **Tamper-Evident Processing:** Auditability and lineage for official statistics.
 - **Cross-Domain Generalizability:** Validated from Pricing → Sports → Clinical.
 
-The framework introduces a **domain-agnostic ingestion interface** (`BaseIngestor`) and a set of **domain adapters** that implement environment-specific extraction, validation, and normalization logic.
+The framework introduces a domain-agnostic ingestion interface (`BaseIngestor`) and a set of domain adapters that implement environment-specific extraction, validation, and normalization logic.
 
 ---
 
@@ -179,7 +179,7 @@ url: "[https://github.com/tarek-clarke/resilient-rap-framework](https://github.c
 
 ## 📬 Contact & Collaboration
 
-I am currently developing this framework as part of my PhD research proposal at **Tallinn University of Technology (TalTech)**. 
+I am currently developing this framework as part of my PhD research proposal for the Tallinn University of Technology (TalTech). 
 
 If you are interested in applying the Resilient RAP framework to your telemetry stack or discussing research opportunities:
 
