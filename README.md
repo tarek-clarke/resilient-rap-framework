@@ -66,7 +66,13 @@ python tools/tui_replayer.py
 
 <img width="2170" height="984" alt="image" src="https://github.com/user-attachments/assets/d74174ff-7321-46a5-961e-defce5a9ee94" />
 
- />
+### 🏥 Domain Generalizability: ICU Patient Monitoring
+To validate the framework's "Zero-Shot" capabilities, the exact same ingestion agent was connected to a simulated **HL7/FHIR Clinical Stream** without retraining.
+
+**Observation:** The system successfully mapped non-standard vendor tags (e.g., `pulse_ox_fingertip`) to the clinical gold standard (`Heart Rate`) using the same vector-space logic used for F1 telemetry.
+
+<img width="2324" height="860" alt="image" src="https://github.com/user-attachments/assets/86affd30-e75c-4e32-a549-c3179bbc8693" />
+
 
 ---
 
