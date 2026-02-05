@@ -175,12 +175,12 @@ url: "[https://github.com/tarek-clarke/resilient-rap-framework](https://github.c
 
 ## 📬 Contact & Collaboration
 
-I am currently developing this framework as part of my PhD research at **Tallinn University of Technology (TalTech)**. 
+I am currently developing this framework as part of my PhD research proposal at **Tallinn University of Technology (TalTech)**. 
 
 If you are interested in applying the Resilient RAP framework to your telemetry stack or discussing research opportunities:
 
 * **Email:** [tclarke91@proton.me](mailto:tclarke91@proton.me)
-* **LinkedIn:** [https://www.linkedin.com/in/tarekclarke]
+* **LinkedIn:** https://www.linkedin.com/in/tarekclarke
 
 
 
