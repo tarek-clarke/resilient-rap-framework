@@ -40,7 +40,7 @@ The framework demonstrates how a **domain-agnostic ingestion architecture** can 
 Originally conceived to address data fragility in National Statistical Offices (NSOs), the project serves as a **generalizable pipeline-engineering framework** validated across multiple operational domains.
 
 The logic is as follows:
-<img width="1604" height="1154" alt="Architectural Diagram" src="[https://github.com/user-attachments/assets/7fcd3a83-9782-4da7-babf-a5022a31f3f3](https://github.com/user-attachments/assets/7fcd3a83-9782-4da7-babf-a5022a31f3f3)" />
+<img width="1604" height="1154" alt="Architectural Diagram" src="https://github.com/user-attachments/assets/7fcd3a83-9782-4da7-babf-a5022a31f3f3" />
 
 ---
 
@@ -64,7 +64,9 @@ python tools/tui_replayer.py
 2.  **Chaos Injection:** The simulation injects non-standard tags like `hr_watch_01` or `brk_tmp_fr`.
 3.  **Self-Healing (Green Panel):** The "Autonomous Repair" agent detects the drift, semantically infers the alias using a BERT model, patches the schema map, and resumes ingestion seamlessly.
 
-<img width="1146" height="413" alt="TUI Dashboard Screenshot" src="[https://github.com/user-attachments/assets/98fff2e6-2f66-46fa-809a-f47b9c9acf34](https://github.com/user-attachments/assets/98fff2e6-2f66-46fa-809a-f47b9c9acf34)" />
+<img width="2170" height="984" alt="image" src="https://github.com/user-attachments/assets/d74174ff-7321-46a5-961e-defce5a9ee94" />
+
+ />
 
 ---
 
@@ -160,9 +162,9 @@ authors:
     affiliation: "Independent Researcher"
 title: "Resilient RAP Framework: A Self-Healing Analytical Pipeline"
 date-released: 2026-02-03
-url: "https://github.com/tarek-clarke/resilient-rap-framework"
+url: "[https://github.com/tarek-clarke/resilient-rap-framework](https://github.com/tarek-clarke/resilient-rap-framework)"
 ```
 
 ## ⚖️ License
 MIT License. Free for academic and research use.
-<img src="[https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd](https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd)" referrerpolicy="no-referrer-when-downgrade" />
+<img src="https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd" referrerpolicy="no-referrer-when-downgrade" />
