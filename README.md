@@ -7,7 +7,7 @@
 
 **A domain-agnostic framework for autonomous schema drift resolution in high-velocity telemetry.**
 
-# 🛡️ Resilient RAP Framework
+# Resilient RAP Framework
 
 **Technical foundation for a proposed PhD research project on data resilience.**
 
@@ -15,7 +15,7 @@ This framework is being developed to solve the "Contract of Trust" problem in hi
 
 > **Note:** This repository is actively tracked for usage patterns to support my PhD research.
 
-## 🚀 Current Research & Traction (Feb 2026)
+## Current Research & Traction (Feb 2026)
 
 This framework is currently being evaluated in applied and academic contexts.
 **Active Development:** Building clinical telemetry adapters to evaluate the framework against safety-critical
@@ -24,7 +24,7 @@ monitoring patterns.
    
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 This repository contains the technical foundation for a proposed PhD research project on Resilient Reproducible
 Analytical Pipelines (RAP). It implements a "Self-Healing" ingestion framework designed to operate across multiple
