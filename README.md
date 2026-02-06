@@ -111,7 +111,7 @@ To validate the framework's "Zero-Shot" capabilities, the exact same ingestion a
 
 **Observation:** The system successfully mapped non-standard vendor tags (e.g., `pulse_ox_fingertip`) to the clinical gold standard (`Heart Rate`) using the same vector-space logic used for F1 telemetry.
 
-<img width="1084" height="575" alt="Screenshot 2026-02-06 at 3 34 55 PM" src="https://github.com/user-attachments/assets/fd170264-9168-4caa-b233-fd5e44261e63" />
+<img width="1086" height="589" alt="Screenshot 2026-02-06 at 3 35 50 PM" src="https://github.com/user-attachments/assets/8d1d61ae-dca0-48be-9d20-7aca4e190b20" />
 
 
 
