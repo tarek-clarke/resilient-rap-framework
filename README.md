@@ -63,8 +63,13 @@ pip install pandas rich sentence-transformers
 python tools/tui_replayer.py
 ```
 
+**Three Simulation Modes Available:**
+- **Mode 1:** F1 Sports Telemetry (static schema drift with all 20 drivers)
+- **Mode 2:** ICU Clinical Monitor (FHIR/HL7 patient telemetry)
+- **Mode 3:** High-Frequency Logger with Dynamic Chaos Injection 🆕
+
 ### What You Will See
-1.  **Normal State:** Telemetry streams (Speed, RPM, Heart Rate).
+1.  **Normal State:** Telemetry streams (Speed, RPM, Heart Rate) from all 20 F1 drivers.
 2.  **Chaos Injection:** The simulation injects non-standard tags like `hr_watch_01` or `brk_tmp_fr`.
 3.  **Self-Healing (Green Panel):** The "Autonomous Repair" agent detects the drift, semantically infers the alias using a BERT model, patches the schema map, and resumes ingestion seamlessly.
 
@@ -74,8 +79,11 @@ python tools/tui_replayer.py
 For researchers validating sub-50ms telemetry resilience, the framework includes a dedicated **F1 Telemetry Logger** that simulates realistic IMU (G-force) and GPS sensors at 50Hz:
 
 ```bash
-# Run high-frequency simulation with chaos injection
+# Run high-frequency simulation with chaos injection (standalone)
 python modules/f1_telemetry_logger.py --duration 10 --chaos --chaos-freq 100
+
+# OR run it in the TUI replayer (select Mode 3)
+python tools/tui_replayer.py
 ```
 
 **Features:**
