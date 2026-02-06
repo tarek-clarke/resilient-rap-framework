@@ -67,7 +67,8 @@ python tools/tui_replayer.py
 2.  **Chaos Injection:** The simulation injects non-standard tags like `hr_watch_01` or `brk_tmp_fr`.
 3.  **Self-Healing (Green Panel):** The "Autonomous Repair" agent detects the drift, semantically infers the alias using a BERT model, patches the schema map, and resumes ingestion seamlessly.
 
-<img width="2170" height="984" alt="image" src="https://github.com/user-attachments/assets/d74174ff-7321-46a5-961e-defce5a9ee94" />
+<img width="1084" height="575" alt="Screenshot 2026-02-06 at 3 34 55 PM" src="https://github.com/user-attachments/assets/847aba41-1904-4e3d-be5a-7b582113de1e" />
+
 
 ### Advanced Demo: High-Frequency IMU + GPS Logger
 To validate sub-50ms telemetry resilience, the framework includes a dedicated **F1 Telemetry Logger** that simulates realistic IMU (G-force) and GPS sensors at 50Hz:
@@ -100,6 +101,9 @@ SELF-HEALING REPORT
    Learned Mappings: 8
 ```
 
+<img width="1073" height="575" alt="Screenshot 2026-02-06 at 3 34 31 PM" src="https://github.com/user-attachments/assets/adeb88f9-8b8c-4912-a801-4075b21c5143" />
+
+
 This validates the framework's ability to handle high-velocity, schema-drifting telemetry in safety-critical environments.
 
 ### Domain Generalizability: ICU Patient Monitoring
@@ -107,7 +111,8 @@ To validate the framework's "Zero-Shot" capabilities, the exact same ingestion a
 
 **Observation:** The system successfully mapped non-standard vendor tags (e.g., `pulse_ox_fingertip`) to the clinical gold standard (`Heart Rate`) using the same vector-space logic used for F1 telemetry.
 
-<img width="2324" height="860" alt="image" src="https://github.com/user-attachments/assets/86affd30-e75c-4e32-a549-c3179bbc8693" />
+<img width="1084" height="575" alt="Screenshot 2026-02-06 at 3 34 55 PM" src="https://github.com/user-attachments/assets/fd170264-9168-4caa-b233-fd5e44261e63" />
+
 
 
 ---
