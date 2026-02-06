@@ -48,18 +48,18 @@ class ClinicalIngestor(BaseIngestor):
         
         # Generate 10 packets of "Live" data
         for i in range(10):
-            row = {}
-            row['patient_id'] = p_id
-            
             # --- CHAOS INJECTION (Messy Vitals Tags) ---
             # The AI Model must map these messy keys to the Gold Standard
-            row['pulse_ox_fingertip'] = random.randint(60, 100)  # -> Heart Rate
-            row['o2_sat_percent'] = random.randint(92, 99)       # -> SpO2
-            row['bp_sys_art_line'] = random.randint(110, 140)    # -> Systolic
-            row['bp_dia_cuff'] = random.randint(60, 90)          # -> Diastolic
-            row['breaths_pm_vent'] = random.randint(12, 20)      # -> Resp Rate
+            clean_record = {
+                'patient_id': p_id,
+                'pulse_ox_fingertip': random.randint(60, 100),  # -> Heart Rate
+                'o2_sat_percent': random.randint(92, 99),       # -> SpO2
+                'bp_sys_art_line': random.randint(110, 140),    # -> Systolic
+                'bp_dia_cuff': random.randint(60, 90),          # -> Diastolic
+                'breaths_pm_vent': random.randint(12, 20)       # -> Resp Rate
+            }
             
-            parsed_data.append(row)
+            parsed_data.append(clean_record)
             
         return parsed_data
 

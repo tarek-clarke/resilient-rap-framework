@@ -36,12 +36,20 @@ def create_telemetry_table(df, title):
     
     # Column name mapping (in case semantic layer didn't catch everything)
     clean_names = {
+        # F1 Headers
         'driver_id': 'Driver',
         'hr_watch_01': 'Heart Rate (bpm)',
         'brk_tmp_fr': 'Brake Temp (°C)',
         'tyre_press_fl': 'Tyre Pressure (psi)',
         'car_velocity': 'Speed (km/h)',
-        'eng_rpm_log': 'RPM'
+        'eng_rpm_log': 'RPM',
+        # ICU Headers
+        'patient_id': 'Patient ID',
+        'pulse_ox_fingertip': 'Heart Rate (bpm)',
+        'o2_sat_percent': 'SpO2 (%)',
+        'bp_sys_art_line': 'Systolic BP (mmHg)',
+        'bp_dia_cuff': 'Diastolic BP (mmHg)',
+        'breaths_pm_vent': 'Resp Rate (/min)'
     }
     
     for col in df.columns:
