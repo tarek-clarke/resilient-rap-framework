@@ -18,8 +18,9 @@ This framework is being developed to solve the "Contract of Trust" problem in hi
 ## Current Research & Traction (Feb 2026)
 
 This framework is currently being evaluated in applied and academic contexts.
-**Active Development:** Building clinical telemetry adapters to evaluate the framework against safety-critical
-monitoring patterns.
+
+**Active Development:** Building clinical telemetry adapters to evaluate the framework against safety-critical monitoring patterns.
+
 **Status:** Phase 1 (Resilient Ingestion) is stable. Phase 2 (Auto-Reconciliation) is in active development.
    
 ---
