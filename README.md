@@ -70,6 +70,36 @@ python tools/tui_replayer.py
 
 <img width="2170" height="984" alt="image" src="https://github.com/user-attachments/assets/d74174ff-7321-46a5-961e-defce5a9ee94" />
 
+### 🔬 Advanced Demo: High-Frequency IMU + GPS Logger
+For researchers validating sub-50ms telemetry resilience, the framework includes a dedicated **F1 Telemetry Logger** that simulates realistic IMU (G-force) and GPS sensors at 50Hz:
+
+```bash
+# Run high-frequency simulation with chaos injection
+python modules/f1_telemetry_logger.py --duration 10 --chaos --chaos-freq 100
+```
+
+**Features:**
+- **50Hz Sampling:** 3-axis accelerometer (lateral, longitudinal, vertical G-forces)
+- **GPS Fusion:** Speed, heading, position, altitude
+- **Chaos Engineering:** Randomly renames sensor tags every N records to simulate vendor drift
+- **Self-Healing:** BERT-based semantic inference auto-maps messy fields to gold standard
+- **Audit Trail:** Logs all drift events with confidence scores
+
+**Output Example:**
+```
+🔧 SELF-HEALING TRIGGERED
+   Sample #50: Detected unknown field 'lateral_g'
+   Semantic Inference: 'lateral_g' → 'g_force_lateral' (confidence: 78.9%)
+   Total Auto-Repairs: 3
+
+📊 SELF-HEALING REPORT
+   Schema Drift Events: 8
+   Auto-Repairs: 8
+   Learned Mappings: 8
+```
+
+This validates the framework's ability to handle high-velocity, schema-drifting telemetry in safety-critical environments.
+
 ### 🏥 Domain Generalizability: ICU Patient Monitoring
 To validate the framework's "Zero-Shot" capabilities, the exact same ingestion agent was connected to a simulated HL7/FHIR Clinical Stream without retraining.
 
@@ -135,18 +165,20 @@ Implementing tamper-evident lineage, deterministic transformations, and reproduc
 resilient-rap-framework/
 │
 ├── modules/
-│   ├── base_ingestor.py      # The Abstract Interface
-│   └── translator.py         # Semantic Reconciliation Engine (BERT)
+│   ├── base_ingestor.py        # The Abstract Interface
+│   ├── translator.py           # Semantic Reconciliation Engine (BERT)
+│   └── f1_telemetry_logger.py  # High-Frequency Telemetry Simulator (50Hz IMU + GPS)
 │
 ├── adapters/
-│   ├── pricing/              # Economic Data Adapter
-│   ├── sports/               # Telemetry Adapter (Active Demo)
-│   └── clinical/             # FHIR Adapter (Planned)
+│   ├── pricing/                # Economic Data Adapter
+│   ├── sports/                 # Telemetry Adapter (Active Demo)
+│   └── clinical/               # FHIR Adapter (Planned)
 │
 ├── tools/
-│   ├── tui_replayer.py       # Visualization Dashboard (The "Screen")
-│   ├── test_translator.py    # Unit tests for Semantic Mapping
-│   └── debug_pipeline.py     # Diagnostic scripts
+│   ├── tui_replayer.py         # Visualization Dashboard (The "Screen")
+│   ├── generate_f1_telemetry.py # Full-Grid Telemetry Generator
+│   ├── test_translator.py      # Unit tests for Semantic Mapping
+│   └── debug_pipeline.py       # Diagnostic scripts
 │
 ├── data/
 │   └── f1_synthetic/
