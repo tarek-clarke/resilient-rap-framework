@@ -171,13 +171,14 @@ The primary technical contribution of this framework is the move from rigid, key
 
 **BERT-Driven Self-Healing**
 
--Mechanism: The system converts incoming unknown telemetry tags (e.g., pulse_ox_fingertip ) into high-
+-**Mechanism:** The system converts incoming unknown telemetry tags (e.g., pulse_ox_fingertip ) into high-
 dimensional vector embeddings.
--Reconciliation: The "Autonomous Repair" agent calculates the cosine similarity between the unknown tag and
+-**Reconciliation:** The "Autonomous Repair" agent calculates the cosine similarity between the unknown tag and
 the "Gold Standard" schema (e.g., Heart Rate ).
--Zero-Shot Adaptability: This allows the pipeline to ingest data from entirely new hardware vendors or clinical
+-**Zero-Shot Adaptability:** This allows the pipeline to ingest data from entirely new hardware vendors or clinical
 sensors without manual code changes or retraining, provided the semantic meaning of the tag remains
 consistent.
+
 ---
 
 ## Repository Structure
