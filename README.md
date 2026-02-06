@@ -9,31 +9,26 @@
 
 # 🛡️ Resilient RAP Framework
 
-**Part of a PhD research proposal for a project at Tallinn University of Technology (TalTech)**
+**Technical foundation for a proposed PhD research project on data resilience.**
 
 This framework is being developed to solve the "Contract of Trust" problem in high-velocity telemetry. 
-For the Architectural Whitepaper, Research Roadmap, and deep-dives on Self-Healing Data, subscribe to the Substack:
-
-👉 [**tarekclarke.substack.com**](https://tarekclarke.substack.com)
-
 
 > **Note:** This repository is actively tracked for usage patterns to support my PhD research.
 
 ## 🚀 Current Research & Traction (Feb 2026)
 
-This framework is currently undergoing industrial validation and academic review.
-- **Metric:** 256 unique environments / 588 total clones (in the first 48 hours).
-- **Engagement:** 44% Senior/Executive profile views via LinkedIn/Dark Social.
-- **Status:** Phase 1 (Resilient Ingestion) is stable. Phase 2 (Auto-Reconciliation) is in active development
+This framework is currently being evaluated in applied and academic contexts.
+**Active Development:** Building clinical telemetry adapters to evaluate the framework against safety-critical
+monitoring patterns.
+**Status:** Phase 1 (Resilient Ingestion) is stable. Phase 2 (Auto-Reconciliation) is in active development.
    
-## ❤️ Support This Research
-This framework is a core part of my PhD research proposal on data resilience at Tallinn University of Technology. If this code is helping you solve schema drift or ingestion challenges, consider becoming a sponsor to fund the compute and development of this open-source prototype.
-
 ---
 
 ## 📌 Project Overview
 
-This repository contains the technical foundation for a PhD research proposal focusing on Resilient Reproducible Analytical Pipelines (RAP). It implements a "Self-Healing" ingestion framework designed to operate across multiple high-frequency data environments, including:
+This repository contains the technical foundation for a proposed PhD research project on Resilient Reproducible
+Analytical Pipelines (RAP). It implements a "Self-Healing" ingestion framework designed to operate across multiple
+high-frequency data environments, including:
 
 - **Pricing telemetry** (web-scraped economic indicators)
 - **Sports telemetry** (IMU/GPS/HR/HRV data)
@@ -48,12 +43,11 @@ The logic is as follows:
 
 ---
 
-## 🏎️ Live Demo: The F1 Chaos Stream
+## Live Demo: The F1 Chaos Stream
 
 To validate the framework's resilience, this repository includes a Terminal User Interface (TUI) that simulates high-frequency F1 telemetry and injects "Schema Drift" (messy sensor tags) in real-time.
 
-### ⚡ Quickstart (Run in < 30s)
-Copy and paste this entire block into your terminal to install dependencies and launch the chaos simulation immediately:
+### Environment Setup & Demonstration
 
 ```bash
 # 1. Install the visualization & data libraries
@@ -66,7 +60,7 @@ python tools/tui_replayer.py
 **Three Simulation Modes Available:**
 - **Mode 1:** F1 Sports Telemetry (static schema drift with all 20 drivers)
 - **Mode 2:** ICU Clinical Monitor (FHIR/HL7 patient telemetry)
-- **Mode 3:** High-Frequency Logger with Dynamic Chaos Injection 🆕
+- **Mode 3:** High-Frequency Logger with Dynamic Chaos Injection
 
 ### What You Will See
 1.  **Normal State:** Telemetry streams (Speed, RPM, Heart Rate) from all 20 F1 drivers.
@@ -75,8 +69,8 @@ python tools/tui_replayer.py
 
 <img width="2170" height="984" alt="image" src="https://github.com/user-attachments/assets/d74174ff-7321-46a5-961e-defce5a9ee94" />
 
-### 🔬 Advanced Demo: High-Frequency IMU + GPS Logger
-For researchers validating sub-50ms telemetry resilience, the framework includes a dedicated **F1 Telemetry Logger** that simulates realistic IMU (G-force) and GPS sensors at 50Hz:
+### Advanced Demo: High-Frequency IMU + GPS Logger
+To validate sub-50ms telemetry resilience, the framework includes a dedicated **F1 Telemetry Logger** that simulates realistic IMU (G-force) and GPS sensors at 50Hz:
 
 ```bash
 # Run high-frequency simulation with chaos injection (standalone)
@@ -95,12 +89,12 @@ python tools/tui_replayer.py
 
 **Output Example:**
 ```
-🔧 SELF-HEALING TRIGGERED
+SELF-HEALING TRIGGERED
    Sample #50: Detected unknown field 'lateral_g'
    Semantic Inference: 'lateral_g' → 'g_force_lateral' (confidence: 78.9%)
    Total Auto-Repairs: 3
 
-📊 SELF-HEALING REPORT
+SELF-HEALING REPORT
    Schema Drift Events: 8
    Auto-Repairs: 8
    Learned Mappings: 8
@@ -108,7 +102,7 @@ python tools/tui_replayer.py
 
 This validates the framework's ability to handle high-velocity, schema-drifting telemetry in safety-critical environments.
 
-### 🏥 Domain Generalizability: ICU Patient Monitoring
+### Domain Generalizability: ICU Patient Monitoring
 To validate the framework's "Zero-Shot" capabilities, the exact same ingestion agent was connected to a simulated HL7/FHIR Clinical Stream without retraining.
 
 **Observation:** The system successfully mapped non-standard vendor tags (e.g., `pulse_ox_fingertip`) to the clinical gold standard (`Heart Rate`) using the same vector-space logic used for F1 telemetry.
@@ -118,7 +112,7 @@ To validate the framework's "Zero-Shot" capabilities, the exact same ingestion a
 
 ---
 
-## 📄 Abstract
+## Abstract
 
 National Statistical Offices, sports performance teams, and clinical monitoring systems all face a common challenge: high-frequency data pipelines break easily when upstream schemas drift, sensors fail, or interfaces change.
 
@@ -153,7 +147,7 @@ This architecture supports a proposed three-stage research agenda:
 
 ---
 
-## 🧠 Theoretical Foundations
+## Theoretical Foundations
 
 This framework draws on three major research streams:
 
@@ -167,8 +161,21 @@ Applying Pareto-focused resilience: reinforcing the “vital few” failure poin
 Implementing tamper-evident lineage, deterministic transformations, and reproducible environments to ensure long-term auditability.
 
 ---
+**Core Innovation: Semantic Schema Mapping**
+The primary technical contribution of this framework is the move from rigid, key-value matching to Semantic Reconciliation. Unlike traditional pipelines that rely on brittle regex patterns or static mapping tables, this framework utilizes a BERT-based Semantic Translator.
 
-## 📂 Repository Structure
+**BERT-Driven Self-Healing**
+
+-Mechanism: The system converts incoming unknown telemetry tags (e.g., pulse_ox_fingertip ) into high-
+dimensional vector embeddings.
+-Reconciliation: The "Autonomous Repair" agent calculates the cosine similarity between the unknown tag and
+the "Gold Standard" schema (e.g., Heart Rate ).
+-Zero-Shot Adaptability: This allows the pipeline to ingest data from entirely new hardware vendors or clinical
+sensors without manual code changes or retraining, provided the semantic meaning of the tag remains
+consistent.
+---
+
+## Repository Structure
 ```
 resilient-rap-framework/
 │
@@ -198,7 +205,7 @@ resilient-rap-framework/
 
 ---
 
-## 📜 Citation & Context
+## Citation & Context
 
 This software was developed by **Tarek Clarke** as an independent research prototype. While informed by challenges in Official Statistics (Producer Prices), this is **not** an official Statistics Canada product.
 
@@ -217,9 +224,9 @@ url: "[https://github.com/tarek-clarke/resilient-rap-framework](https://github.c
 
 ---
 
-## 📬 Contact & Collaboration
+## Contact & Collaboration
 
-I am currently developing this framework as part of my PhD research proposal for the Tallinn University of Technology (TalTech). 
+I am currently developing this framework as part of a doctoral research proposal.
 
 If you are interested in applying the Resilient RAP framework to your telemetry stack or discussing research opportunities:
 
