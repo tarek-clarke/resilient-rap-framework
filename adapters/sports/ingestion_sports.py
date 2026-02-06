@@ -48,34 +48,39 @@ class SportsIngestor(BaseIngestor):
         """
         parsed_data = []
         
-        # 1. Standardize input (Handle Dict vs List mismatch)
+        # 1. Extract drivers from config structure
         raw_list = []
         if isinstance(raw, list):
+            # Already a list of drivers
             raw_list = [item for item in raw if isinstance(item, dict)]
         elif isinstance(raw, dict):
-            for key, value in raw.items():
-                # If the value is a dict, use it; otherwise wrap it
-                record = value.copy() if isinstance(value, dict) else {"raw_val": value}
-                # Ensure driver_id is preserved
-                if 'driver_id' not in record:
-                    record['driver_id'] = key
-                raw_list.append(record)
+            # Check if this is the full config with 'drivers' key
+            if 'drivers' in raw and isinstance(raw['drivers'], list):
+                raw_list = raw['drivers']
+            else:
+                # Legacy: treat dict keys as driver records
+                for key, value in raw.items():
+                    if isinstance(value, dict):
+                        record = value.copy()
+                        if 'driver_id' not in record and 'id' not in record:
+                            record['driver_id'] = key
+                        raw_list.append(record)
         
         # 2. Inject Synthetic Telemetry (The PhD Simulation)
         for row in raw_list:
-            # We intentionally use "Bad" column names to prove the ML works
-            row['hr_watch_01'] = random.randint(110, 160)      # Target: Heart Rate
-            row['brk_tmp_fr'] = random.randint(400, 700)       # Target: Brake Temp
-            row['tyre_press_fl'] = random.randint(28, 32)      # Target: Tyre Pressure
-            row['car_velocity'] = random.randint(280, 330)     # Target: Speed
-            row['eng_rpm_log'] = random.randint(10000, 12000)  # Target: RPM
+            # Normalize driver_id field (could be 'id' or 'driver_id')
+            driver_id = row.get('id') or row.get('driver_id', 'UNKNOWN')
             
-            # Filter: Keep ID and Sensors, drop static junk (Bio, URL, etc.)
-            # This makes the TUI table clean and readable.
-            clean_record = {k: v for k, v in row.items() if k in [
-                'driver_id', 'code', 'permanentNumber', 
-                'hr_watch_01', 'brk_tmp_fr', 'tyre_press_fl', 'car_velocity', 'eng_rpm_log'
-            ]}
+            # We intentionally use "Bad" column names to prove the ML works
+            clean_record = {
+                'driver_id': driver_id,
+                'hr_watch_01': random.randint(110, 160),      # Target: Heart Rate
+                'brk_tmp_fr': random.randint(400, 700),       # Target: Brake Temp
+                'tyre_press_fl': random.randint(28, 32),      # Target: Tyre Pressure
+                'car_velocity': random.randint(280, 330),     # Target: Speed
+                'eng_rpm_log': random.randint(10000, 12000)   # Target: RPM
+            }
+            
             parsed_data.append(clean_record)
                 
         return parsed_data
