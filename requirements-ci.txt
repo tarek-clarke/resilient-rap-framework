@@ -1,7 +1,6 @@
-pandas==2.3.3
-numpy==2.2.6
-rich==14.3.2
-pytest==9.0.2
-sentence-transformers==5.2.2
-scikit-learn==1.7.2
-flake8
+pandas>=2.0.0
+numpy>=1.20.0
+rich>=10.0.0
+pytest>=7.0.0
+flake8>=4.0.0
+sentence-transformers>=2.2.0
