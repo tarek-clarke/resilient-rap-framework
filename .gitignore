@@ -10,6 +10,7 @@ user_data/
 scraped_data.csv
 urls.txt
 *.csv
+!tests/tui_replayer_tests.csv
 _targets/
 
 # --- Large Binary & Virtualization Files ---

@@ -1,0 +1,8 @@
+test_name,result,notes
+create_high_freq_telemetry_table_empty,pass,Handles empty stream
+create_high_freq_telemetry_table_malformed,pass,Defaults missing values to 0.0
+create_high_freq_telemetry_table_spikes,pass,Handles extreme values
+create_telemetry_table_empty,pass,Handles empty DataFrame
+create_telemetry_table_malformed,pass,Handles missing columns
+create_resilience_panel_empty,pass,Shows drift scanning
+create_chaos_panel_empty,pass,Shows normal chaos state
