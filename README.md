@@ -221,6 +221,43 @@ resilient-rap-framework/
 
 ---
 
+## Testing & CI/CD
+
+### Running Tests Locally
+
+The framework includes a comprehensive pytest test suite focused on edge cases and resilience scenarios:
+
+```bash
+# Install test dependencies
+pip install pytest
+
+# Run the full test suite
+pytest tests/ -v
+
+# Run specific test file (TUI Replayer edge cases)
+pytest tests/test_tui_replayer.py -v
+```
+
+### Test Coverage
+
+The test suite includes:
+- **Empty Streams:** Validates handling of empty telemetry data
+- **Malformed JSON:** Tests behavior with missing IMU/GPS keys or None values
+- **High-Frequency Spikes:** Validates extreme values (e.g., 1000G accelerations)
+- **Panel Creation:** Ensures resilience and chaos panels render correctly with edge case data
+
+### GitHub Actions CI Pipeline
+
+The repository includes an automated CI/CD workflow that:
+1. **Triggers** on every push to `main`
+2. **Tests** using pytest (Python 3.12)
+3. **Lints** with flake8 for code quality
+4. **Reports** results directly in GitHub
+
+The workflow file is located at [`.github/workflows/ci.yml`](.github/workflows/ci.yml). You can monitor pipeline status in the [Actions tab](https://github.com/tarek-clarke/resilient-rap-framework/actions) of the repository.
+
+---
+
 ## Citation & Context
 
 This software was developed by **Tarek Clarke** as an independent research prototype. While informed by challenges in Official Statistics (Producer Prices), this is **not** an official Statistics Canada product.
