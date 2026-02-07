@@ -58,4 +58,6 @@ transformers==5.0.0
 triton==3.6.0
 typer-slim==0.21.1
 typing_extensions==4.15.0
+
 tzdata==2025.3
+pytest==8.0.0
