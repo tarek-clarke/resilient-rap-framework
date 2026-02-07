@@ -140,7 +140,7 @@ The framework introduces a domain-agnostic ingestion interface (`BaseIngestor`) 
 
 ---
 
-## 🛠️ Technical Architecture
+## Technical Architecture
 
 The system is structured as a modular, extensible RAP:
 
