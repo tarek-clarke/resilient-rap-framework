@@ -208,13 +208,21 @@ resilient-rap-framework/
 ├── tools/
 │   ├── tui_replayer.py         # Visualization Dashboard (The "Screen")
 │   ├── generate_f1_telemetry.py # Full-Grid Telemetry Generator
+│   ├── stress_test_engine_temp.py # Engine Temperature Stress Test Tool
 │   ├── test_translator.py      # Unit tests for Semantic Mapping
 │   └── debug_pipeline.py       # Diagnostic scripts
 │
+├── tests/
+│   ├── test_tui_replayer.py    # TUI Edge Case Tests
+│   ├── test_chaos_ingestion.py # Chaos Engineering Tests
+│   └── test_engine_temp_stress.py # Engine Temperature Stress Tests
+│
 ├── data/
+│   ├── engine_temp_stress_test_results.csv # Stress Test Output
 │   └── f1_synthetic/
 │       └── race_config_grid.json
 │
+├── pytest.ini               # pytest configuration
 ├── requirements.txt
 └── README.md
 ```
@@ -279,6 +287,40 @@ The framework includes advanced resilience validation through chaos engineering 
 - **Validation:** BERT semantic layer maps corrupted fields despite unicode and extreme values
 - **Success Criteria:** Multiple kinematic fields resolved with confidence scores > 0.45
 
+#### Engine Temperature Stress Tests (19 comprehensive validation scenarios)
+
+The framework includes dedicated stress tests that validate resilience under sustained engine temperature monitoring with injected anomalies:
+
+**Test Categories:**
+1. **Data Generation (3 tests):** Validates 100-row telemetry generation, anomaly injection frequency (every 10 rows), and anomaly type distribution
+2. **Pipeline Resilience (4 tests):** Ensures pipeline doesn't crash with anomalies, verifies anomalies are logged not ignored, confirms conversion to NaN, and validates valid temps preserved
+3. **Semantic Layer (1 test):** Verifies BERT-based field mapping applies successfully
+4. **Data Integrity (2 tests):** Validates DataFrame structure and error type logging
+5. **Lineage & Recovery (3 tests):** Confirms lineage recorded for all stages, validates stress test summary statistics, and tests recovery after anomalies
+6. **Anomaly Detection (4 tests):** Validates detection of NaN, string, impossible high temps (>200°C), and impossible low temps (<-50°C)
+7. **Integration Tests (2 tests):** Full pipeline run and resilience metric calculation
+
+**Anomaly Types Injected:**
+- **NaN values:** Simulates sensor failures
+- **String corruption:** Non-numeric data (e.g., "ERROR", "N/A")
+- **Impossible highs:** Temperatures >200°C
+- **Impossible lows:** Temperatures <-50°C
+
+**Running Engine Temperature Stress Tests:**
+```bash
+# Run all engine temperature stress tests
+pytest tests/test_engine_temp_stress.py -v
+
+# Run stress test tool standalone (generates CSV results)
+python tools/stress_test_engine_temp.py
+
+# Run only integration tests
+pytest tests/test_engine_temp_stress.py -m integration -v
+```
+
+**Stress Test Output:**
+The standalone tool generates a CSV file (`data/engine_temp_stress_test_results.csv`) with detailed metrics including anomaly counts, recovery rates, and data quality statistics.
+
 **Running Chaos Tests:**
 ```bash
 # Run all chaos tests
@@ -287,7 +329,7 @@ pytest tests/test_chaos_ingestion.py -v
 # Run a specific chaos scenario
 pytest tests/test_chaos_ingestion.py::TestChaos1_MalformedTelemetry -v
 
-# Run all tests (TUI + Chaos)
+# Run all tests (TUI + Chaos + Engine Temp Stress)
 pytest tests/ -v
 ```
 
