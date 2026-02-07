@@ -240,11 +240,62 @@ pytest tests/test_tui_replayer.py -v
 
 ### Test Coverage
 
-The test suite includes:
+#### TUI Replayer Tests (7 tests)
+The test suite includes edge case validation for the terminal interface:
 - **Empty Streams:** Validates handling of empty telemetry data
 - **Malformed JSON:** Tests behavior with missing IMU/GPS keys or None values
 - **High-Frequency Spikes:** Validates extreme values (e.g., 1000G accelerations)
 - **Panel Creation:** Ensures resilience and chaos panels render correctly with edge case data
+
+#### Chaos Ingestion Tests (5 comprehensive chaos engineering scenarios)
+
+The framework includes advanced resilience validation through chaos engineering tests that stress-test the self-healing ingestion layer:
+
+**1. TestChaos1_MalformedTelemetry** - Null/Missing Field Recovery
+- **Scenario:** Mechanical (brake temp, steering) and biometric (heart rate) fields are null/missing
+- **Validation:** Verifies semantic reconciliation triggered and field mappings created
+- **Success Criteria:** Self-healing layer maps messy field aliases to gold standard
+
+**2. TestChaos2_VariableCountSpike** - Dynamic Field Proliferation
+- **Scenario:** Sudden injection of 13+ unexpected kinematic & environmental fields mid-stream
+- **Domains:** Kinematic (accel_x_g, accel_y_g, lateral_g), Environmental (track_temp_c, air_humidity_pct)
+- **Validation:** Pipeline handles field explosion without crashing
+- **Success Criteria:** All new fields mapped or gracefully ignored with resilient schema
+
+**3. TestChaos3_MissingTimestamps** - Temporal Discontinuity Recovery
+- **Scenario:** Records with missing/null/invalid/backward-leaping timestamps
+- **Validation:** Pipeline processes data without temporal ordering
+- **Success Criteria:** Missing timestamps don't crash ingestion; synthetic timestamps assigned if needed
+
+**4. TestChaos4_MixedDomainChaos** - Cross-Domain Resilience
+- **Scenario:** Clinical adapter receives mixed chaos (biometric + mechanical + environmental fields)
+- **Domains:** Biometric (heart rate, SpO2), Mechanical (brake pressure), Environmental (track temperature)
+- **Validation:** Adapter prioritizes relevant fields for domain and ignores others gracefully
+- **Success Criteria:** Biometric fields preserved; mechanical fields mapped or ignored without error
+
+**5. TestChaos5_ExtremeKinematicEnvironmental** - Extreme Values + Corrupted Field Names
+- **Scenario:** Extreme values (10G forces, -99°C temps, 150% humidity) + unicode/typo field names
+- **Examples:** `a_x`, `accelY`, `g_y`, `gforce_x_axis`, `accel_z_g` (corrupted), extreme values
+- **Validation:** BERT semantic layer maps corrupted fields despite unicode and extreme values
+- **Success Criteria:** Multiple kinematic fields resolved with confidence scores > 0.45
+
+**Running Chaos Tests:**
+```bash
+# Run all chaos tests
+pytest tests/test_chaos_ingestion.py -v
+
+# Run a specific chaos scenario
+pytest tests/test_chaos_ingestion.py::TestChaos1_MalformedTelemetry -v
+
+# Run all tests (TUI + Chaos)
+pytest tests/ -v
+```
+
+**Chaos Test Architecture:**
+Each chaos test creates a custom ingestor subclass that inherits from the domain adapter and overrides specific methods to inject failures. This validates that the base framework's `apply_semantic_layer()` method and audit lineage recording work correctly under stress:
+- **Semantic Alignment:** Uses BERT (all-MiniLM-L6-v2) with 0.45 confidence threshold
+- **Audit Trail:** Records all schema drift events with timestamps and confidence scores
+- **Self-Healing:** Automatically maps unrecognized fields to gold standard schema
 
 ### GitHub Actions CI Pipeline
 
