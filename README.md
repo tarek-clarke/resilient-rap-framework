@@ -343,11 +343,34 @@ Each chaos test creates a custom ingestor subclass that inherits from the domain
 
 The repository includes an automated CI/CD workflow that:
 1. **Triggers** on every push to `main`
-2. **Tests** using pytest (Python 3.12)
-3. **Lints** with flake8 for code quality
-4. **Reports** results directly in GitHub
+2. **Verifies** repository structure and basic integrity
+3. **Reports** results directly in GitHub
 
 The workflow file is located at [`.github/workflows/ci.yml`](.github/workflows/ci.yml). You can monitor pipeline status in the [Actions tab](https://github.com/tarek-clarke/resilient-rap-framework/actions) of the repository.
+
+### Release Pipeline
+
+The repository includes an automated release workflow that triggers on version tags:
+
+**To create a new release:**
+```bash
+# Tag the commit with semantic versioning
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+**The release workflow automatically:**
+1. ✅ **Runs full test suite** - All 31 tests (TUI, Chaos, Engine Temperature)
+2. 🐳 **Builds Docker image** - Pushes to GitHub Container Registry
+3. 📦 **Creates GitHub Release** - Auto-generated changelog and build artifacts
+4. 📝 **Generates release notes** - Commit history since last tag
+
+**Artifacts included:**
+- Docker image: `ghcr.io/tarek-clarke/resilient-rap-framework:v1.0.0`
+- Docker image tarball: `resilient-rap-framework-v1.0.0.tar.gz`
+- Full changelog between versions
+
+The workflow file is located at [`.github/workflows/release.yml`](.github/workflows/release.yml).
 
 ---
 
