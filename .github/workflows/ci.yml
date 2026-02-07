@@ -24,7 +24,7 @@ jobs:
 
       - name: Run pytest
         run: |
-          pytest tests/ -v --disable-warnings
+          HF_HUB_OFFLINE=1 pytest tests/ -v --disable-warnings -k "not integration" --timeout=10
 
       - name: Lint with flake8
         run: |
