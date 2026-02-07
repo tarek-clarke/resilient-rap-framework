@@ -125,6 +125,68 @@ https://github.com/user-attachments/assets/ee85bd6c-f8a3-4969-a8e5-1071e7d7ff25
 
 ---
 
+## OpenF1 API Integration: Real F1 Telemetry
+
+The framework now includes a production-ready adapter for ingesting **real-time F1 telemetry** from the [OpenF1 API](https://openf1.org/).
+
+### Features
+- **Live Data Ingestion:** Pulls actual car telemetry from official F1 sessions
+- **API Endpoint:** `https://api.openf1.org/v1/car_data`
+- **Semantic Reconciliation:** Automatically maps API fields to internal schema
+- **Full Audit Trail:** Complete lineage tracking for every API call and transformation
+
+### Quick Start
+
+```bash
+# Install dependencies (if not already installed)
+pip install requests
+
+# Fetch telemetry for a specific session and driver
+python tools/demo_openf1.py --session 9158 --driver 1
+
+# Fetch all drivers from a session
+python tools/demo_openf1.py --session 9158
+```
+
+### Programmatic Usage
+
+```python
+from adapters.openf1 import OpenF1Adapter
+
+# Initialize adapter
+adapter = OpenF1Adapter(
+    session_key=9158,      # 2024 Abu Dhabi GP
+    driver_number=1        # Max Verstappen
+)
+
+# Fetch and process data
+df = adapter.fetch_data()
+
+# Display results
+print(f"Fetched {len(df)} telemetry records")
+print(df.head())
+
+# Export audit log
+adapter.export_audit_log("data/openf1_audit.json")
+```
+
+### API Field Mapping
+
+The adapter automatically reconciles OpenF1 API fields to the internal schema:
+
+| OpenF1 API Field | Internal Field | Gold Standard |
+|------------------|----------------|---------------|
+| `speed` | `vehicle_speed` | Speed (km/h) |
+| `rpm` | `engine_rpm` | RPM |
+| `n_gear` | `current_gear` | Gear |
+| `throttle` | `throttle_pct` | Throttle (%) |
+| `brake` | `brake_status` | Brake |
+| `drs` | `drs_active` | DRS |
+
+The semantic reconciliation layer validates the mapping using BERT embeddings with confidence scoring.
+
+---
+
 ## Abstract
 
 National Statistical Offices, sports performance teams, and clinical monitoring systems all face a common challenge: high-frequency data pipelines break easily when upstream schemas drift, sensors fail, or interfaces change.
@@ -203,11 +265,13 @@ resilient-rap-framework/
 ├── adapters/
 │   ├── pricing/                # Economic Data Adapter
 │   ├── sports/                 # Telemetry Adapter (Active Demo)
+│   ├── openf1/                 # OpenF1 API Adapter (Real-time F1 Data)
 │   └── clinical/               # FHIR Adapter (Planned)
 │
 ├── tools/
 │   ├── tui_replayer.py         # Visualization Dashboard (The "Screen")
 │   ├── generate_f1_telemetry.py # Full-Grid Telemetry Generator
+│   ├── demo_openf1.py          # OpenF1 API Demo
 │   ├── stress_test_engine_temp.py # Engine Temperature Stress Test Tool
 │   ├── test_translator.py      # Unit tests for Semantic Mapping
 │   └── debug_pipeline.py       # Diagnostic scripts
