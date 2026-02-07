@@ -7,13 +7,28 @@
 
 **A domain-agnostic framework for autonomous schema drift resolution in high-velocity telemetry.**
 
-# Resilient RAP Framework
-
 **Technical foundation for a proposed PhD research project on data resilience.**
 
 This framework is being developed to solve the "Contract of Trust" problem in high-velocity telemetry. 
 
 > **Note:** This repository is actively tracked for usage patterns to support my PhD research.
+
+---
+
+## Abstract
+
+National Statistical Offices, sports performance teams, and clinical monitoring systems all face a common challenge: high-frequency data pipelines break easily when upstream schemas drift, sensors fail, or interfaces change.
+
+Traditional pipelines rely on brittle selectors or rigid schemas. When these fail, organizations experience data blackouts, delayed decision-making, and loss of situational awareness.
+
+This research proposes a Resilient RAP Framework grounded in:
+- **Software Reliability Engineering:** Pareto-focused resilience for the "vital few" failure points.
+- **Tamper-Evident Processing:** Auditability and lineage for official statistics.
+- **Cross-Domain Generalizability:** Validated from Pricing → Sports → Clinical.
+
+The framework introduces a domain-agnostic ingestion interface (`BaseIngestor`) and a set of domain adapters that implement environment-specific extraction, validation, and normalization logic.
+
+---
 
 ## Current Research & Traction (Feb 2026)
 
@@ -22,14 +37,12 @@ This framework is currently being evaluated in applied and academic contexts.
 **Active Development:** Building clinical telemetry adapters to evaluate the framework against safety-critical monitoring patterns.
 
 **Status:** Phase 1 (Resilient Ingestion) is stable. Phase 2 (Auto-Reconciliation) is in active development.
-   
+
 ---
 
 ## Project Overview
 
-This repository contains the technical foundation for a proposed PhD research project on Resilient Reproducible
-Analytical Pipelines (RAP). It implements a "Self-Healing" ingestion framework designed to operate across multiple
-high-frequency data environments, including:
+This repository contains the technical foundation for a proposed PhD research project on Resilient Reproducible Analytical Pipelines (RAP). It implements a "Self-Healing" ingestion framework designed to operate across multiple high-frequency data environments, including:
 
 - **Pricing telemetry** (web-scraped economic indicators)
 - **Sports telemetry** (IMU/GPS/HR/HRV data)
@@ -44,11 +57,144 @@ The logic is as follows:
 
 ---
 
-## Live Demo: The F1 Chaos Stream
+## Theoretical Foundations
+
+This framework draws on three major research streams:
+
+### **Autonomous Agents**
+Adapting "believable agent" logic to navigate semi-structured environments and infer signal relevance from context rather than fixed selectors.
+
+### **Software Reliability Engineering**
+Applying Pareto-focused resilience: reinforcing the "vital few" failure points that cause the majority of pipeline outages.
+
+### **Data Integrity & Reproducibility**
+Implementing tamper-evident lineage, deterministic transformations, and reproducible environments to ensure long-term auditability.
+
+---
+
+## Technical Architecture
+
+The system is structured as a modular, extensible RAP:
+
+| Component | Technology | Purpose |
+|----------|------------|---------|
+| **Core Ingestion Interface** | Python (`BaseIngestor`) | Domain-agnostic ingestion contract (connect → extract → parse → validate → normalize) |
+| **Semantic Reconciliation** | BERT / Transformers | Auto-mapping messy inputs to a Gold Standard schema (Self-Healing) |
+| **Sports Adapter** | JSON / Simulation | Ingesting IMU/GPS/HR/HRV telemetry from athlete monitoring systems |
+| **Clinical Adapter** | FHIR/HL7 APIs | Ingesting physiological observations from clinical telemetry systems |
+| **Resilience Layer** | Logging, lineage | Ensuring fault tolerance and traceability (Audit Logs) |
+| **Reproducibility** | Docker, pinned deps | Guaranteeing deterministic execution across years |
+
+This architecture supports a proposed three-stage research agenda:
+1. **Sports Telemetry:** Validating high-frequency drift resolution (F1/Motorsport).
+2. **Clinical Telemetry:** Applying the framework to safety-critical streams (HL7/FHIR).
+3. **Unified Theory:** Establishing a formal definition for "Resilient RAP" in official statistics.
+
+---
+
+## Core Innovation: Semantic Schema Mapping
+
+The primary technical contribution of this framework is the move from rigid, key-value matching to Semantic Reconciliation. Unlike traditional pipelines that rely on brittle regex patterns or static mapping tables, this framework utilizes a BERT-based Semantic Translator.
+
+### BERT-Driven Self-Healing
+
+**Mechanism:** The system converts incoming unknown telemetry tags (e.g., `pulse_ox_fingertip`) into high-dimensional vector embeddings.
+
+**Reconciliation:** The "Autonomous Repair" agent calculates the cosine similarity between the unknown tag and the "Gold Standard" schema (e.g., `Heart Rate`).
+
+**Zero-Shot Adaptability:** This allows the pipeline to ingest data from entirely new hardware vendors or clinical sensors without manual code changes or retraining, provided the semantic meaning of the tag remains consistent.
+
+---
+
+## Demonstrations & Validation
+
+### OpenF1 API Integration: Real F1 Telemetry
+
+The framework includes a production-ready adapter for ingesting **real-time F1 telemetry** from the [OpenF1 API](https://openf1.org/).
+
+#### Features
+- **Live Data Ingestion:** Pulls actual car telemetry from official F1 sessions
+- **API Endpoint:** `https://api.openf1.org/v1/car_data`
+- **Semantic Reconciliation:** Automatically maps API fields to internal schema
+- **Full Audit Trail:** Complete lineage tracking for every API call and transformation
+
+#### Quick Start
+
+```bash
+# Install dependencies (if not already installed)
+pip install requests
+
+# Fetch telemetry for a specific session and driver
+python tools/demo_openf1.py --session 9158 --driver 1
+
+# Fetch all drivers from a session
+python tools/demo_openf1.py --session 9158
+```
+
+#### What You'll See
+
+Running the demo displays:
+
+1. **Telemetry Table:** First 10 records showing speed, RPM, gear, throttle, brake, and DRS status
+2. **Semantic Reconciliation Results:** Real-time BERT-based field mapping with confidence scores
+   - Example: `vehicle_speed` → `Speed (km/h)` (61% confidence)
+3. **Pipeline Lineage:** Complete audit trail from API connection through semantic alignment
+4. **Data Statistics:** Total records fetched and number of unique drivers
+
+#### Output Files
+
+- **`data/openf1_audit.json`**: Complete pipeline audit log with:
+  - Timestamps for each pipeline stage
+  - Field mapping confidence scores
+  - Raw and normalized data samples
+  - Validation results and error tracking
+  
+Check the audit file to trace exactly how each field was reconciled and validated through the pipeline.
+
+#### Programmatic Usage
+
+```python
+from adapters.openf1 import OpenF1Adapter
+
+# Initialize adapter
+adapter = OpenF1Adapter(
+    session_key=9158,      # 2024 Abu Dhabi GP
+    driver_number=1        # Max Verstappen
+)
+
+# Fetch and process data
+df = adapter.fetch_data()
+
+# Display results
+print(f"Fetched {len(df)} telemetry records")
+print(df.head())
+
+# Export audit log
+adapter.export_audit_log("data/openf1_audit.json")
+```
+
+#### API Field Mapping
+
+The adapter automatically reconciles OpenF1 API fields to the internal schema:
+
+| OpenF1 API Field | Internal Field | Gold Standard |
+|------------------|----------------|---------------|
+| `speed` | `vehicle_speed` | Speed (km/h) |
+| `rpm` | `engine_rpm` | RPM |
+| `n_gear` | `current_gear` | Gear |
+| `throttle` | `throttle_pct` | Throttle (%) |
+| `brake` | `brake_status` | Brake |
+| `drs` | `drs_active` | DRS |
+
+The semantic reconciliation layer validates the mapping using BERT embeddings with confidence scoring.
+
+---
+
+### Live Demo: The F1 Chaos Stream
 
 To validate the framework's resilience, this repository includes a Terminal User Interface (TUI) that simulates high-frequency F1 telemetry and injects "Schema Drift" (messy sensor tags) in real-time.
 
-### Environment Setup & Demonstration
+#### Environment Setup & Demonstration
 
 ```bash
 # 1. Install the visualization & data libraries
@@ -63,20 +209,21 @@ python tools/tui_replayer.py
 - **Mode 2:** ICU Clinical Monitor (FHIR/HL7 patient telemetry)
 - **Mode 3:** High-Frequency Logger with Dynamic Chaos Injection
 
-### What You Will See
-1.  **Normal State:** Telemetry streams (Speed, RPM, Heart Rate) from all 20 F1 drivers.
-2.  **Chaos Injection:** The simulation injects non-standard tags like `hr_watch_01` or `brk_tmp_fr`.
-3.  **Self-Healing (Green Panel):** The "Autonomous Repair" agent detects the drift, semantically infers the alias using a BERT model, patches the schema map, and resumes ingestion seamlessly.
+#### What You Will See
+1. **Normal State:** Telemetry streams (Speed, RPM, Heart Rate) from all 20 F1 drivers.
+2. **Chaos Injection:** The simulation injects non-standard tags like `hr_watch_01` or `brk_tmp_fr`.
+3. **Self-Healing Response:** The "Autonomous Repair" agent detects the drift, semantically infers the alias using a BERT model, patches the schema map, and resumes ingestion seamlessly.
 
-https://github.com/user-attachments/assets/cc76f009-6199-4fe6-99b5-879eac1170b2
+Video: https://github.com/user-attachments/assets/cc76f009-6199-4fe6-99b5-879eac1170b2
 
-
+---
 
 ### Advanced Demo: High-Frequency IMU + GPS Logger
+
 To validate sub-50ms telemetry resilience, the framework includes a dedicated **F1 Telemetry Logger** that simulates realistic IMU (G-force) and GPS sensors at 50Hz:
 
 ```bash
-# Run high-frequency simulation with chaos injection (standalone)
+# Run he-frequency simulation with chaos injection (standalone)
 python modules/f1_telemetry_logger.py --duration 10 --chaos --chaos-freq 100
 
 # OR run it in the TUI replayer (select Mode 3)
@@ -103,124 +250,19 @@ SELF-HEALING REPORT
    Learned Mappings: 8
 ```
 
-
-
-https://github.com/user-attachments/assets/33d72579-07fa-4bfe-b443-ca09ab91a80f
-
-
+Video: https://github.com/user-attachments/assets/33d72579-07fa-4bfe-b443-ca09ab91a80f
 
 This validates the framework's ability to handle high-velocity, schema-drifting telemetry in safety-critical environments.
 
+---
+
 ### Domain Generalizability: ICU Patient Monitoring
+
 To validate the framework's "Zero-Shot" capabilities, the exact same ingestion agent was connected to a simulated HL7/FHIR Clinical Stream without retraining.
 
-**Observation:** The system successfully mapped non-standard vendor tags (e.g., `pulse_ox_fingertip`) to the clinical gold standard (`Heart Rate`) using the same vector-space logic used for F1 telemetry.
+**Observation:** The system successfully mapped non-standard vendor tags (e.g., `pulse_ox_fingertip`) to the clinical gold standard using the same vector-space logic used for F1 telemetry.
 
-
-
-https://github.com/user-attachments/assets/ee85bd6c-f8a3-4969-a8e5-1071e7d7ff25
-
-
-
-
----
-
-## OpenF1 API Integration: Real F1 Telemetry
-
-The framework now includes a production-ready adapter for ingesting **real-time F1 telemetry** from the [OpenF1 API](https://openf1.org/).
-
-### Features
-- **Live Data Ingestion:** Pulls actual car telemetry from official F1 sessions
-- **API Endpoint:** `https://api.openf1.org/v1/car_data`
-- **Semantic Reconciliation:** Automatically maps API fields to internal schema
-- **Full Audit Trail:** Complete lineage tracking for every API call and transformation
-
-### Quick Start
-
-```bash
-# Install dependencies (if not already installed)
-pip install requests
-
-# Fetch telemetry for a specific session and driver
-python tools/demo_openf1.py --session 9158 --driver 1
-
-# Fetch all drivers from a session
-python tools/demo_openf1.py --session 9158
-```
-
-### What You'll See
-
-Running the demo displays:
-
-1. **Telemetry Table:** First 10 records showing speed, RPM, gear, throttle, brake, and DRS status
-2. **Semantic Reconciliation Results:** Real-time BERT-based field mapping with confidence scores
-   - Example: `vehicle_speed` → `Speed (km/h)` (61% confidence)
-3. **Pipeline Lineage:** Complete audit trail from API connection through semantic alignment
-4. **Data Statistics:** Total records fetched and number of unique drivers
-
-### Output Files
-
-- **`data/openf1_audit.json`**: Complete pipeline audit log with:
-  - Timestamps for each pipeline stage
-  - Field mapping confidence scores
-  - Raw and normalized data samples
-  - Validation results and error tracking
-  
-Check the audit file to trace exactly how each field was reconciled and validated through the pipeline.
-
-### Programmatic Usage
-
-```python
-from adapters.openf1 import OpenF1Adapter
-
-# Initialize adapter
-adapter = OpenF1Adapter(
-    session_key=9158,      # 2024 Abu Dhabi GP
-    driver_number=1        # Max Verstappen
-)
-
-# Fetch and process data
-df = adapter.fetch_data()
-
-# Display results
-print(f"Fetched {len(df)} telemetry records")
-print(df.head())
-
-# Export audit log
-adapter.export_audit_log("data/openf1_audit.json")
-```
-
-### API Field Mapping
-
-The adapter automatically reconciles OpenF1 API fields to the internal schema:
-
-| OpenF1 API Field | Internal Field | Gold Standard |
-|------------------|----------------|---------------|
-| `speed` | `vehicle_speed` | Speed (km/h) |
-| `rpm` | `engine_rpm` | RPM |
-| `n_gear` | `current_gear` | Gear |
-| `throttle` | `throttle_pct` | Throttle (%) |
-| `brake` | `brake_status` | Brake |
-| `drs` | `drs_active` | DRS |
-
-The semantic reconciliation layer validates the mapping using BERT embeddings with confidence scoring.
-
----
-
-## Abstract
-
-National Statistical Offices, sports performance teams, and clinical monitoring systems all face a common challenge: high-frequency data pipelines break easily when upstream schemas drift, sensors fail, or interfaces change.
-
-Traditional pipelines rely on brittle selectors or rigid schemas. When these fail, organizations experience data blackouts, delayed decision-making, and loss of situational awareness.
-
-This research proposes a Resilient RAP Framework grounded in:
-- **Software Reliability Engineering:** Pareto-focused resilience for the "vital few" failure points.
-- **Tamper-Evident Processing:** Auditability and lineage for official statistics.
-- **Cross-Domain Generalizability:** Validated from Pricing → Sports → Clinical.
-
-The framework introduces a domain-agnostic ingestion interface (`BaseIngestor`) and a set of domain adapters that implement environment-specific extraction, validation, and normalization logic.
-
----
+Video: https://github.com/user-attachments/assets/ee85bd6c-f8a3-4969-a8e5-1071e7d7ff25
 
 ## Technical Architecture
 
@@ -444,10 +486,10 @@ git push origin v1.0.0
 ```
 
 **The release workflow automatically:**
-1. ✅ **Runs full test suite** - All 31 tests (TUI, Chaos, Engine Temperature)
-2. 🐳 **Builds Docker image** - Pushes to GitHub Container Registry
-3. 📦 **Creates GitHub Release** - Auto-generated changelog and build artifacts
-4. 📝 **Generates release notes** - Commit history since last tag
+1. [PASS] **Runs full test suite** - All 31 tests (TUI, Chaos, Engine Temperature)
+2. [DOCKER] **Builds Docker image** - Pushes to GitHub Container Registry
+3. [PACKAGE] **Creates GitHub Release** - Auto-generated changelog and build artifacts
+4. [DOCS] **Generates release notes** - Commit history since last tag
 
 **Artifacts included:**
 - Docker image: `ghcr.io/tarek-clarke/resilient-rap-framework:v1.0.0`
