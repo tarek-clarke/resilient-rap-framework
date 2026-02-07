@@ -148,6 +148,26 @@ python tools/demo_openf1.py --session 9158 --driver 1
 python tools/demo_openf1.py --session 9158
 ```
 
+### What You'll See
+
+Running the demo displays:
+
+1. **Telemetry Table:** First 10 records showing speed, RPM, gear, throttle, brake, and DRS status
+2. **Semantic Reconciliation Results:** Real-time BERT-based field mapping with confidence scores
+   - Example: `vehicle_speed` → `Speed (km/h)` (61% confidence)
+3. **Pipeline Lineage:** Complete audit trail from API connection through semantic alignment
+4. **Data Statistics:** Total records fetched and number of unique drivers
+
+### Output Files
+
+- **`data/openf1_audit.json`**: Complete pipeline audit log with:
+  - Timestamps for each pipeline stage
+  - Field mapping confidence scores
+  - Raw and normalized data samples
+  - Validation results and error tracking
+  
+Check the audit file to trace exactly how each field was reconciled and validated through the pipeline.
+
 ### Programmatic Usage
 
 ```python
