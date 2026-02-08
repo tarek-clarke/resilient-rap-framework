@@ -322,10 +322,14 @@ resilient-rap-framework/
 │   ├── openf1/                 # OpenF1 API Adapter (Real-time F1 Data)
 │   └── clinical/               # FHIR Adapter (Planned)
 │
+├── reporting/
+│   └── pdf_report.py           # PDF Report Generation Module (ReportLab)
+│
 ├── tools/
 │   ├── tui_replayer.py         # Visualization Dashboard (The "Screen")
 │   ├── generate_f1_telemetry.py # Full-Grid Telemetry Generator
 │   ├── demo_openf1.py          # OpenF1 API Demo
+│   ├── demo_pdf_report.py      # PDF Report Generation Demo
 │   ├── stress_test_engine_temp.py # Engine Temperature Stress Test Tool
 │   ├── test_translator.py      # Unit tests for Semantic Mapping
 │   └── debug_pipeline.py       # Diagnostic scripts
@@ -337,6 +341,8 @@ resilient-rap-framework/
 │
 ├── data/
 │   ├── engine_temp_stress_test_results.csv # Stress Test Output
+│   ├── reports/
+│   │   └── demo_report.pdf     # Example PDF Report (tracked for demo purposes)
 │   └── f1_synthetic/
 │       └── race_config_grid.json
 │
@@ -517,6 +523,64 @@ As of February 2026, the framework implements cryptographic signing (SHA-256) fo
 - If the hashes match, the log is tamper-free.
 
 **Location:** Audit logs are saved in the `data/` directory (e.g., `data/openf1_audit.json`, `data/reproducibility_audit.json`).
+
+---
+
+## PDF Report Generation
+
+The framework includes **professional PDF report generation** for pipeline runs, failures, and resilience metrics. This feature provides a publication-ready export of audit logs, schema drift events, and data quality metrics.
+
+### Features
+
+- **Automated Reporting:** Generates comprehensive PDF reports from `RunReport` objects
+- **Detailed Metrics:** Includes records processed, schema drifts, failures, and resilience actions
+- **Visual Clarity:** Professional layout with headers, sections, and formatted tables
+- **Audit Integration:** Works seamlessly with the tamper-evident audit logging system
+
+### Usage
+
+The PDF report feature is integrated into the `BaseIngestor` class. After running a pipeline, call `generate_pdf_report()` to export a PDF:
+
+```python
+from adapters.clinical import ClinicalIngestor
+
+# Run pipeline
+adapter = ClinicalIngestor()
+adapter.connect()
+adapter.run()
+
+# Generate PDF report
+adapter.generate_pdf_report("data/reports/my_report.pdf")
+```
+
+### Standalone Demo
+
+Run the PDF report demo to see an example report:
+
+```bash
+# Generate a demo PDF report
+python tools/demo_pdf_report.py
+
+# View the report (opens in default PDF viewer)
+open data/reports/demo_report.pdf
+```
+
+**Example Report:** See [data/reports/demo_report.pdf](data/reports/demo_report.pdf) for a sample report showing schema drift reconciliation, including the correction of `pulse_ox_fingertip` to "Oxygen Saturation (SpO2)".
+
+### Report Contents
+
+Each PDF report includes:
+1. **Run Summary:** Run ID, source, status, timestamps
+2. **Metrics:** Records processed, failed, success rate
+3. **Schema Drift Events:** Field name, expected/observed types, severity, action taken
+4. **Failure Log:** Timestamps, error types, and error messages
+5. **Resilience Actions:** Auto-repair events with confidence scores
+
+### Implementation
+
+- **Module:** [`reporting/pdf_report.py`](reporting/pdf_report.py)
+- **Demo Script:** [`tools/demo_pdf_report.py`](tools/demo_pdf_report.py)
+- **Output Directory:** `data/reports/`
 
 ---
 
