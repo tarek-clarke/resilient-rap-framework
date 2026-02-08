@@ -52,7 +52,7 @@ class ClinicalIngestor(BaseIngestor):
             # The AI Model must map these messy keys to the Gold Standard
             clean_record = {
                 'patient_id': p_id,
-                'pulse_ox_fingertip': random.randint(60, 100),  # -> Heart Rate
+                'pulse_ox_fingertip': random.randint(60, 100),  # -> SpO2 (Oxygen Saturation)
                 'o2_sat_percent': random.randint(92, 99),       # -> SpO2
                 'bp_sys_art_line': random.randint(110, 140),    # -> Systolic
                 'bp_dia_cuff': random.randint(60, 90),          # -> Diastolic

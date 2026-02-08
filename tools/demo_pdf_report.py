@@ -51,7 +51,7 @@ def create_sample_report() -> RunReport:
             observed_type="string",
             severity="medium",
             timestamp=run_start + timedelta(seconds=120),
-            action_taken="auto-reconciled to Heart Rate"
+            action_taken="auto-reconciled to Oxygen Saturation (SpO2)"
         ),
         SchemaDriftEvent(
             field_name="brake_temp_front_left",
