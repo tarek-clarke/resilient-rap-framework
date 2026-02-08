@@ -214,7 +214,11 @@ python tools/tui_replayer.py
 2. **Chaos Injection:** The simulation injects non-standard tags like `hr_watch_01` or `brk_tmp_fr`.
 3. **Self-Healing Response:** The "Autonomous Repair" agent detects the drift, semantically infers the alias using a BERT model, patches the schema map, and resumes ingestion seamlessly.
 
-Video: https://github.com/user-attachments/assets/cc76f009-6199-4fe6-99b5-879eac1170b2
+Video: 
+
+https://github.com/user-attachments/assets/d216c8f6-97d2-4d9d-8aa6-c769e2858ef5
+
+
 
 ---
 
@@ -250,7 +254,11 @@ SELF-HEALING REPORT
    Learned Mappings: 8
 ```
 
-Video: https://github.com/user-attachments/assets/33d72579-07fa-4bfe-b443-ca09ab91a80f
+Video: 
+
+https://github.com/user-attachments/assets/381dc390-e369-4171-9648-3b4641f689a1
+
+
 
 This validates the framework's ability to handle high-velocity, schema-drifting telemetry in safety-critical environments.
 
@@ -262,7 +270,11 @@ To validate the framework's "Zero-Shot" capabilities, the exact same ingestion a
 
 **Observation:** The system successfully mapped non-standard vendor tags (e.g., `pulse_ox_fingertip`) to the clinical gold standard using the same vector-space logic used for F1 telemetry.
 
-Video: https://github.com/user-attachments/assets/ee85bd6c-f8a3-4969-a8e5-1071e7d7ff25
+Video: 
+
+https://github.com/user-attachments/assets/27bee465-682d-47e4-a4a1-75a87edf1656
+
+
 
 ## Technical Architecture
 
