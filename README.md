@@ -548,6 +548,38 @@ If you are interested in applying the Resilient RAP framework to your telemetry 
 * **Email:** [tclarke91@proton.me](mailto:tclarke91@proton.me)
 * **LinkedIn:** https://www.linkedin.com/in/tarekclarke
 
+---
+
+## Commercial Licensing & Enterprise Use
+
+**Academic and research use is fully permitted under the PolyForm Noncommercial License.** However, any commercial deployment or for-profit application requires an explicit commercial license.
+
+### Examples of Commercial Use Requiring Licensing
+
+Commercial licensing is required for:
+
+- **Enterprise deployments** of the framework within organizations for operational use
+- **Sports analytics platforms** or telemetry systems sold to teams, leagues, or broadcasters
+- **Healthcare/clinical systems** integrated into patient monitoring or diagnostic workflows
+- **Real-time systems** providing paid services to paying customers
+- **SaaS or cloud-based offerings** built on or incorporating the framework
+- **Consulting services** that derive value from the framework for fee-paying clients
+- **Any use where the framework is part of a revenue-generating product or service**
+
+### Licensing Inquiries
+
+If you are interested in:
+- Using the framework in a commercial or enterprise context
+- Building a proprietary or paid product based on this code
+- Licensing the source code for a for-profit organization
+- Obtaining a commercial license for sports or clinical applications
+
+**Please contact:** [tclarke91@proton.me](mailto:tclarke91@proton.me)
+
+Include details about your intended use case, deployment scale, and timeline in your inquiry.
+
+---
+
 ## License & IP Protection
 
 **Copyright (c) 2024–2026 Tarek Clarke. All rights reserved.**
