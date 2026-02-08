@@ -98,13 +98,22 @@ class BaseIngestor(ABC):
         })
 
     def export_audit_log(self, path="data/reproducibility_audit.json"):
-        """Saves the complete lineage to a JSON file for PhD-level auditing."""
+        """
+        Saves the complete lineage to a JSON file for PhD-level auditing.
+        Adds SHA-256 cryptographic signature for tamper evidence.
+        """
+        import hashlib
         audit_data = {
             "framework_version": "1.0-resilient",
             "source": self.source_name,
             "lineage_trail": self.lineage,
             "error_log": self.errors
         }
+        # Serialize audit data and compute SHA-256 hash
+        audit_json = json.dumps(audit_data, sort_keys=True, indent=4)
+        signature = hashlib.sha256(audit_json.encode("utf-8")).hexdigest()
+        # Add signature to audit data
+        audit_data["sha256_signature"] = signature
         with open(path, "w") as f:
             json.dump(audit_data, f, indent=4)
 

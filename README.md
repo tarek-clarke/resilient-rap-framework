@@ -72,26 +72,6 @@ Implementing tamper-evident lineage, deterministic transformations, and reproduc
 
 ---
 
-## Technical Architecture
-
-The system is structured as a modular, extensible RAP:
-
-| Component | Technology | Purpose |
-|----------|------------|---------|
-| **Core Ingestion Interface** | Python (`BaseIngestor`) | Domain-agnostic ingestion contract (connect → extract → parse → validate → normalize) |
-| **Semantic Reconciliation** | BERT / Transformers | Auto-mapping messy inputs to a Gold Standard schema (Self-Healing) |
-| **Sports Adapter** | JSON / Simulation | Ingesting IMU/GPS/HR/HRV telemetry from athlete monitoring systems |
-| **Clinical Adapter** | FHIR/HL7 APIs | Ingesting physiological observations from clinical telemetry systems |
-| **Resilience Layer** | Logging, lineage | Ensuring fault tolerance and traceability (Audit Logs) |
-| **Reproducibility** | Docker, pinned deps | Guaranteeing deterministic execution across years |
-
-This architecture supports a proposed three-stage research agenda:
-1. **Sports Telemetry:** Validating high-frequency drift resolution (F1/Motorsport).
-2. **Clinical Telemetry:** Applying the framework to safety-critical streams (HL7/FHIR).
-3. **Unified Theory:** Establishing a formal definition for "Resilient RAP" in official statistics.
-
----
-
 ## Core Innovation: Semantic Schema Mapping
 
 The primary technical contribution of this framework is the move from rigid, key-value matching to Semantic Reconciliation. Unlike traditional pipelines that rely on brittle regex patterns or static mapping tables, this framework utilizes a BERT-based Semantic Translator.
@@ -304,7 +284,7 @@ This framework draws on three major research streams:
 Adapting "believable agent" logic to navigate semi-structured environments and infer signal relevance from context rather than fixed selectors.
 
 ### **Software Reliability Engineering**
-Applying Pareto-focused resilience: reinforcing the “vital few” failure points that cause the majority of pipeline outages.
+Applying Pareto-focused resilience: reinforcing the "vital few" failure points that cause the majority of pipeline outages.
 
 ### **Data Integrity & Reproducibility**
 Implementing tamper-evident lineage, deterministic transformations, and reproducible environments to ensure long-term auditability.
@@ -543,3 +523,31 @@ If you are interested in applying the Resilient RAP framework to your telemetry 
 ## License
 Distributed under the Apache License 2.0. See LICENSE for more information.
 <img src="https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd&source=launch_Feb05" referrerpolicy="no-referrer-when-downgrade" />
+
+---
+
+## Tamper-Evident Audit Logging
+
+### Cryptographic Signing for Audit Logs
+
+As of February 2026, the framework implements cryptographic signing (SHA-256) for all audit logs exported by the ingestion interface. This ensures tamper evidence and integrity verification for all pipeline lineage and error logs.
+
+- Each audit log JSON file now includes a `sha256_signature` field, which is a SHA-256 hash of the audit log contents.
+- This signature allows downstream users, auditors, or researchers to verify that the audit trail has not been altered since export.
+
+**Example:**
+```json
+{
+  "framework_version": "1.0-resilient",
+  "source": "openf1",
+  "lineage_trail": [...],
+  "error_log": [...],
+  "sha256_signature": "c1a2b3..."
+}
+```
+
+**How to verify:**
+- Recompute the SHA-256 hash of the audit log (excluding the `sha256_signature` field) and compare it to the stored signature.
+- If the hashes match, the log is tamper-free.
+
+**Location:** Audit logs are saved in the `data/` directory (e.g., `data/openf1_audit.json`, `data/reproducibility_audit.json`).
