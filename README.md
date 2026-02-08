@@ -551,3 +551,5 @@ As of February 2026, the framework implements cryptographic signing (SHA-256) fo
 - If the hashes match, the log is tamper-free.
 
 **Location:** Audit logs are saved in the `data/` directory (e.g., `data/openf1_audit.json`, `data/reproducibility_audit.json`).
+
+---
