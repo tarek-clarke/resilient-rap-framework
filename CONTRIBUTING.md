@@ -33,7 +33,7 @@ By submitting any contribution (code, documentation, bug reports, feature sugges
 
 1. **Fork the repository** and create a new branch for your work.
 2. **Make your changes**, ensuring code quality and documentation.
-3. **Include copyright notices** on new files: "Copyright (c) 2024–2026 Tarek Clarke. All rights reserved."
+3. **Include copyright notices** on new files: "Copyright (c) 2026 Tarek Clarke. All rights reserved."
 4. **Test your changes** before submitting.
 5. **Submit a pull request** with:
    - A clear description of the changes

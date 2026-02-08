@@ -582,7 +582,7 @@ Include details about your intended use case, deployment scale, and timeline in 
 
 ## License & IP Protection
 
-**Copyright (c) 2024–2026 Tarek Clarke. All rights reserved.**
+**Copyright (c) 2026 Tarek Clarke. All rights reserved.**
 
 This project is licensed under the **PolyForm Noncommercial License 1.0.0**. 
 
