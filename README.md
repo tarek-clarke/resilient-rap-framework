@@ -492,6 +492,34 @@ The workflow file is located at [`.github/workflows/release.yml`](.github/workfl
 
 ---
 
+## Tamper-Evident Audit Logging
+
+### Cryptographic Signing for Audit Logs
+
+As of February 2026, the framework implements cryptographic signing (SHA-256) for all audit logs exported by the ingestion interface. This ensures tamper evidence and integrity verification for all pipeline lineage and error logs.
+
+- Each audit log JSON file now includes a `sha256_signature` field, which is a SHA-256 hash of the audit log contents.
+- This signature allows downstream users, auditors, or researchers to verify that the audit trail has not been altered since export.
+
+**Example:**
+```json
+{
+  "framework_version": "1.0-resilient",
+  "source": "openf1",
+  "lineage_trail": [...],
+  "error_log": [...],
+  "sha256_signature": "c1a2b3..."
+}
+```
+
+**How to verify:**
+- Recompute the SHA-256 hash of the audit log (excluding the `sha256_signature` field) and compare it to the stored signature.
+- If the hashes match, the log is tamper-free.
+
+**Location:** Audit logs are saved in the `data/` directory (e.g., `data/openf1_audit.json`, `data/reproducibility_audit.json`).
+
+---
+
 ## Citation & Context
 
 This software was developed by **Tarek Clarke** as an independent research prototype. While informed by challenges in Official Statistics (Producer Prices), this is **not** an official Statistics Canada product.
@@ -523,33 +551,5 @@ If you are interested in applying the Resilient RAP framework to your telemetry 
 ## License
 Distributed under the Apache License 2.0. See LICENSE for more information.
 <img src="https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd&source=launch_Feb05" referrerpolicy="no-referrer-when-downgrade" />
-
----
-
-## Tamper-Evident Audit Logging
-
-### Cryptographic Signing for Audit Logs
-
-As of February 2026, the framework implements cryptographic signing (SHA-256) for all audit logs exported by the ingestion interface. This ensures tamper evidence and integrity verification for all pipeline lineage and error logs.
-
-- Each audit log JSON file now includes a `sha256_signature` field, which is a SHA-256 hash of the audit log contents.
-- This signature allows downstream users, auditors, or researchers to verify that the audit trail has not been altered since export.
-
-**Example:**
-```json
-{
-  "framework_version": "1.0-resilient",
-  "source": "openf1",
-  "lineage_trail": [...],
-  "error_log": [...],
-  "sha256_signature": "c1a2b3..."
-}
-```
-
-**How to verify:**
-- Recompute the SHA-256 hash of the audit log (excluding the `sha256_signature` field) and compare it to the stored signature.
-- If the hashes match, the log is tamper-free.
-
-**Location:** Audit logs are saved in the `data/` directory (e.g., `data/openf1_audit.json`, `data/reproducibility_audit.json`).
 
 ---
