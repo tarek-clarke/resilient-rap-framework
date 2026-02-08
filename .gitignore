@@ -24,3 +24,6 @@ _targets/
 *.json
 !requirements.txt
 !config/schema.json
+
+# Allow demo PDF report example to be tracked
+!data/reports/demo_report.pdf
