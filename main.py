@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+# Copyright (c) 2024–2026 Tarek Clarke. All rights reserved.
+# Licensed under the PolyForm Noncommercial License 1.0.0.
+# See LICENSE for full details.
+
 from modules.base_ingest import BaseIngestor
 from modules.translator import SemanticTranslator
 import json

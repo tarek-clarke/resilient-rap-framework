@@ -1,7 +1,7 @@
 # Resilient RAP Framework: Self-Healing Data Pipelines
 
 ![Status](https://img.shields.io/badge/Status-Prototype-blue)
-![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
+![License](https://img.shields.io/badge/License-PolyForm%20Noncommercial-red.svg)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-yellow)
 [![Analytics](https://img.shields.io/badge/Analytics-Tracked_via_Scarf-blue)](https://about.scarf.sh)
 
@@ -548,8 +548,20 @@ If you are interested in applying the Resilient RAP framework to your telemetry 
 * **Email:** [tclarke91@proton.me](mailto:tclarke91@proton.me)
 * **LinkedIn:** https://www.linkedin.com/in/tarekclarke
 
-## License
-Distributed under the Apache License 2.0. See LICENSE for more information.
+## License & IP Protection
+
+**Copyright (c) 2024–2026 Tarek Clarke. All rights reserved.**
+
+This project is licensed under the **PolyForm Noncommercial License 1.0.0**. 
+
+- **Academic Use:** Fully permitted for research, publication, and dissertation work.
+- **Commercial Use:** Prohibited without explicit written permission from the copyright holder.
+- **Derivative Works:** Academic derivatives are permitted under the same license; commercial derivatives require licensing.
+
+For commercial licensing inquiries or permission to use this software in for-profit contexts, please contact tclarke91@proton.me.
+
+See [LICENSE](./LICENSE) and [CONTRIBUTING.md](./CONTRIBUTING.md) for full details.
+
 <img src="https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd&source=launch_Feb05" referrerpolicy="no-referrer-when-downgrade" />
 
 ---
