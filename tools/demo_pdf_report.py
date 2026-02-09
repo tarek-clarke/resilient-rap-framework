@@ -6,119 +6,76 @@
 """
 Demo: PDF Report Generation for Resilient RAP Framework
 --------------------------------------------------------
-This script demonstrates how to generate PDF reports from pipeline runs,
-including schema drift detection, failure handling, and audit summaries.
+This script generates PDF reports from actual OpenF1 API pipeline runs,
+including real schema drift detection, failure handling, and audit summaries.
 
 Usage:
     python tools/demo_pdf_report.py
+
+Features:
+- Fetches real F1 telemetry data from OpenF1 API
+- Runs semantic reconciliation pipeline
+- Generates professional PDF report with actual results
 """
 
 from datetime import datetime, timedelta
 from reporting.pdf_report import (
     generate_pdf_report,
     RunReport,
-    SchemaDriftEvent,
-    FailureEvent,
-    ResilienceAction,
-    AuditSummary,
     ReportGenerationError
 )
+from adapters.openf1.ingestion_openf1 import OpenF1Adapter
 
 
 def create_sample_report() -> RunReport:
     """
-    Create a sample RunReport with realistic data for demonstration.
+    Create a RunReport from actual OpenF1 API pipeline execution.
+    
+    Fetches real F1 telemetry data and runs the full resilient RAP pipeline.
     
     Returns:
-        RunReport with sample drift events, failures, and resilience actions
+        RunReport with real drift events, failures, and resilience actions
     """
-    run_start = datetime.utcnow() - timedelta(minutes=5)
-    run_end = datetime.utcnow()
+    print("\n[STEP 1] Initializing OpenF1 Adapter for real data fetch...")
     
-    # Sample schema drift events
-    schema_drifts = [
-        SchemaDriftEvent(
-            field_name="vehicle_speed",
-            expected_type="float",
-            observed_type="integer",
-            severity="low",
-            timestamp=run_start + timedelta(seconds=30),
-            action_taken="auto-reconciled to Speed (km/h)"
-        ),
-        SchemaDriftEvent(
-            field_name="pulse_ox_fingertip",
-            expected_type="integer",
-            observed_type="string",
-            severity="medium",
-            timestamp=run_start + timedelta(seconds=120),
-            action_taken="auto-reconciled to Oxygen Saturation (SpO2)"
-        ),
-        SchemaDriftEvent(
-            field_name="brake_temp_front_left",
-            expected_type="float",
-            observed_type="missing",
-            severity="high",
-            timestamp=run_start + timedelta(seconds=180),
-            action_taken="quarantine_record: Missing critical sensor data"
-        ),
-    ]
-    
-    # Sample failure events
-    failures = [
-        FailureEvent(
-            component="validation",
-            failure_type="schema_mismatch",
-            error_message="Missing required field: patient_id (recovered via semantic mapping)",
-            timestamp=run_start + timedelta(seconds=90)
-        ),
-    ]
-    
-    # Sample resilience actions
-    resilience_actions = [
-        ResilienceAction(
-            action_type="retry",
-            component="ingestion",
-            outcome="success",
-            details="Retry #2 succeeded after exponential backoff",
-            timestamp=run_start + timedelta(seconds=60)
-        ),
-        ResilienceAction(
-            action_type="fallback",
-            component="validation",
-            outcome="success",
-            details="Used default schema validation rules",
-            timestamp=run_start + timedelta(seconds=95)
-        ),
-        ResilienceAction(
-            action_type="auto-reconcile",
-            component="semantic_layer",
-            outcome="success",
-            details="3 fields auto-reconciled to gold standard",
-            timestamp=run_start + timedelta(seconds=150)
-        ),
-    ]
-    
-    # Audit summary
-    audit_summary = AuditSummary(
-        total_events=487,
-        tamper_evident=True,
-        signature_valid=True,
-        anomalies_detected=2,
-        audit_file_path="data/reproducibility_audit.json"
+    # Initialize adapter for real F1 data
+    adapter = OpenF1Adapter(
+        session_key=9158,          # Real F1 session
+        driver_number=1,           # Max Verstappen 
+        source_name="OpenF1_API_Real_Session",
+        target_schema=[
+            "Speed (km/h)",
+            "RPM",
+            "Gear",
+            "Throttle (%)",
+            "Brake",
+            "DRS",
+            "Engine Temperature (°C)"
+        ]
     )
     
-    # Create run report
-    return RunReport(
-        run_id="run_20260208_demo_abc123",
-        started_at=run_start,
-        ended_at=run_end,
-        schema_drifts=schema_drifts,
-        failures=failures,
-        resilience_actions=resilience_actions,
-        audit_summary=audit_summary,
-        source_name="OpenF1 API - Demo Session",
-        pipeline_status="partial"
-    )
+    print("[STEP 2] Running full pipeline (connect → extract → parse → validate → normalize → semantic reconciliation)...")
+    
+    try:
+        # Run the complete pipeline
+        df = adapter.run()
+        
+        print(f"[STEP 3] Pipeline completed successfully!")
+        print(f"  • Records processed: {len(df)}")
+        print(f"  • Lineage entries: {len(adapter.lineage)}")
+        print(f"  • Errors recorded: {len(adapter.errors)}")
+        
+        # Generate report from actual pipeline results
+        run_report = adapter.generate_run_report()
+        
+        if run_report:
+            return run_report
+        else:
+            raise RuntimeError("Failed to generate run report from adapter")
+            
+    except Exception as e:
+        print(f"Error running pipeline: {e}")
+        raise
 
 
 def main():
