@@ -59,7 +59,7 @@ def create_sample_report() -> RunReport:
             observed_type="missing",
             severity="high",
             timestamp=run_start + timedelta(seconds=180),
-            action_taken="fallback to default value"
+            action_taken="quarantine_record: Missing critical sensor data"
         ),
     ]
     

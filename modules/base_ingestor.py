@@ -147,13 +147,16 @@ class BaseIngestor(ABC):
                 if lineage_entry.get("stage") == "semantic_alignment" and "details" in lineage_entry:
                     for resolution in lineage_entry["details"]:
                         # Create drift event from semantic resolution
+                        observed_type = type(resolution.get('raw_field')).__name__
+                        expected_type_name = type(resolution.get('target_field')).__name__
+                        action_log = f"Type Cast: {observed_type} -> {expected_type_name}"
                         drift = SchemaDriftEvent(
                             field_name=resolution.get("raw_field", "unknown"),
                             expected_type="standard",
                             observed_type="raw",
                             severity="medium" if resolution.get("confidence", 0) < 0.7 else "low",
                             timestamp=datetime.fromisoformat(resolution.get("timestamp", datetime.utcnow().isoformat())),
-                            action_taken=f"auto-reconciled to {resolution.get('target_field', 'unknown')}"
+                            action_taken=action_log
                         )
                         schema_drifts.append(drift)
             
@@ -192,7 +195,14 @@ class BaseIngestor(ABC):
             )
             
             # Determine pipeline status
-            status = "success" if not self.errors else ("failed" if len(self.errors) > 5 else "partial")
+            critical_failures = [e for e in self.errors if "critical" in str(e).lower()]
+            recovered_events = [r for r in self.lineage if "recovery" in r.get("stage", "").lower()]
+            if len(critical_failures) > 0:
+                status = "FAILED"
+            elif len(recovered_events) > 0:
+                status = "COMPLETED (WITH RECOVERIES)"
+            else:
+                status = "COMPLETED"
             
             # Create and return RunReport
             return RunReport(
