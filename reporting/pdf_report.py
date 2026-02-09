@@ -351,7 +351,7 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                         Paragraph(failure.timestamp.strftime('%H:%M:%S'), cell_style)
                     ])
                 
-                failure_table = Table(failure_data, colWidths=[1.4*inch, 1.4*inch, 3.3*inch, 1.0*inch])
+                failure_table = Table(failure_data, colWidths=[2.0*inch, 1.2*inch, 2.9*inch, 1.0*inch])
                 failure_table.setStyle(TableStyle([
                     ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e67e22')),
                     ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -393,7 +393,7 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                         Paragraph(action.details, cell_style)
                     ])
                 
-                action_table = Table(action_data, colWidths=[1.4*inch, 1.4*inch, 1.2*inch, 3.3*inch])
+                action_table = Table(action_data, colWidths=[1.2*inch, 2.0*inch, 1.0*inch, 3.1*inch])
                 action_table.setStyle(TableStyle([
                     ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#27ae60')),
                     ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
