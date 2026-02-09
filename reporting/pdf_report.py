@@ -284,14 +284,22 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
             story.append(Paragraph("Schema Drift Events", heading_style))
             story.append(Spacer(1, 12))
             
+            # Create a style for wrapped text in table cells
+            cell_style = ParagraphStyle(
+                'CellStyle',
+                parent=styles['Normal'],
+                fontSize=10,
+                leading=12
+            )
+            
             drift_data = [["Field", "Expected", "Observed", "Severity", "Action"]]
             for drift in run_report.schema_drifts:
                 drift_data.append([
-                    drift.field_name,
-                    drift.expected_type,
-                    drift.observed_type,
-                    drift.severity,
-                    drift.action_taken
+                    Paragraph(drift.field_name, cell_style),
+                    Paragraph(drift.expected_type, cell_style),
+                    Paragraph(drift.observed_type, cell_style),
+                    Paragraph(drift.severity, cell_style),
+                    Paragraph(drift.action_taken, cell_style)
                 ])
             
             drift_table = Table(drift_data, colWidths=[1.3*inch, 1.2*inch, 1.2*inch, 1.1*inch, 2.2*inch])
@@ -302,12 +310,12 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                 ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                 ('FONTSIZE', (0, 0), (-1, 0), 11),
-                ('FONTSIZE', (0, 1), (-1, -1), 10),
                 ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
                 ('TOPPADDING', (0, 1), (-1, -1), 8),
+                ('LEFTPADDING', (0, 0), (-1, -1), 6),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 6),
                 ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
-                ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                ('WORDWRAP', (0, 0), (-1, -1), True)
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
             ]))
             story.append(drift_table)
             story.append(Spacer(1, 20))
@@ -321,13 +329,21 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                 story.append(Paragraph("<b>Failures:</b>", styles['Normal']))
                 story.append(Spacer(1, 6))
                 
+                # Create a style for wrapped text in table cells
+                cell_style = ParagraphStyle(
+                    'CellStyle',
+                    parent=styles['Normal'],
+                    fontSize=10,
+                    leading=12
+                )
+                
                 failure_data = [["Component", "Type", "Message", "Time"]]
                 for failure in run_report.failures:
                     failure_data.append([
-                        failure.component,
-                        failure.failure_type,
-                        failure.error_message,
-                        failure.timestamp.strftime('%H:%M:%S')
+                        Paragraph(failure.component, cell_style),
+                        Paragraph(failure.failure_type, cell_style),
+                        Paragraph(failure.error_message, cell_style),
+                        Paragraph(failure.timestamp.strftime('%H:%M:%S'), cell_style)
                     ])
                 
                 failure_table = Table(failure_data, colWidths=[1.3*inch, 1.3*inch, 3*inch, 0.9*inch])
@@ -338,12 +354,12 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                     ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                     ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                     ('FONTSIZE', (0, 0), (-1, 0), 11),
-                    ('FONTSIZE', (0, 1), (-1, -1), 10),
                     ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
                     ('TOPPADDING', (0, 1), (-1, -1), 8),
+                    ('LEFTPADDING', (0, 0), (-1, -1), 6),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 6),
                     ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
-                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                    ('WORDWRAP', (0, 0), (-1, -1), True)
+                    ('GRID', (0, 0), (-1, -1), 1, colors.black)
                 ]))
                 story.append(failure_table)
                 story.append(Spacer(1, 12))
@@ -352,13 +368,21 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                 story.append(Paragraph("<b>Resilience Actions:</b>", styles['Normal']))
                 story.append(Spacer(1, 6))
                 
+                # Create a style for wrapped text in table cells
+                cell_style = ParagraphStyle(
+                    'CellStyle',
+                    parent=styles['Normal'],
+                    fontSize=10,
+                    leading=12
+                )
+                
                 action_data = [["Action", "Component", "Outcome", "Details"]]
                 for action in run_report.resilience_actions:
                     action_data.append([
-                        action.action_type,
-                        action.component,
-                        action.outcome,
-                        action.details
+                        Paragraph(action.action_type, cell_style),
+                        Paragraph(action.component, cell_style),
+                        Paragraph(action.outcome, cell_style),
+                        Paragraph(action.details, cell_style)
                     ])
                 
                 action_table = Table(action_data, colWidths=[1.3*inch, 1.3*inch, 1*inch, 3*inch])
@@ -369,12 +393,12 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                     ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                     ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                     ('FONTSIZE', (0, 0), (-1, 0), 11),
-                    ('FONTSIZE', (0, 1), (-1, -1), 10),
                     ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
                     ('TOPPADDING', (0, 1), (-1, -1), 8),
+                    ('LEFTPADDING', (0, 0), (-1, -1), 6),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 6),
                     ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
-                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                    ('WORDWRAP', (0, 0), (-1, -1), True)
+                    ('GRID', (0, 0), (-1, -1), 1, colors.black)
                 ]))
                 story.append(action_table)
                 story.append(Spacer(1, 20))
