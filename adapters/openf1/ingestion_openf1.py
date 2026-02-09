@@ -87,43 +87,67 @@ class OpenF1Adapter(BaseIngestor):
     def extract_raw(self):
         """
         Fetch raw car telemetry data from the OpenF1 API.
+        Includes exponential backoff retry logic for reliability.
         
         Returns:
             Raw JSON response from the API
         """
-        try:
-            # Build query parameters
-            params = {
-                "session_key": self.session_key
-            }
-            
-            if self.driver_number is not None:
-                params["driver_number"] = self.driver_number
-            
-            # Fetch car data
-            response = requests.get(
-                f"{self.base_url}/car_data",
-                params=params,
-                timeout=30
-            )
-            response.raise_for_status()
-            
-            self.raw_data = response.json()
-            
-            self.record_lineage(
-                "data_extracted",
-                metadata={
-                    "endpoint": "/v1/car_data",
-                    "records_fetched": len(self.raw_data) if isinstance(self.raw_data, list) else 0,
-                    "query_params": params
+        import time
+        
+        max_retries = 3
+        timeout = 60  # Increased from 30s to 60s for unreliable networks
+        
+        for attempt in range(max_retries):
+            try:
+                # Build query parameters
+                params = {
+                    "session_key": self.session_key
                 }
-            )
-            
-            return self.raw_data
-            
-        except requests.exceptions.RequestException as e:
-            self.record_error("extraction", e)
-            raise RuntimeError(f"Failed to extract data from OpenF1 API: {str(e)}")
+                
+                if self.driver_number is not None:
+                    params["driver_number"] = self.driver_number
+                
+                # Fetch car data with timeout
+                response = requests.get(
+                    f"{self.base_url}/car_data",
+                    params=params,
+                    timeout=timeout
+                )
+                response.raise_for_status()
+                
+                self.raw_data = response.json()
+                
+                self.record_lineage(
+                    "data_extracted",
+                    metadata={
+                        "endpoint": "/v1/car_data",
+                        "records_fetched": len(self.raw_data) if isinstance(self.raw_data, list) else 0,
+                        "query_params": params,
+                        "retry_attempt": attempt + 1
+                    }
+                )
+                
+                return self.raw_data
+                
+            except requests.exceptions.Timeout:
+                if attempt < max_retries - 1:
+                    # Exponential backoff: 2s, 4s, 8s
+                    wait_time = 2 ** (attempt + 1)
+                    self.record_lineage(
+                        "api_timeout_retry",
+                        metadata={
+                            "attempt": attempt + 1,
+                            "max_retries": max_retries,
+                            "wait_seconds": wait_time
+                        }
+                    )
+                    time.sleep(wait_time)
+                else:
+                    self.record_error("extraction_timeout", Exception(f"API timeout after {max_retries} retries"))
+                    raise RuntimeError(f"Failed to extract data from OpenF1 API after {max_retries} retries: Timeout")
+            except requests.exceptions.RequestException as e:
+                self.record_error("extraction", e)
+                raise RuntimeError(f"Failed to extract data from OpenF1 API: {str(e)}")
     
     def parse(self, raw):
         """
@@ -155,8 +179,14 @@ class OpenF1Adapter(BaseIngestor):
         for record in raw:
             # Map API fields to internal format with intentional variations
             # This tests the semantic reconciliation layer
+            
+            # Handle timestamp: use API date field, fallback to current time if missing or None
+            timestamp = record.get("date")
+            if not timestamp:  # Handles None, empty string, or missing
+                timestamp = datetime.utcnow().isoformat()
+            
             parsed_record = {
-                "timestamp": record.get("date", datetime.utcnow().isoformat()),
+                "timestamp": timestamp,
                 "driver_num": record.get("driver_number"),
                 "vehicle_speed": record.get("speed"),  # Map: speed -> vehicle_speed
                 "engine_rpm": record.get("rpm"),       # Map: rpm -> engine_rpm
