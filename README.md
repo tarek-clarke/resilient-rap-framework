@@ -9,6 +9,8 @@
 
 **Technical foundation for a proposed PhD research project on data resilience.**
 
+> **📊 [View Live Demo Report (PDF)](data/reports/demo_report.pdf)** - Real-time F1 telemetry processing with 18,026 records, zero failures, and automatic semantic reconciliation.
+
 This framework is being developed to solve the "Contract of Trust" problem in high-velocity telemetry. 
 
 > **Note:** This repository is actively tracked for usage patterns to support my PhD research.
