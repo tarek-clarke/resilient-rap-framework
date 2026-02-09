@@ -66,15 +66,9 @@ def create_sample_report() -> RunReport:
     # Sample failure events
     failures = [
         FailureEvent(
-            component="ingestion",
-            failure_type="connection_timeout",
-            error_message="API connection timeout after 30s",
-            timestamp=run_start + timedelta(seconds=45)
-        ),
-        FailureEvent(
             component="validation",
             failure_type="schema_mismatch",
-            error_message="Missing required field: timestamp",
+            error_message="Missing required field: patient_id (recovered via semantic mapping)",
             timestamp=run_start + timedelta(seconds=90)
         ),
     ]
