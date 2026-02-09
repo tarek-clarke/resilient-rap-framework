@@ -27,7 +27,7 @@ try:
         SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
         PageBreak, Preformatted
     )
-    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
     REPORTLAB_AVAILABLE = True
 except ImportError:
     REPORTLAB_AVAILABLE = False
@@ -262,14 +262,17 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
             ["Total Audit Events", str(run_report.audit_summary.total_events if run_report.audit_summary else "N/A")],
         ]
         
-        summary_table = Table(summary_data, colWidths=[4*inch, 2*inch])
+        summary_table = Table(summary_data, colWidths=[4.5*inch, 2.5*inch])
         summary_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3498db')),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('FONTSIZE', (0, 1), (-1, -1), 11),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('TOPPADDING', (0, 1), (-1, -1), 8),
             ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
             ('GRID', (0, 0), (-1, -1), 1, colors.black)
         ]))
@@ -291,16 +294,20 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                     drift.action_taken
                 ])
             
-            drift_table = Table(drift_data, colWidths=[1.5*inch, 1*inch, 1*inch, 1*inch, 2*inch])
+            drift_table = Table(drift_data, colWidths=[1.3*inch, 1.2*inch, 1.2*inch, 1.1*inch, 2.2*inch])
             drift_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e74c3c')),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
                 ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, -1), 9),
+                ('FONTSIZE', (0, 0), (-1, 0), 11),
+                ('FONTSIZE', (0, 1), (-1, -1), 10),
                 ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('TOPPADDING', (0, 1), (-1, -1), 8),
                 ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
-                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                ('WORDWRAP', (0, 0), (-1, -1), True)
             ]))
             story.append(drift_table)
             story.append(Spacer(1, 20))
@@ -319,20 +326,24 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                     failure_data.append([
                         failure.component,
                         failure.failure_type,
-                        failure.error_message[:40] + "..." if len(failure.error_message) > 40 else failure.error_message,
+                        failure.error_message,
                         failure.timestamp.strftime('%H:%M:%S')
                     ])
                 
-                failure_table = Table(failure_data, colWidths=[1.5*inch, 1.5*inch, 2.5*inch, 1*inch])
+                failure_table = Table(failure_data, colWidths=[1.3*inch, 1.3*inch, 3*inch, 0.9*inch])
                 failure_table.setStyle(TableStyle([
                     ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e67e22')),
                     ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
                     ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                     ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                    ('FONTSIZE', (0, 0), (-1, -1), 9),
+                    ('FONTSIZE', (0, 0), (-1, 0), 11),
+                    ('FONTSIZE', (0, 1), (-1, -1), 10),
                     ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                    ('TOPPADDING', (0, 1), (-1, -1), 8),
                     ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
-                    ('GRID', (0, 0), (-1, -1), 1, colors.black)
+                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                    ('WORDWRAP', (0, 0), (-1, -1), True)
                 ]))
                 story.append(failure_table)
                 story.append(Spacer(1, 12))
@@ -347,19 +358,23 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                         action.action_type,
                         action.component,
                         action.outcome,
-                        action.details[:40] + "..." if len(action.details) > 40 else action.details
+                        action.details
                     ])
                 
-                action_table = Table(action_data, colWidths=[1.5*inch, 1.5*inch, 1*inch, 2.5*inch])
+                action_table = Table(action_data, colWidths=[1.3*inch, 1.3*inch, 1*inch, 3*inch])
                 action_table.setStyle(TableStyle([
                     ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#27ae60')),
                     ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
                     ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                     ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                    ('FONTSIZE', (0, 0), (-1, -1), 9),
+                    ('FONTSIZE', (0, 0), (-1, 0), 11),
+                    ('FONTSIZE', (0, 1), (-1, -1), 10),
                     ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                    ('TOPPADDING', (0, 1), (-1, -1), 8),
                     ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
-                    ('GRID', (0, 0), (-1, -1), 1, colors.black)
+                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                    ('WORDWRAP', (0, 0), (-1, -1), True)
                 ]))
                 story.append(action_table)
                 story.append(Spacer(1, 20))
