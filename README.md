@@ -357,6 +357,355 @@ resilient-rap-framework/
 
 ---
 
+## Quick Start Guides
+
+The following guides demonstrate the core capabilities of the Resilient RAP Framework with a focus on academic reproducibility and validation. Each guide includes executable code, expected outputs, and verification approaches suitable for research and publication.
+
+### QS1: Environment Setup (Reproducible Development Environment)
+
+**Objective:** Establish a reproducible Python environment with pinned dependencies.
+
+**Rationale:** Deterministic execution across time is essential for research reproducibility and audit compliance.
+
+```bash
+# Clone repository
+git clone https://github.com/tarek-clarke/resilient-rap-framework.git
+cd resilient-rap-framework
+
+# Create virtual environment  
+python3.10 -m venv .venv
+source .venv/bin/activate
+
+# Install dependencies with exact versions (reproducible)
+pip install -r requirements.txt
+
+# Verify installation
+python -c "import requests, sentence_transformers; print('✓ Core dependencies installed')"
+```
+
+**Verification:** You should see `✓ Core dependencies installed`. This ensures all experiments use identical library versions.
+
+**Why This Matters for Research:** Pinned dependencies enable your results to be reproduced years later, which is critical for:
+- Academic publication reproducibility
+- Long-term audit trail compliance
+- Validation by independent reviewers
+
+---
+
+### QS2: OpenF1 API Adapter - Real Telemetry Ingestion
+
+**Objective:** Ingest real F1 telemetry data from the OpenF1 API and validate semantic field mapping.
+
+**Rationale:** Demonstrates the framework's ability to handle high-velocity, production telemetry with automatic schema reconciliation.
+
+**Use Case:** Validating the framework against real-world, uncontrolled data (not synthetic/simulated).
+
+```bash
+# Run the OpenF1 adapter with a specific F1 session (2024 Abu Dhabi GP)
+PYTHONPATH="." python tools/demo_openf1.py --session 9158 --driver 1
+
+# Expected Output:
+# ✓ Connected to OpenF1 API
+# ✓ Fetched 360 telemetry records for Driver 1
+# ✓ Semantic reconciliation complete (6 field mappings)
+# ✓ Audit log saved to: data/openf1_audit.json
+```
+
+**Verification Steps:**
+
+1. **Check raw telemetry:** Open `data/openf1_audit.json` and inspect the `raw_samples` field to see actual API response.
+
+2. **Verify field mappings:**
+   ```python
+   import json
+   with open('data/openf1_audit.json') as f:
+       audit = json.load(f)
+   
+   print("Field Mappings (with confidence scores):")
+   for mapping in audit['semantic_mappings']:
+       print(f"  {mapping['raw_field']} → {mapping['gold_standard']}: {mapping['confidence']:.1%}")
+   ```
+
+3. **Validate audit trail integrity:**
+   ```bash
+   # Compute SHA-256 hash to verify audit log hasn't been tampered with
+   python -c "
+   import json, hashlib
+   with open('data/openf1_audit.json') as f:
+       data = json.load(f)
+   signature = data['sha256_signature']
+   del data['sha256_signature']
+   recomputed = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
+   print(f'Stored:     {signature}')
+   print(f'Recomputed: {recomputed}')
+   print(f'Match: {signature == recomputed}')
+   "
+   ```
+
+**Research Implications:**
+
+- This demonstrates **reproducible telemetry ingestion** from a public API
+- The audit log provides **tamper-evident lineage** suitable for compliance and publication
+- Field mapping confidence scores can be reported as part of methodology
+- OpenF1 data is freely available for academic and research use
+
+**Related Code:** [`adapters/openf1/ingestion_openf1.py`](adapters/openf1/ingestion_openf1.py), [`modules/base_ingestor.py`](modules/base_ingestor.py)
+
+---
+
+### QS3: Schema Drift Detection - BERT-Based Semantic Reconciliation
+
+**Objective:** Demonstrate automatic detection and reconciliation of schema drift using semantic embeddings.
+
+**Rationale:** This is the core innovation—moving from brittle regex to semantic understanding of field meaning.
+
+**Use Case:** Testing the framework's ability to handle vendor schema changes without code modifications.
+
+```python
+import json
+from adapters.openf1 import OpenF1Adapter
+
+# Initialize adapter for F1 session 9158 (Abu Dhabi 2024)
+adapter = OpenF1Adapter(session_key=9158, driver_number=1)
+adapter.connect()
+
+# Run full pipeline: extract → parse → validate → normalize → semantic reconciliation
+report = adapter.run()
+
+# Report schema drift events
+print(f"\nSchema Drift Events Detected: {len(report.schema_drifts)}")
+for drift in report.schema_drifts:
+    print(f"\n  Field: {drift.field_name}")
+    print(f"  Expected Type: {drift.expected_type}")
+    print(f"  Observed Type: {drift.observed_type}")
+    print(f"  Action: {drift.action_taken}")
+
+# Export audit log for inspection
+adapter.export_audit_log("data/my_audit.json")
+```
+
+**Verification:**
+
+The schema drift detection uses BERT embeddings (sentence-transformers/all-MiniLM-L6-v2) to compute cosine similarity between observed fields and expected fields:
+
+```python
+# Inspect semantic mapping details
+import json
+with open('data/my_audit.json') as f:
+    audit = json.load(f)
+
+print("\nSemantic Mapping Details:")
+for event in audit.get('semantic_mappings', []):
+    print(f"  Raw: {event['raw_field']}")
+    print(f"  Mapped: {event['gold_standard']}")
+    print(f"  Confidence: {event['confidence']:.1%}")
+    print()
+```
+
+**Why This Matters for Research:**
+
+- Demonstrates **zero-shot schema adaptation** (no retraining required)
+- Provides **confidence scores** for downstream error analysis
+- Audit trail documents every semantic decision, enabling peer review
+- Reproducible across domains (F1, Clinical, Pricing)
+
+**Academic Citation:** The embedding approach is based on utilizing pre-trained BERT models for semantic understanding. Confidence scores quantify the reliability of each mapping decision.
+
+**Related Code:** [`modules/translator.py`](modules/translator.py) (BERT-based semantic translation), [`modules/base_ingestor.py`](modules/base_ingestor.py) (reconciliation logic)
+
+---
+
+### QS4: Auditable Lineage Tracking
+
+**Objective:** Inspect the complete pipeline lineage to verify data provenance and transformation integrity.
+
+**Rationale:** Lineage tracking is essential for compliance, reproducibility, and scientific validity.
+
+```python
+import json
+from datetime import datetime
+
+# Load audit log from previous step
+with open('data/my_audit.json') as f:
+    audit = json.load(f)
+
+# Print pipeline timeline
+print("Pipeline Execution Timeline:")
+print(f"  Started: {audit['started_at']}")
+print(f"  Ended: {audit['ended_at']}")
+print()
+
+# Print all stage checkpoints
+print("Pipeline Stage Completions:")
+for stage in audit.get('pipeline_stages', []):
+    print(f"  {stage['stage']}: {stage['timestamp']}")
+print()
+
+# Print error log (if any)
+if audit.get('error_log'):
+    print("Noted Issues (Schema Drift, Validation Errors):")
+    for error in audit['error_log']:
+        print(f"  - {error['error_type']}: {error['message']}")
+else:
+    print("✓ No errors recorded")
+
+# Verify audit signature
+import hashlib
+stored_sig = audit['sha256_signature']
+del audit['sha256_signature']
+computed_sig = hashlib.sha256(json.dumps(audit, sort_keys=True).encode()).hexdigest()
+print(f"\n✓ Audit Integrity: {stored_sig == computed_sig}")
+```
+
+**Expected Output:**
+```
+Pipeline Execution Timeline:
+  Started: 2026-02-09T01:11:57.123456
+  Ended: 2026-02-09T01:12:03.456789
+
+Pipeline Stage Completions:
+  connect: 2026-02-09T01:11:57.200001
+  extract: 2026-02-09T01:11:58.300002
+  parse: 2026-02-09T01:11:59.400003
+  validate: 2026-02-09T01:12:00.500004
+  normalize: 2026-02-09T01:12:01.600005
+  semantic_reconciliation: 2026-02-09T01:12:02.700006
+
+Noted Issues (Schema Drift, Validation Errors):
+  - schema_drift: Field 'vehicle_speed' mapped to 'Speed (km/h)' with 89% confidence
+
+✓ Audit Integrity: True
+```
+
+**Why This Matters for Research:**
+
+- **Reproducibility:** Exact timestamps and stage completions allow reconstruction
+- **Compliance:** Tamper-evident signatures (SHA-256) prove audit trail integrity
+- **Publication:** Lineage can be included in methodology sections
+- **Validation:** Reviewers can verify data transformation order and decisions
+
+**Related Code:** [`modules/base_ingestor.py`](modules/base_ingestor.py) (audit generation), cryptographic signing in audit export
+
+---
+
+### QS5: PDF Report Generation
+
+**Objective:** Generate a professional, publication-ready PDF report summarizing pipeline execution.
+
+**Rationale:** Enables sharing reproducible results in a standardized, auditable format.
+
+```bash
+# Generate a PDF report from real OpenF1 data
+PYTHONPATH="." python tools/demo_pdf_report.py
+
+# Expected Output:
+# ✓ PDF report generated successfully!
+# → data/reports/demo_report.pdf
+```
+
+**Programmatic Usage:**
+
+```python
+from adapters.openf1 import OpenF1Adapter
+from reporting.pdf_report import generate_pdf_report
+
+# Run pipeline to generate report
+adapter = OpenF1Adapter(session_key=9158, driver_number=1)
+adapter.connect()
+report = adapter.run()
+
+# Generate PDF
+generate_pdf_report(report, "data/my_report.pdf")
+print(f"✓ Report saved to: data/my_report.pdf")
+```
+
+**Report Contents (for academic use):**
+
+The PDF includes:
+- **Run Summary:** Source, timestamps, record counts, final status
+- **Schema Drift Events:** Field name, expected/observed types, severity, action (with confidence scores)
+- **Failure Log:** Error types, messages, timestamps
+- **Resilience Actions:** Auto-repair events, component, outcome
+- **Audit Summary:** Total events processed, tamper-evident status, anomalies detected
+
+**Why This Matters for Research:**
+
+- **Publication-Ready:** Professional formatting suitable for appendices or supplementary materials
+- **Reproducible Artifacts:** PDF embeds the audit trail for long-term archival
+- **Shareable:** Can be distributed alongside academic papers without privacy concerns
+- **Traceable:** Includes all transformation decisions with timestamps and confidence scores
+
+**Related Code:** [`reporting/pdf_report.py`](reporting/pdf_report.py), [`tools/demo_pdf_report.py`](tools/demo_pdf_report.py)
+
+---
+
+### QS6: Resilience & Self-Healing in Action
+
+**Objective:** Validate the framework's ability to detect and automatically repair schema drift in real-time.
+
+**Rationale:** Tests core hypothesis that semantic reconciliation enables autonomous repair without human intervention.
+
+**Test Scenario:** Inject non-standard field names and observe automatic semantic inference.
+
+```bash
+# Run chaos engineering test with schema drift injection
+PYTHONPATH="." python -m pytest tests/test_chaos_ingestion.py::TestChaos2_VariableCountSpike -v
+
+# Expected Output:
+# test_chaos_ingestion.py::TestChaos2_VariableCountSpike PASSED
+# 
+# Schema Drift Detected (13 unexpected fields)
+# ✓ Field 'accel_x_g' → 'acceleration_x' (87% confidence)
+# ✓ Field 'track_temp_c' → 'track_temperature' (92% confidence)
+# ✓ All 13 fields reconciled without manual intervention
+```
+
+**Programmatic Validation:**
+
+```python
+# Run a minimal chaos test
+from adapters.sports import SportsAdapter
+import random
+
+adapter = SportsAdapter()
+adapter.connect()
+
+# Inject chaos: rename 5 fields mid-stream
+original_fields = ['speed', 'rpm', 'throttle', 'brake', 'drs']
+chaos_fields = ['vel_kmh', 'engine_speed', 'accel_pct', 'brk_status', 'drag_reduction']
+
+# Simulate injection
+adapter._schema_overrides = {orig: chaos for orig, chaos in zip(original_fields, chaos_fields)}
+
+# Run pipeline and check resilience
+report = adapter.run()
+
+print(f"\nResilience Test Results:")
+print(f"  Schema Drifts Detected: {len(report.schema_drifts)}")
+print(f"  Auto-Repairs: {len(report.resilience_actions)}")
+print(f"  Final Status: {report.status}")  # Should be 'success'
+print(f"  ✓ Pipeline Resilient: {report.status == 'success'}")
+```
+
+**Metrics to Report:**
+
+When publishing results, include:
+- **Detection Latency:** How quickly drift is detected (records until detection)
+- **Repair Success Rate:** Percentage of drifted fields that are auto-mapped with confidence > 70%
+- **End-to-End Throughput:** Records/second during normal vs. chaos injection
+- **False Positive Rate:** Instances where semantic mapping was incorrect
+
+**Why This Matters for Research:**
+
+- **Validates Core Hypothesis:** Demonstrates semantic reconciliation works in practice
+- **Quantifies Resilience:** Provides metrics for comparison with baseline approaches
+- **Reproducible Testing:** Chaos tests can be re-run to validate variations or improvements
+- **Safety-Critical Validation:** Essential for clinical applications where schema changes could cause patient safety issues
+
+**Related Code:** [`tests/test_chaos_ingestion.py`](tests/test_chaos_ingestion.py) (comprehensive chaos scenarios), [`modules/base_ingestor.py`](modules/base_ingestor.py) (resilience logic)
+
+---
+
 ## Testing & CI/CD
 
 ### Running Tests Locally
