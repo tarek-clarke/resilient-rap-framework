@@ -289,7 +289,9 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                 'CellStyle',
                 parent=styles['Normal'],
                 fontSize=10,
-                leading=12
+                leading=14,
+                wordWrap='LTR',
+                splitLongWords=False
             )
             
             drift_data = [["Field", "Expected", "Observed", "Severity", "Action"]]
@@ -302,7 +304,7 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                     Paragraph(drift.action_taken, cell_style)
                 ])
             
-            drift_table = Table(drift_data, colWidths=[1.3*inch, 1.2*inch, 1.2*inch, 1.1*inch, 2.2*inch])
+            drift_table = Table(drift_data, colWidths=[1.5*inch, 1.3*inch, 1.3*inch, 1.2*inch, 2.5*inch])
             drift_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e74c3c')),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -311,9 +313,10 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                 ('FONTSIZE', (0, 0), (-1, 0), 11),
                 ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                ('TOPPADDING', (0, 1), (-1, -1), 8),
-                ('LEFTPADDING', (0, 0), (-1, -1), 6),
-                ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+                ('TOPPADDING', (0, 1), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 1), (-1, -1), 10),
+                ('LEFTPADDING', (0, 0), (-1, -1), 8),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 8),
                 ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
                 ('GRID', (0, 0), (-1, -1), 1, colors.black)
             ]))
@@ -334,7 +337,9 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                     'CellStyle',
                     parent=styles['Normal'],
                     fontSize=10,
-                    leading=12
+                    leading=14,
+                    wordWrap='LTR',
+                    splitLongWords=False
                 )
                 
                 failure_data = [["Component", "Type", "Message", "Time"]]
@@ -346,7 +351,7 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                         Paragraph(failure.timestamp.strftime('%H:%M:%S'), cell_style)
                     ])
                 
-                failure_table = Table(failure_data, colWidths=[1.3*inch, 1.3*inch, 3*inch, 0.9*inch])
+                failure_table = Table(failure_data, colWidths=[1.4*inch, 1.4*inch, 3.3*inch, 1.0*inch])
                 failure_table.setStyle(TableStyle([
                     ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e67e22')),
                     ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -355,9 +360,10 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                     ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                     ('FONTSIZE', (0, 0), (-1, 0), 11),
                     ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                    ('TOPPADDING', (0, 1), (-1, -1), 8),
-                    ('LEFTPADDING', (0, 0), (-1, -1), 6),
-                    ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+                    ('TOPPADDING', (0, 1), (-1, -1), 10),
+                    ('BOTTOMPADDING', (0, 1), (-1, -1), 10),
+                    ('LEFTPADDING', (0, 0), (-1, -1), 8),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 8),
                     ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
                     ('GRID', (0, 0), (-1, -1), 1, colors.black)
                 ]))
@@ -373,7 +379,9 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                     'CellStyle',
                     parent=styles['Normal'],
                     fontSize=10,
-                    leading=12
+                    leading=14,
+                    wordWrap='LTR',
+                    splitLongWords=False
                 )
                 
                 action_data = [["Action", "Component", "Outcome", "Details"]]
@@ -385,7 +393,7 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                         Paragraph(action.details, cell_style)
                     ])
                 
-                action_table = Table(action_data, colWidths=[1.3*inch, 1.3*inch, 1*inch, 3*inch])
+                action_table = Table(action_data, colWidths=[1.4*inch, 1.4*inch, 1.2*inch, 3.3*inch])
                 action_table.setStyle(TableStyle([
                     ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#27ae60')),
                     ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -394,9 +402,10 @@ def generate_pdf_report(run_report: RunReport, output_path: str) -> None:
                     ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                     ('FONTSIZE', (0, 0), (-1, 0), 11),
                     ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                    ('TOPPADDING', (0, 1), (-1, -1), 8),
-                    ('LEFTPADDING', (0, 0), (-1, -1), 6),
-                    ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+                    ('TOPPADDING', (0, 1), (-1, -1), 10),
+                    ('BOTTOMPADDING', (0, 1), (-1, -1), 10),
+                    ('LEFTPADDING', (0, 0), (-1, -1), 8),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 8),
                     ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
                     ('GRID', (0, 0), (-1, -1), 1, colors.black)
                 ]))
