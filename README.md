@@ -80,11 +80,11 @@ The primary technical contribution of this framework is the move from rigid, key
 
 ### BERT-Driven Self-Healing
 
-**Mechanism:** The system converts incoming unknown telemetry tags (e.g., `pulse_ox_fingertip`) into high-dimensional vector embeddings.
+**Mechanism:** The system converts incoming unknown telemetry tags (e.g., `vehicle_speed`, `engine_rpm`) into high-dimensional vector embeddings.
 
-**Reconciliation:** The "Autonomous Repair" agent calculates the cosine similarity between the unknown tag and the "Gold Standard" schema (e.g., `Heart Rate`).
+**Reconciliation:** The "Autonomous Repair" agent calculates the cosine similarity between the unknown tag and the "Gold Standard" schema (e.g., `Speed (km/h)`, `RPM`).
 
-**Zero-Shot Adaptability:** This allows the pipeline to ingest data from entirely new hardware vendors or clinical sensors without manual code changes or retraining, provided the semantic meaning of the tag remains consistent.
+**Zero-Shot Adaptability:** This allows the pipeline to ingest data from entirely new hardware vendors or telemetry systems without manual code changes or retraining, provided the semantic meaning of the tag remains consistent.
 
 ---
 
@@ -248,9 +248,11 @@ This validates the framework's ability to handle high-velocity, schema-drifting 
 
 ### Domain Generalizability: ICU Patient Monitoring
 
-To validate the framework's "Zero-Shot" capabilities, the exact same ingestion agent was connected to a simulated HL7/FHIR Clinical Stream without retraining.
+To validate the framework's "Zero-Shot" capabilities, the exact same ingestion agent was tested with a simulated HL7/FHIR Clinical Stream without retraining.
 
-**Observation:** The system successfully mapped non-standard vendor tags (e.g., `pulse_ox_fingertip`) to the clinical gold standard using the same vector-space logic used for F1 telemetry.
+**Observation:** The system successfully mapped non-standard vendor tags (e.g., `pulse_ox_fingertip`) to the clinical gold standard using the same vector-space logic demonstrated in the F1 telemetry adapter.
+
+**Note:** The current demo PDF report showcases F1 telemetry. Clinical telemetry validation is shown in the video below:
 
 Video: 
 
@@ -567,7 +569,7 @@ python tools/demo_pdf_report.py
 open data/reports/demo_report.pdf
 ```
 
-**Example Report:** See [data/reports/demo_report.pdf](data/reports/demo_report.pdf) for a sample report showing schema drift reconciliation, including the correction of `pulse_ox_fingertip` to "Oxygen Saturation (SpO2)".
+**Example Report:** See [data/reports/demo_report.pdf](data/reports/demo_report.pdf) for a live report showing real OpenF1 API data processing with 18,026 F1 telemetry records. The report demonstrates automatic schema drift reconciliation, including mappings like `vehicle_speed` → "Speed (km/h)", `engine_rpm` → "RPM", and `throttle_pct` → "Throttle (%)".
 
 ### Report Contents
 
