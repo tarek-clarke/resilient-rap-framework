@@ -228,50 +228,6 @@ adapter.export_audit_log("data/nhl_game_2024020001_audit.json")
 
 ---
 
-### ICU Health Vitals Stream (Simulated HL7/FHIR)
-
-The framework includes a clinical adapter that simulates an ICU bedside monitor with messy vendor tags to validate clinical resilience.
-
-#### Features
-- **Live Vitals Stream:** Heart rate, SpO2, blood pressure, respiratory rate
-- **Schema Drift Injection:** Simulated vendor tags like `pulse_ox_fingertip`
-- **Semantic Reconciliation:** Automatic mapping to clinical gold standard
-- **Audit Trail:** Full lineage for every packet
-
-#### Quick Start
-
-```bash
-# Run the TUI and select Mode 2 (ICU Clinical Monitor)
-python tools/tui_replayer.py
-```
-
-#### Programmatic Usage
-
-```python
-from adapters.clinical.ingestion_clinical import ClinicalIngestor
-
-# Initialize adapter
-adapter = ClinicalIngestor(source_name="ICU_Bed_04")
-
-# Run pipeline
-df = adapter.fetch_data()
-
-# Display results
-print(df.head())
-
-# Export audit log
-adapter.export_audit_log("data/icu_bed_04_audit.json")
-```
-
-#### What You'll See
-
-1. **Vitals Table:** Streaming heart rate, SpO2, BP, respiration
-2. **Semantic Reconciliation Results:** Vendor tags mapped to clinical schema
-3. **Pipeline Lineage:** Full audit trail for each packet
-4. **Resilience Signals:** Drift detection and auto-repair results
-
----
-
 ### Live Demo: The F1 Chaos Stream
 
 To validate the framework's resilience, this repository includes a Terminal User Interface (TUI) that simulates high-frequency F1 telemetry and injects "Schema Drift" (messy sensor tags) in real-time.
