@@ -172,6 +172,106 @@ The semantic reconciliation layer validates the mapping using BERT embeddings wi
 
 ---
 
+### NHL API Integration: Play-by-Play Event Stream (2024-2025)
+
+The framework includes a production-ready adapter for ingesting **real-time NHL play-by-play events** from the official NHL Stats API.
+
+#### Features
+- **Live Event Stream:** Shots, goals, hits, penalties, faceoffs, and turnovers
+- **API Endpoint:** `https://api-web.nhle.com/v1/gamecenter/{game_id}/play-by-play`
+- **Semantic Reconciliation:** Maps event fields to a gold standard schema
+- **Full Audit Trail:** Lineage tracking for every event and transformation
+
+#### Quick Start
+
+```bash
+# Fetch play-by-play events from the 2024-25 season opener
+python tools/demo_nhl.py --game 2024020001
+
+# Build a game ID for the 2024-25 regular season
+python tools/demo_nhl.py --season 2024 --game-type 02 --game-num 50
+```
+
+#### What You'll See
+
+1. **Event Stream Table:** First N events with period, time, player, and team
+2. **Semantic Reconciliation Results:** Mapped fields with confidence scores
+3. **Pipeline Lineage:** End-to-end event audit trail
+4. **Event Statistics:** Counts by event type (shots, goals, penalties, etc.)
+
+#### Output Files
+
+- **`data/nhl_game_2024020001_audit.json`**: Complete pipeline audit log with:
+  - Event timestamps and period context
+  - Field mapping confidence scores
+  - Raw and normalized event samples
+  - Validation results and error tracking
+
+#### Programmatic Usage
+
+```python
+from adapters.nhl import NHLAdapter
+
+# Initialize adapter with a 2024-25 game ID
+adapter = NHLAdapter(game_id="2024020001")
+
+# Fetch and process data
+df = adapter.fetch_data()
+
+# Display results
+print(f"Fetched {len(df)} events")
+print(df.head())
+
+# Export audit log
+adapter.export_audit_log("data/nhl_game_2024020001_audit.json")
+```
+
+---
+
+### ICU Health Vitals Stream (Simulated HL7/FHIR)
+
+The framework includes a clinical adapter that simulates an ICU bedside monitor with messy vendor tags to validate clinical resilience.
+
+#### Features
+- **Live Vitals Stream:** Heart rate, SpO2, blood pressure, respiratory rate
+- **Schema Drift Injection:** Simulated vendor tags like `pulse_ox_fingertip`
+- **Semantic Reconciliation:** Automatic mapping to clinical gold standard
+- **Audit Trail:** Full lineage for every packet
+
+#### Quick Start
+
+```bash
+# Run the TUI and select Mode 2 (ICU Clinical Monitor)
+python tools/tui_replayer.py
+```
+
+#### Programmatic Usage
+
+```python
+from adapters.clinical.ingestion_clinical import ClinicalIngestor
+
+# Initialize adapter
+adapter = ClinicalIngestor(source_name="ICU_Bed_04")
+
+# Run pipeline
+df = adapter.fetch_data()
+
+# Display results
+print(df.head())
+
+# Export audit log
+adapter.export_audit_log("data/icu_bed_04_audit.json")
+```
+
+#### What You'll See
+
+1. **Vitals Table:** Streaming heart rate, SpO2, BP, respiration
+2. **Semantic Reconciliation Results:** Vendor tags mapped to clinical schema
+3. **Pipeline Lineage:** Full audit trail for each packet
+4. **Resilience Signals:** Drift detection and auto-repair results
+
+---
+
 ### Live Demo: The F1 Chaos Stream
 
 To validate the framework's resilience, this repository includes a Terminal User Interface (TUI) that simulates high-frequency F1 telemetry and injects "Schema Drift" (messy sensor tags) in real-time.
