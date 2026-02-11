@@ -260,9 +260,9 @@ def generate_pdf_report(benchmark_output, output_path):
     # Recommendations
     story.append(Paragraph("Recommendations", heading_style))
     
-    # 2-column table: 35% | 65%
-    col_width_recommendation = 2.625*inch
-    col_width_rationale = 4.875*inch
+    # 2-column table: 27% | 73%
+    col_width_recommendation = 2.0*inch
+    col_width_rationale = 5.5*inch
     
     recommendations = [
         [Paragraph("Recommendation", header_cell_style), Paragraph("Rationale", header_cell_style)],
@@ -288,8 +288,8 @@ def generate_pdf_report(benchmark_output, output_path):
         ('BACKGROUND', (0, 1), (-1, -1), colors.white),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f0f0f0')]),
         ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#cccccc')),
-        ('FONTSIZE', (0, 1), (-1, -1), 9),
-        ('MINHEIGHT', (0, 0), (-1, -1), 40),  # Minimum cell height
+        ('FONTSIZE', (0, 1), (-1, -1), 8),  # Content cells - reduced from 9pt
+        ('MINHEIGHT', (0, 0), (-1, -1), 45),  # Minimum cell height
     ]))
     story.append(rec_table)
     story.append(Spacer(1, 0.2*inch))
