@@ -27,3 +27,4 @@ _targets/
 
 # Allow demo PDF report example to be tracked
 !data/reports/demo_report.pdf
+!data/reports/semantic_layer_benchmark_*.pdf
