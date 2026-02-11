@@ -7,7 +7,7 @@ F1 Sports Adapter (Final Simulation Version)
 """
 import json
 import random
-import pandas as pd
+import polars as pl
 from modules.base_ingestor import BaseIngestor
 
 class SportsIngestor(BaseIngestor):

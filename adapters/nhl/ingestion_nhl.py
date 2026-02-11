@@ -5,7 +5,7 @@ Real-time NHL play-by-play event streaming from the official NHL Stats API.
 Connects to statsapi.web.nhl.com to pull game events (shots, goals, hits, etc.) as event streams.
 """
 import requests
-import pandas as pd
+import polars as pl
 from datetime import datetime
 from typing import Optional, List
 from modules.base_ingestor import BaseIngestor
@@ -475,12 +475,12 @@ class NHLAdapter(BaseIngestor):
         
         return normalized_data
     
-    def fetch_data(self) -> pd.DataFrame:
+    def fetch_data(self) -> pl.DataFrame:
         """
         Convenience method to fetch and process data in one call.
         
         Returns:
-            pandas.DataFrame with processed play-by-play event data
+            polars.DataFrame with processed play-by-play event data
         """
         return self.run()
     

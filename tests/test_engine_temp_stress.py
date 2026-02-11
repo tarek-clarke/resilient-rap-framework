@@ -12,7 +12,7 @@ Validates that the framework:
 
 import pytest
 import numpy as np
-import pandas as pd
+import polars as pl
 import sys
 import os
 
@@ -70,7 +70,7 @@ class TestEngineTemperatureStress:
             normalized = stress_ingestor.normalize(parsed)
             
             # 6. Convert to DataFrame
-            df = pd.DataFrame(normalized)
+            df = pl.DataFrame(normalized)
             
             # 7. Apply semantic layer
             df_healed = stress_ingestor.apply_semantic_layer(df)
@@ -110,16 +110,16 @@ class TestEngineTemperatureStress:
         
         # Normalize should convert anomalies to NaN
         normalized = stress_ingestor.normalize(parsed)
-        df = pd.DataFrame(normalized)
+        df = pl.DataFrame(normalized)
         
-        # Should have NaN values for anomalies
-        assert df['eng_temp_sensor'].isna().sum() > 0, \
-            "Should have NaN values for anomalous temperature readings"
+        # Should have null values for anomalies
+        assert df['eng_temp_sensor'].null_count() > 0, \
+            "Should have null values for anomalous temperature readings"
         
         # Count anomalies: should reflect some of our injected anomalies
-        nan_count = df['eng_temp_sensor'].isna().sum()
-        assert nan_count >= 8, \
-            f"Should have at least 8 NaN values (from anomalies), got {nan_count}"
+        null_count = df['eng_temp_sensor'].null_count()
+        assert null_count >= 8, \
+            f"Should have at least 8 null values (from anomalies), got {null_count}"
     
     def test_valid_engine_temps_preserved(self, stress_ingestor):
         """Verify valid engine temperatures are preserved correctly."""
@@ -128,10 +128,10 @@ class TestEngineTemperatureStress:
         parsed = stress_ingestor.parse(raw)
         stress_ingestor.validate(parsed)
         normalized = stress_ingestor.normalize(parsed)
-        df = pd.DataFrame(normalized)
+        df = pl.DataFrame(normalized)
         
-        # Should have valid (non-NaN) values
-        valid_temps = df['eng_temp_sensor'].dropna()
+        # Should have valid (non-null) values
+        valid_temps = df.filter(pl.col('eng_temp_sensor').is_not_null())['eng_temp_sensor']
         assert len(valid_temps) > 0, "Should have valid temperature values"
         
         # Valid temps should be in plausible range (50-130°C for F1 engines)
@@ -145,7 +145,7 @@ class TestEngineTemperatureStress:
         parsed = stress_ingestor.parse(raw)
         stress_ingestor.validate(parsed)
         normalized = stress_ingestor.normalize(parsed)
-        df = pd.DataFrame(normalized)
+        df = pl.DataFrame(normalized)
         
         # Apply semantic layer
         df_healed = stress_ingestor.apply_semantic_layer(df)
@@ -165,7 +165,7 @@ class TestEngineTemperatureStress:
         parsed = stress_ingestor.parse(raw)
         stress_ingestor.validate(parsed)
         normalized = stress_ingestor.normalize(parsed)
-        df = pd.DataFrame(normalized)
+        df = pl.DataFrame(normalized)
         
         # Check structure
         assert df.shape[0] == 100, f"Should have 100 rows, got {df.shape[0]}"
@@ -199,7 +199,7 @@ class TestEngineTemperatureStress:
         parsed = stress_ingestor.parse(raw)
         stress_ingestor.validate(parsed)
         normalized = stress_ingestor.normalize(parsed)
-        df = pd.DataFrame(normalized)
+        df = pl.DataFrame(normalized)
         df_healed = stress_ingestor.apply_semantic_layer(df)
         
         # Check lineage
@@ -232,16 +232,16 @@ class TestEngineTemperatureStress:
         parsed = stress_ingestor.parse(raw)
         stress_ingestor.validate(parsed)
         normalized = stress_ingestor.normalize(parsed)
-        df = pd.DataFrame(normalized)
+        df = pl.DataFrame(normalized)
         
         # After rows with anomalies (e.g., row 10, 20, 30), 
         # subsequent rows should still be present
-        recovery_rows = df[df['row_number'] > 10]
+        recovery_rows = df.filter(pl.col('row_number') > 10)
         assert len(recovery_rows) > 85, \
             "Pipeline should recover after anomalies and process remaining rows"
         
         # Verify data in rows after anomalies
-        row_21 = df[df['row_number'] == 21]
+        row_21 = df.filter(pl.col('row_number') == 21)
         assert len(row_21) > 0, "Data should be present after anomalies"
 
 

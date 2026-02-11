@@ -1,7 +1,7 @@
 import sys
 import os
 import time
-import pandas as pd
+import polars as pl
 from rich.live import Live
 from rich.table import Table
 from rich.layout import Layout

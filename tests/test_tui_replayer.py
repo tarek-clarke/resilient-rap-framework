@@ -1,4 +1,4 @@
-import pandas as pd
+import polars as pl
 from types import SimpleNamespace
 
 import importlib.util
@@ -43,13 +43,13 @@ def test_create_high_freq_telemetry_table_spikes():
 
 # Edge case: Empty DataFrame for create_telemetry_table
 def test_create_telemetry_table_empty():
-    df = pd.DataFrame()
+    df = pl.DataFrame()
     table = tui_replayer.create_telemetry_table(df, "Test")
     assert table.row_count == 0
 
 # Edge case: Malformed DataFrame columns
 def test_create_telemetry_table_malformed():
-    df = pd.DataFrame({
+    df = pl.DataFrame({
         'driver_id': ['HAM'],
         'hr_watch_01': [None],
         'tyre_press_fl': [None],

@@ -11,7 +11,7 @@ Core Orchestrator with Semantic Reconciliation and Reproducible Lineage.
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-import pandas as pd
+import polars as pl
 import json
 import uuid
 from modules.translator import SemanticTranslator
@@ -54,10 +54,10 @@ class BaseIngestor(ABC):
     # --- Concrete Framework Methods ---
 
     def to_dataframe(self, normalized):
-        """Converts structured data to Pandas DataFrame."""
-        return pd.DataFrame(normalized)
+        """Converts structured data to Polars DataFrame."""
+        return pl.DataFrame(normalized)
 
-    def apply_semantic_layer(self, df: pd.DataFrame):
+    def apply_semantic_layer(self, df: pl.DataFrame):
         """
         Autonomous Reconciliation Layer.
         Maps messy telemetry labels to the Gold Standard schema.
@@ -86,7 +86,7 @@ class BaseIngestor(ABC):
         if resolutions:
             self.record_lineage("semantic_alignment", metadata=resolutions)
             
-        return df.rename(columns=mapping)
+        return df.rename(mapping)
 
     def record_lineage(self, stage: str, metadata: dict = None):
         """Records a step in the data lifecycle for the audit trail."""

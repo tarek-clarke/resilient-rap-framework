@@ -1,4 +1,4 @@
-import pandas as pd
+import polars as pl
 import sys
 import time
 import json
@@ -18,7 +18,7 @@ def run_replayer():
 
     # 2. Load Data
     try:
-        df = pd.read_csv(DATA_FILE)
+        df = pl.read_csv(DATA_FILE)
     except Exception as e:
         sys.stderr.write(f"❌ Error reading CSV: {e}\n")
         sys.exit(1)
@@ -26,30 +26,35 @@ def run_replayer():
     # 3. FIX: Smart Column Detection (Solves the KeyError)
     # ---------------------------------------------------
     # Normalize all columns to lowercase to avoid case sensitivity issues
-    df.columns = [c.lower() for c in df.columns]
+    df = df.rename({col: col.lower() for col in df.columns})
 
     # Check which time column exists and standarize it to 'timestamp_ms'
     if 'timestamp_ms' in df.columns:
         pass # We are good
     elif 'date' in df.columns:
         # Convert datetime string to milliseconds
-        df['timestamp_ms'] = pd.to_datetime(df['date']).astype('int64') // 10**6
+        df = df.with_columns(
+            pl.col('date').str.to_datetime().cast(pl.Int64).truediv(10**6).alias('timestamp_ms')
+        )
     elif 'time' in df.columns:
         # Convert relative timedelta to milliseconds
-        df['timestamp_ms'] = pd.to_timedelta(df['time']).dt.total_seconds() * 1000
+        df = df.with_columns(
+            (pl.col('time').str.durations().dt.total_seconds() * 1000).alias('timestamp_ms')
+        )
     elif 'timestamp' in df.columns:
-         df['timestamp_ms'] = df['timestamp'] * 1000
+         df = df.with_columns((pl.col('timestamp') * 1000).alias('timestamp_ms'))
     else:
-        # Fallback: If no time column, just use the index (fake time)
-        sys.stderr.write(f"⚠️  Warning: No time column found. Using index as time.\n")
+        # Fallback: If no time column, just use the row index (fake time)
+        sys.stderr.write(f"⚠️  Warning: No time column found. Using row index as time.\n")
         sys.stderr.write(f"   Columns found: {list(df.columns)}\n")
-        df['timestamp_ms'] = df.index * 20 # Assume 50Hz (20ms steps)
+        df = df.with_row_count('row_idx')
+        df = df.with_columns((pl.col('row_idx') * 20).alias('timestamp_ms')).drop('row_idx')
 
     # 4. Sort by time to ensure playback order
-    df = df.sort_values(by="timestamp_ms")
+    df = df.sort('timestamp_ms')
     
     # 5. The Playback Loop
-    records = df.to_dict(orient="records")
+    records = df.to_dicts()
     sys.stderr.write(f"✅ Loaded {len(records)} packets. Starting Stream...\n")
     
     start_time = time.time()
@@ -69,9 +74,9 @@ def run_replayer():
             if 'speed_kph' in record:
                 record['speed_kmh'] = record.pop('speed_kph')
         
-        # Convert timestamps to strings for JSON serialization
-        # (Pandas Timestamps crash json.dumps otherwise)
-        clean_record = {k: str(v) if isinstance(v, (pd.Timestamp, pd.Timedelta)) else v for k,v in record.items()}
+        # Convert values to strings for JSON serialization if needed
+        # Polars uses native Python types that work with json.dumps
+        clean_record = {k: str(v) if v is None else v for k, v in record.items()}
         
         # Print to STDOUT (This pipes to the TUI)
         print(json.dumps(clean_record), flush=True)

@@ -37,6 +37,7 @@ nvidia-nvshmem-cu12==3.4.5
 nvidia-nvtx-cu12==12.8.90
 packaging==26.0
 pandas==2.3.3
+polars==1.19.19
 Pygments==2.19.2
 python-dateutil==2.9.0.post0
 pytz==2025.2

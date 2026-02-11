@@ -5,7 +5,7 @@ Real-time F1 telemetry ingestion from the OpenF1 API.
 Connects to api.openf1.org to pull car data for specific sessions and drivers.
 """
 import requests
-import pandas as pd
+import polars as pl
 from datetime import datetime
 from typing import Optional
 from modules.base_ingestor import BaseIngestor
@@ -333,11 +333,11 @@ class OpenF1Adapter(BaseIngestor):
         
         return normalized_data
     
-    def fetch_data(self) -> pd.DataFrame:
+    def fetch_data(self) -> pl.DataFrame:
         """
         Convenience method to fetch and process data in one call.
         
         Returns:
-            pandas.DataFrame with processed telemetry data
+            polars.DataFrame with processed telemetry data
         """
         return self.run()

@@ -10,7 +10,7 @@ Validates self-healing recovery from:
 """
 
 import pytest
-import pandas as pd
+import polars as pl
 import json
 from datetime import datetime
 from unittest.mock import patch, MagicMock

@@ -14,7 +14,7 @@ Purpose: Validate that the self-healing layer flags anomalies gracefully instead
 
 import json
 import random
-import pandas as pd
+import polars as pl
 import numpy as np
 from datetime import datetime, timedelta
 import sys
@@ -273,16 +273,16 @@ def run_stress_test(output_csv=None):
     
     # 7. Convert to DataFrame
     print("\n[STAGE 6] Converting to DataFrame...")
-    df = pd.DataFrame(normalized)
+    df = pl.DataFrame(normalized)
     print(f"✓ Created DataFrame with shape {df.shape}")
     print(f"  Columns: {list(df.columns)}")
     
     # Display engine temp statistics
     if 'eng_temp_sensor' in df.columns:
         print(f"\nEngine Temperature Statistics:")
-        print(f"  Valid values: {df['eng_temp_sensor'].notna().sum()}")
-        print(f"  Missing/Anomalous (NaN): {df['eng_temp_sensor'].isna().sum()}")
-        valid_temps = df['eng_temp_sensor'].dropna()
+        print(f"  Valid values: {df['eng_temp_sensor'].is_not_null().sum()}")
+        print(f"  Missing/Anomalous (NaN): {df['eng_temp_sensor'].null_count()}")
+        valid_temps = df.filter(pl.col('eng_temp_sensor').is_not_null())['eng_temp_sensor']
         if len(valid_temps) > 0:
             print(f"  Min: {valid_temps.min():.1f}°C")
             print(f"  Max: {valid_temps.max():.1f}°C")
@@ -313,7 +313,7 @@ def run_stress_test(output_csv=None):
     
     # Save results if requested
     if output_csv:
-        df_healed.to_csv(output_csv, index=False)
+        df_healed.write_csv(output_csv)
         print(f"\n✓ Results saved to {output_csv}")
     
     # Print final summary
