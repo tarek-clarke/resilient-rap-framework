@@ -149,13 +149,15 @@ def generate_pdf_report(benchmark_output, output_path):
     # Key Findings
     story.append(Paragraph("Key Findings", heading_style))
     
-    # Create cell style for table content
+    # Create cell style for table content with proper word wrapping
     cell_style = ParagraphStyle(
         'TableCell',
         parent=styles['Normal'],
         fontSize=9,
         alignment=TA_LEFT,
-        wordWrap='CJK'
+        wordWrap='CJK',
+        spaceAfter=0,
+        leading=11
     )
     
     header_cell_style = ParagraphStyle(
@@ -164,8 +166,16 @@ def generate_pdf_report(benchmark_output, output_path):
         fontSize=10,
         alignment=TA_LEFT,
         fontName='Helvetica-Bold',
-        textColor=colors.whitesmoke
+        textColor=colors.whitesmoke,
+        spaceAfter=0,
+        leading=12
     )
+    
+    # Use full available width (7.5 inches for letter with 0.5" margins)
+    # Column distribution: 30% | 20% | 50%
+    col_width_metric = 2.25*inch
+    col_width_value = 1.5*inch
+    col_width_interpretation = 3.75*inch
     
     findings_data = [
         [Paragraph("Metric", header_cell_style), Paragraph("Value", header_cell_style), Paragraph("Interpretation", header_cell_style)],
@@ -176,7 +186,7 @@ def generate_pdf_report(benchmark_output, output_path):
         [Paragraph("Recommended Threshold", cell_style), Paragraph("0.45", cell_style), Paragraph("Balanced resilience vs accuracy", cell_style)]
     ]
     
-    findings_table = Table(findings_data, colWidths=[2.0*inch, 1.2*inch, 2.6*inch])
+    findings_table = Table(findings_data, colWidths=[col_width_metric, col_width_value, col_width_interpretation])
     findings_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2e5f9e')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -184,14 +194,15 @@ def generate_pdf_report(benchmark_output, output_path):
         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 10),
-        ('LEFTPADDING', (0, 0), (-1, -1), 8),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 8),
-        ('TOPPADDING', (0, 0), (-1, -1), 8),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('LEFTPADDING', (0, 0), (-1, -1), 10),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+        ('TOPPADDING', (0, 0), (-1, -1), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
         ('BACKGROUND', (0, 1), (-1, -1), colors.white),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f0f0f0')]),
         ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#cccccc')),
         ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('MINHEIGHT', (0, 0), (-1, -1), 40),  # Minimum cell height
     ]))
     story.append(findings_table)
     story.append(Spacer(1, 0.2*inch))
@@ -249,6 +260,10 @@ def generate_pdf_report(benchmark_output, output_path):
     # Recommendations
     story.append(Paragraph("Recommendations", heading_style))
     
+    # 2-column table: 35% | 65%
+    col_width_recommendation = 2.625*inch
+    col_width_rationale = 4.875*inch
+    
     recommendations = [
         [Paragraph("Recommendation", header_cell_style), Paragraph("Rationale", header_cell_style)],
         [Paragraph("Use threshold 0.45 for production", cell_style), Paragraph("Balances resilience with accuracy (75-90% success)", cell_style)],
@@ -258,7 +273,7 @@ def generate_pdf_report(benchmark_output, output_path):
         [Paragraph("Implement caching for common field names", cell_style), Paragraph("Avoid re-computing embeddings for same fields", cell_style)]
     ]
     
-    rec_table = Table(recommendations, colWidths=[2.0*inch, 4.0*inch])
+    rec_table = Table(recommendations, colWidths=[col_width_recommendation, col_width_rationale])
     rec_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2e5f9e')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -266,14 +281,15 @@ def generate_pdf_report(benchmark_output, output_path):
         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 10),
-        ('LEFTPADDING', (0, 0), (-1, -1), 8),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 8),
-        ('TOPPADDING', (0, 0), (-1, -1), 8),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('LEFTPADDING', (0, 0), (-1, -1), 10),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+        ('TOPPADDING', (0, 0), (-1, -1), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
         ('BACKGROUND', (0, 1), (-1, -1), colors.white),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f0f0f0')]),
         ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#cccccc')),
         ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('MINHEIGHT', (0, 0), (-1, -1), 40),  # Minimum cell height
     ]))
     story.append(rec_table)
     story.append(Spacer(1, 0.2*inch))
