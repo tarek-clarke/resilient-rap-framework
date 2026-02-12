@@ -13,6 +13,7 @@ and can be orchestrated end-to-end.
 
 import sys
 from pathlib import Path
+from datetime import datetime, timezone
 
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -49,8 +50,7 @@ def test_chaos_engine():
     for clean, corrupt, etype in simulator.stream_chaos(num_samples=10):
         count += 1
     print(f"✓ Stream: Generated {count} chaos samples")
-    
-    return True
+    assert count == 10, f"Expected 10 samples, got {count}"
 
 
 def test_baselines():
@@ -81,8 +81,7 @@ def test_baselines():
     results, metrics = run_comparison(mock_resolver, chaos_stream, schema)
     print(f"✓ Comparison: Processed {len(results)} samples")
     print(f"  - Semantic accuracy: {metrics['semantic_accuracy']:.2%}")
-    
-    return True
+    assert len(results) == 2, f"Expected 2 results, got {len(results)}"
 
 
 def test_provenance():
@@ -114,8 +113,7 @@ def test_provenance():
     
     # Cleanup
     log_file.unlink(missing_ok=True)
-    
-    return True
+    assert is_valid, "Chain integrity verification failed"
 
 
 def test_clinical_vitals():
@@ -140,8 +138,7 @@ def test_clinical_vitals():
     for record in gen.stream_vitals(num_records=10):
         count += 1
     print(f"✓ Streamed {count} vital records")
-    
-    return True
+    assert count == 10, f"Expected 10 records, got {count}"
 
 
 def test_orchestrator():
@@ -170,8 +167,7 @@ def test_orchestrator():
     print(f"✓ Auditability validation: chain_valid={audit_results['chain_valid']}")
     
     print(f"✓ Generated {len(orchestrator.results)} result records")
-    
-    return True
+    assert len(orchestrator.results) > 0, "No results generated"
 
 
 def main():

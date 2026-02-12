@@ -32,7 +32,7 @@ Date: 2026
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 import hashlib
@@ -107,7 +107,7 @@ class TamperEvidentLog:
         
         transaction = {
             "transaction_id": self.transaction_count,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "original_field": original,
             "original_hash": original_hash,
             "mapped_field": mapped,
@@ -245,7 +245,7 @@ class TamperEvidentLog:
         
         report = f"""
 === PROVENANCE AUDIT REPORT ===
-Generated: {datetime.utcnow().isoformat()}
+Generated: {datetime.now(timezone.utc).isoformat()}
 
 Chain Integrity:
   - Valid: {is_valid}

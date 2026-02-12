@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass, asdict
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 try:
     import polars as pl
@@ -339,7 +339,7 @@ class PhDValidationOrchestrator:
             spaceAfter=30,
         )
         story.append(Paragraph("PhD Thesis Validation Report", title_style))
-        story.append(Paragraph(f"Generated: {datetime.utcnow().isoformat()}", styles['Normal']))
+        story.append(Paragraph(f"Generated: {datetime.now(timezone.utc).isoformat()}", styles['Normal']))
         story.append(Spacer(1, 0.3*inch))
         
         # Executive Summary
