@@ -188,3 +188,17 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 ---
 
 **Maintained for the PhD program in Reproducible Data Engineering**
+
+<!-- EXPERIMENT_RESULTS_START -->
+## Experimental Results (Auto-Generated)
+
+| Method | Drift Resilience Accuracy |
+|---|---|
+| Semantic Layer | N/A |
+| Levenshtein Baseline | N/A |
+| RegEx Baseline | N/A |
+
+
+![Resilience Curve](results/figures/resilience_curve_high_dpi.png)
+
+<!-- EXPERIMENT_RESULTS_END -->
