@@ -165,10 +165,10 @@ PYTHONPATH="." python tools/benchmark_semantic_layer.py
 If you use this framework in published research, please cite:
 
 ```bibtex
-@software{clarke2025resilientrap,
+@software{clarke2026resilientrap,
   author = {Clarke, Tarek},
   title = {Resilient RAP: Production-Grade Framework for Semantic Schema Resolution},
-  year = {2025},
+  year = {2026},
   url = {https://github.com/tarek-clarke/resilient-rap-framework}
 }
 ```
