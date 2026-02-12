@@ -169,7 +169,7 @@ If you use this framework in published research, please cite:
   author = {Clarke, Tarek},
   title = {Resilient RAP: Production-Grade Framework for Semantic Schema Resolution},
   year = {2025},
-  url = {https://github.com/yourusername/resilient-rap-framework}
+  url = {https://github.com/tarek-clarke/resilient-rap-framework}
 }
 ```
 
