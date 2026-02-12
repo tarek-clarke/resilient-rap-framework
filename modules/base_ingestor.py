@@ -14,7 +14,10 @@ from datetime import datetime
 import polars as pl
 import json
 import uuid
+from typing import Any, Dict, Optional
+from pathlib import Path
 from modules.translator import SemanticTranslator
+from src.provenance import TamperEvidentLogger
 
 class BaseIngestor(ABC):
     """
@@ -22,7 +25,15 @@ class BaseIngestor(ABC):
     Implements the 'Resilience' and 'Reproducibility' layers of the RAP.
     """
 
-    def __init__(self, source_name: str, target_schema: list, export_pdf_report: bool = False):
+    def __init__(
+        self,
+        source_name: str,
+        target_schema: list,
+        export_pdf_report: bool = False,
+        enable_provenance: bool = True,
+        provenance_log_path: str = "data/provenance_log.jsonl",
+        provenance_sample_size: int = 5,
+    ):
         self.source_name = source_name
         self.lineage = []
         self.errors = []
@@ -31,6 +42,12 @@ class BaseIngestor(ABC):
         self.run_id = f"run_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}"
         self.run_start_time = None
         self.run_end_time = None
+        self.provenance_sample_size = provenance_sample_size
+        self.provenance_logger = (
+            TamperEvidentLogger(log_path=Path(provenance_log_path))
+            if enable_provenance
+            else None
+        )
         
         # Initialize the Semantic Translator (ML Engine)
         self.translator = SemanticTranslator(target_schema)
@@ -57,6 +74,21 @@ class BaseIngestor(ABC):
         """Converts structured data to Polars DataFrame."""
         return pl.DataFrame(normalized)
 
+    def _snapshot_dataframe(self, df: pl.DataFrame) -> Dict[str, Any]:
+        """
+        Capture a compact snapshot for provenance logging.
+
+        Research justification: compact snapshots balance auditability with
+        performance for high-velocity telemetry streams.
+        """
+        sample_size = min(self.provenance_sample_size, df.height)
+        sample_rows = df.head(sample_size).to_dicts() if sample_size > 0 else []
+        return {
+            "columns": df.columns,
+            "row_count": df.height,
+            "sample": sample_rows,
+        }
+
     def apply_semantic_layer(self, df: pl.DataFrame):
         """
         Autonomous Reconciliation Layer.
@@ -64,6 +96,8 @@ class BaseIngestor(ABC):
         """
         mapping = {}
         resolutions = []
+
+        input_snapshot = self._snapshot_dataframe(df) if self.provenance_logger else None
 
         for col in df.columns:
             standard_name, confidence = self.translator.resolve(col)
@@ -86,7 +120,26 @@ class BaseIngestor(ABC):
         if resolutions:
             self.record_lineage("semantic_alignment", metadata=resolutions)
             
-        return df.rename(mapping)
+        healed_df = df.rename(mapping)
+
+        if self.provenance_logger:
+            output_snapshot = self._snapshot_dataframe(healed_df)
+            provenance_record = self.provenance_logger.log_transformation(
+                input_data=input_snapshot,
+                output_data=output_snapshot,
+                metadata={
+                    "stage": "semantic_alignment",
+                    "source": self.source_name,
+                    "run_id": self.run_id,
+                    "mapping_count": len(mapping),
+                },
+            )
+            self.record_lineage(
+                "provenance_logged",
+                metadata={"record_hash": provenance_record.get("record_hash")},
+            )
+
+        return healed_df
 
     def record_lineage(self, stage: str, metadata: dict = None):
         """Records a step in the data lifecycle for the audit trail."""

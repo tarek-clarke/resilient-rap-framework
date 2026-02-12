@@ -6,10 +6,19 @@ ICU Clinical Adapter (File-Based Simulation)
 """
 import json
 import random
+from typing import List
 from modules.base_ingestor import BaseIngestor
+from data.generators.clinical_stream import generate_clinical_stream
 
 class ClinicalIngestor(BaseIngestor):
-    def __init__(self, source_name="ICU_Bed_04", target_schema=None):
+    def __init__(
+        self,
+        source_name="ICU_Bed_04",
+        target_schema=None,
+        use_stream_generator: bool = False,
+        stream_vendor: str = "GE",
+        stream_batch_size: int = 10,
+    ):
         if not target_schema:
             target_schema = [
                 "Heart Rate (bpm)", 
@@ -21,6 +30,9 @@ class ClinicalIngestor(BaseIngestor):
         super().__init__(source_name, target_schema)
         self.config_path = "data/clinical_synthetic/patient_metadata.json"
         self.patient_info = {}
+        self.use_stream_generator = use_stream_generator
+        self.stream_vendor = stream_vendor
+        self.stream_batch_size = stream_batch_size
 
     def connect(self):
         """Load patient metadata to simulate connecting to the Hospital Network."""
@@ -38,10 +50,22 @@ class ClinicalIngestor(BaseIngestor):
 
     def extract_raw(self):
         # Pass the patient info to the parser
+        if self.use_stream_generator:
+            return list(
+                generate_clinical_stream(
+                    batch_size=self.stream_batch_size,
+                    vendor=self.stream_vendor,
+                )
+            )
         return self.patient_info
 
     def parse(self, raw):
         parsed_data = []
+
+        if isinstance(raw, list) and raw and isinstance(raw[0], str):
+            for packet in raw:
+                parsed_data.append(json.loads(packet))
+            return parsed_data
         
         # Get Patient ID from the loaded JSON (or default)
         p_id = raw.get("patient_id", "ANON")

@@ -1,1072 +1,126 @@
-# Resilient RAP Framework: Self-Healing Data Pipelines
+# Resilient RAP Framework
 
-![Status](https://img.shields.io/badge/Status-Prototype-blue)
+[![Status](https://img.shields.io/badge/Status-Prototype-blue)](https://img.shields.io/badge/Status-Prototype-blue)
 ![License](https://img.shields.io/badge/License-PolyForm%20Noncommercial-red.svg)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-yellow)
 [![Analytics](https://img.shields.io/badge/Analytics-Tracked_via_Scarf-blue)](https://about.scarf.sh)
 
-**A domain-agnostic framework for autonomous schema drift resolution in high-velocity telemetry.**
+A production-oriented framework for autonomous schema drift resolution in high-velocity sports telemetry (F1, NHL) and health telemetry (ICU).
 
-**Technical foundation for a proposed PhD research project on data resilience.**
+## Production Capabilities
 
-> **📊 [View Live Demo Report (PDF)](data/reports/demo_report.pdf)** - Real-time F1 telemetry processing with 18,026 records, zero failures, and automatic semantic reconciliation.
+- Semantic reconciliation for schema drift using a BERT-based translator.
+- Tamper-evident lineage and audit logging (SHA-256 linked records).
+- HITL analytics for intervention cost and learning curves.
+- Adapter-based ingestion for F1 telemetry, NHL play-by-play, and ICU streams.
+- Deterministic, reproducible runs with run IDs and lineage checkpoints.
 
-This framework is being developed to solve the "Contract of Trust" problem in high-velocity telemetry. 
+## Requirements
 
-> **Note:** This repository is actively tracked for usage patterns to support my PhD research.
+- Python 3.10+
+- Dependencies in requirements.txt
 
----
+Optional:
+- Docker (for containerized deployment)
 
-## Abstract
-
-National Statistical Offices, sports performance teams, and clinical monitoring systems all face a common challenge: high-frequency data pipelines break easily when upstream schemas drift, sensors fail, or interfaces change.
-
-Traditional pipelines rely on brittle selectors or rigid schemas. When these fail, organizations experience data blackouts, delayed decision-making, and loss of situational awareness.
-
-This research proposes a Resilient RAP Framework grounded in:
-- **Software Reliability Engineering:** Pareto-focused resilience for the "vital few" failure points.
-- **Tamper-Evident Processing:** Auditability and lineage for official statistics.
-- **Cross-Domain Generalizability:** Validated from Pricing → Sports → Clinical.
-
-The framework introduces a domain-agnostic ingestion interface (`BaseIngestor`) and a set of domain adapters that implement environment-specific extraction, validation, and normalization logic.
-
----
-
-## Current Research & Traction (Feb 2026)
-
-This framework is currently being evaluated in applied and academic contexts.
-
-**Active Development:** Building clinical telemetry adapters to evaluate the framework against safety-critical monitoring patterns.
-
-**Status:** Phase 1 (Resilient Ingestion) is stable. Phase 2 (Auto-Reconciliation) is in active development.
-
----
-
-## Project Overview
-
-This repository contains the technical foundation for a proposed PhD research project on Resilient Reproducible Analytical Pipelines (RAP). It implements a "Self-Healing" ingestion framework designed to operate across multiple high-frequency data environments, including:
-
-- **Pricing telemetry** (web-scraped economic indicators)
-- **Sports telemetry** (IMU/GPS/HR/HRV data)
-- **Clinical telemetry** (FHIR/HL7 physiological streams)
-
-The framework demonstrates how a domain-agnostic ingestion architecture can be adapted to volatile, schema-drifting, or safety-critical environments through modular adapters and reproducible engineering principles.
-
-Originally conceived to address data fragility in National Statistical Offices (NSOs), the project serves as a generalizable pipeline-engineering framework validated across multiple operational domains.
-
-The logic is as follows:
-<img width="1604" height="1154" alt="Architectural Diagram" src="https://github.com/user-attachments/assets/7fcd3a83-9782-4da7-babf-a5022a31f3f3" />
-
----
-
-## Theoretical Foundations
-
-This framework draws on three major research streams:
-
-### **Autonomous Agents**
-Adapting "believable agent" logic to navigate semi-structured environments and infer signal relevance from context rather than fixed selectors.
-
-### **Software Reliability Engineering**
-Applying Pareto-focused resilience: reinforcing the "vital few" failure points that cause the majority of pipeline outages.
-
-### **Data Integrity & Reproducibility**
-Implementing tamper-evident lineage, deterministic transformations, and reproducible environments to ensure long-term auditability.
-
----
-
-## Core Innovation: Semantic Schema Mapping
-
-The primary technical contribution of this framework is the move from rigid, key-value matching to Semantic Reconciliation. Unlike traditional pipelines that rely on brittle regex patterns or static mapping tables, this framework utilizes a BERT-based Semantic Translator.
-
-### BERT-Driven Self-Healing
-
-**Mechanism:** The system converts incoming unknown telemetry tags (e.g., `vehicle_speed`, `engine_rpm`) into high-dimensional vector embeddings.
-
-**Reconciliation:** The "Autonomous Repair" agent calculates the cosine similarity between the unknown tag and the "Gold Standard" schema (e.g., `Speed (km/h)`, `RPM`).
-
-**Zero-Shot Adaptability:** This allows the pipeline to ingest data from entirely new hardware vendors or telemetry systems without manual code changes or retraining, provided the semantic meaning of the tag remains consistent.
-
----
-
-## Demonstrations & Validation
-
-### OpenF1 API Integration: Real F1 Telemetry
-
-The framework includes a production-ready adapter for ingesting **real-time F1 telemetry** from the [OpenF1 API](https://openf1.org/).
-
-#### Features
-- **Live Data Ingestion:** Pulls actual car telemetry from official F1 sessions
-- **API Endpoint:** `https://api.openf1.org/v1/car_data`
-- **Semantic Reconciliation:** Automatically maps API fields to internal schema
-- **Full Audit Trail:** Complete lineage tracking for every API call and transformation
-
-#### Quick Start
+## Install
 
 ```bash
-# Install dependencies (if not already installed)
-pip install requests
-
-# Fetch telemetry for a specific session and driver
-python tools/demo_openf1.py --session 9158 --driver 1
-
-# Fetch all drivers from a session
-python tools/demo_openf1.py --session 9158
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-#### What You'll See
+## Configuration
 
-Running the demo displays:
+- Audit logs: data/reproducibility_audit.json
+- Provenance log: data/provenance_log.jsonl
+- Reports: data/reports/
 
-1. **Telemetry Table:** First 10 records showing speed, RPM, gear, throttle, brake, and DRS status
-2. **Semantic Reconciliation Results:** Real-time BERT-based field mapping with confidence scores
-   - Example: `vehicle_speed` → `Speed (km/h)` (61% confidence)
-3. **Pipeline Lineage:** Complete audit trail from API connection through semantic alignment
-4. **Data Statistics:** Total records fetched and number of unique drivers
+Environment variables are not required for core operation. External API calls rely on network access.
 
-#### Output Files
+## Run Pipelines
 
-- **`data/openf1_audit.json`**: Complete pipeline audit log with:
-  - Timestamps for each pipeline stage
-  - Field mapping confidence scores
-  - Raw and normalized data samples
-  - Validation results and error tracking
-  
-Check the audit file to trace exactly how each field was reconciled and validated through the pipeline.
+### OpenF1
 
-#### Programmatic Usage
+```bash
+PYTHONPATH="." python tools/demo_openf1.py --session 9158 --driver 1
+```
+
+### NHL
+
+```bash
+PYTHONPATH="." python tools/demo_nhl.py --game 2024020001
+```
+
+### Clinical (ICU Stream Generator)
 
 ```python
-from adapters.openf1 import OpenF1Adapter
+from adapters.clinical.ingestion_clinical import ClinicalIngestor
 
-# Initialize adapter
-adapter = OpenF1Adapter(
-    session_key=9158,      # 2024 Abu Dhabi GP
-    driver_number=1        # Max Verstappen
+ingestor = ClinicalIngestor(
+    use_stream_generator=True,
+    stream_vendor="GE",
+    stream_batch_size=25,
 )
 
-# Fetch and process data
-df = adapter.fetch_data()
-
-# Display results
-print(f"Fetched {len(df)} telemetry records")
+ingestor.connect()
+df = ingestor.run()
 print(df.head())
+```
 
-# Export audit log
+## Provenance and Auditability
+
+Every semantic alignment writes a tamper-evident record (input hash -> output hash) to data/provenance_log.jsonl. Audit logs can be exported from any adapter:
+
+```python
 adapter.export_audit_log("data/openf1_audit.json")
 ```
 
-#### API Field Mapping
+## HITL Analytics
 
-The adapter automatically reconciles OpenF1 API fields to the internal schema:
-
-| OpenF1 API Field | Internal Field | Gold Standard |
-|------------------|----------------|---------------|
-| `speed` | `vehicle_speed` | Speed (km/h) |
-| `rpm` | `engine_rpm` | RPM |
-| `n_gear` | `current_gear` | Gear |
-| `throttle` | `throttle_pct` | Throttle (%) |
-| `brake` | `brake_status` | Brake |
-| `drs` | `drs_active` | DRS |
-
-The semantic reconciliation layer validates the mapping using BERT embeddings with confidence scoring.
-
----
-
-### NHL API Integration: Play-by-Play Event Stream (2024-2025)
-
-The framework includes a production-ready adapter for ingesting **real-time NHL play-by-play events** from the official NHL Stats API.
-
-#### Features
-- **Live Event Stream:** Shots, goals, hits, penalties, faceoffs, and turnovers
-- **API Endpoint:** `https://api-web.nhle.com/v1/gamecenter/{game_id}/play-by-play`
-- **Semantic Reconciliation:** Maps event fields to a gold standard schema
-- **Full Audit Trail:** Lineage tracking for every event and transformation
-
-#### Quick Start
-
-```bash
-# Fetch play-by-play events from the 2024-25 season opener
-python tools/demo_nhl.py --game 2024020001
-
-# Build a game ID for the 2024-25 regular season
-python tools/demo_nhl.py --season 2024 --game-type 02 --game-num 50
-```
-
-#### What You'll See
-
-1. **Event Stream Table:** First N events with period, time, player, and team
-2. **Semantic Reconciliation Results:** Mapped fields with confidence scores
-3. **Pipeline Lineage:** End-to-end event audit trail
-4. **Event Statistics:** Counts by event type (shots, goals, penalties, etc.)
-
-#### Output Files
-
-- **`data/nhl_game_2024020001_audit.json`**: Complete pipeline audit log with:
-  - Event timestamps and period context
-  - Field mapping confidence scores
-  - Raw and normalized event samples
-  - Validation results and error tracking
-
-#### Programmatic Usage
+Human-in-the-loop analytics are available via the orchestrator summary:
 
 ```python
-from adapters.nhl import NHLAdapter
+from modules.hitl_orchestrator import HumanInTheLoopOrchestrator
 
-# Initialize adapter with a 2024-25 game ID
-adapter = NHLAdapter(game_id="2024020001")
-
-# Fetch and process data
-df = adapter.fetch_data()
-
-# Display results
-print(f"Fetched {len(df)} events")
-print(df.head())
-
-# Export audit log
-adapter.export_audit_log("data/nhl_game_2024020001_audit.json")
+orchestrator = HumanInTheLoopOrchestrator()
+orchestrator.display_feedback_summary()
 ```
 
----
+## Benchmarks
 
-### Live Demo: The F1 Chaos Stream
-
-To validate the framework's resilience, this repository includes a Terminal User Interface (TUI) that simulates high-frequency F1 telemetry and injects "Schema Drift" (messy sensor tags) in real-time.
-
-#### Environment Setup & Demonstration
+Run baseline comparators against drift simulation:
 
 ```bash
-# 1. Install the visualization & data libraries
-pip install pandas rich sentence-transformers
-
-# 2. Run the Resilient TUI (Self-contained simulation)
-python tools/tui_replayer.py
+PYTHONPATH="." python tools/benchmark_semantic_layer.py
 ```
 
-**Three Simulation Modes Available:**
-- **Mode 1:** F1 Sports Telemetry (static schema drift with all 20 drivers)
-- **Mode 2:** ICU Clinical Monitor (FHIR/HL7 patient telemetry)
-- **Mode 3:** High-Frequency Logger with Dynamic Chaos Injection
-
-#### What You Will See
-1. **Normal State:** Telemetry streams (Speed, RPM, Heart Rate) from all 20 F1 drivers.
-2. **Chaos Injection:** The simulation injects non-standard tags like `hr_watch_01` or `brk_tmp_fr`.
-3. **Self-Healing Response:** The "Autonomous Repair" agent detects the drift, semantically infers the alias using a BERT model, patches the schema map, and resumes ingestion seamlessly.
-
-Video: 
-
-https://github.com/user-attachments/assets/d216c8f6-97d2-4d9d-8aa6-c769e2858ef5
-
-
-
----
-
-### Advanced Demo: High-Frequency IMU + GPS Logger
-
-To validate sub-50ms telemetry resilience, the framework includes a dedicated **F1 Telemetry Logger** that simulates realistic IMU (G-force) and GPS sensors at 50Hz:
+## Testing
 
 ```bash
-# Run he-frequency simulation with chaos injection (standalone)
-python modules/f1_telemetry_logger.py --duration 10 --chaos --chaos-freq 100
-
-# OR run it in the TUI replayer (select Mode 3)
-python tools/tui_replayer.py
+pytest tests/ -v
 ```
-
-**Features:**
-- **50Hz Sampling:** 3-axis accelerometer (lateral, longitudinal, vertical G-forces)
-- **GPS Fusion:** Speed, heading, position, altitude
-- **Chaos Engineering:** Randomly renames sensor tags every N records to simulate vendor drift
-- **Self-Healing:** BERT-based semantic inference auto-maps messy fields to gold standard
-- **Audit Trail:** Logs all drift events with confidence scores
-
-**Output Example:**
-```
-SELF-HEALING TRIGGERED
-   Sample #50: Detected unknown field 'lateral_g'
-   Semantic Inference: 'lateral_g' → 'g_force_lateral' (confidence: 78.9%)
-   Total Auto-Repairs: 3
-
-SELF-HEALING REPORT
-   Schema Drift Events: 8
-   Auto-Repairs: 8
-   Learned Mappings: 8
-```
-
-Video: 
-
-https://github.com/user-attachments/assets/381dc390-e369-4171-9648-3b4641f689a1
-
-
-
-This validates the framework's ability to handle high-velocity, schema-drifting telemetry in safety-critical environments.
-
----
-
-### Domain Generalizability: ICU Patient Monitoring
-
-To validate the framework's "Zero-Shot" capabilities, the exact same ingestion agent was tested with a simulated HL7/FHIR Clinical Stream without retraining.
-
-**Observation:** The system successfully mapped non-standard vendor tags (e.g., `pulse_ox_fingertip`) to the clinical gold standard using the same vector-space logic demonstrated in the F1 telemetry adapter.
-
-**Note:** The current demo PDF report showcases F1 telemetry. Clinical telemetry validation is shown in the video below:
-
-Video: 
-
-https://github.com/user-attachments/assets/27bee465-682d-47e4-a4a1-75a87edf1656
-
-
-
-## Technical Architecture
-
-The system is structured as a modular, extensible RAP:
-
-| Component | Technology | Purpose |
-|----------|------------|---------|
-| **Core Ingestion Interface** | Python (`BaseIngestor`) | Domain-agnostic ingestion contract (connect → extract → parse → validate → normalize) |
-| **Semantic Reconciliation** | BERT / Transformers | Auto-mapping messy inputs to a Gold Standard schema (Self-Healing) |
-| **Sports Adapter** | JSON / Simulation | Ingesting IMU/GPS/HR/HRV telemetry from athlete monitoring systems |
-| **Clinical Adapter** | FHIR/HL7 APIs | Ingesting physiological observations from clinical telemetry systems |
-| **Resilience Layer** | Logging, lineage | Ensuring fault tolerance and traceability (Audit Logs) |
-| **Reproducibility** | Docker, pinned deps | Guaranteeing deterministic execution across years |
-
-This architecture supports a proposed three-stage research agenda:
-1. **Sports Telemetry:** Validating high-frequency drift resolution (F1/Motorsport).
-2. **Clinical Telemetry:** Applying the framework to safety-critical streams (HL7/FHIR).
-3. **Unified Theory:** Establishing a formal definition for "Resilient RAP" in official statistics.
-
----
-
-## Theoretical Foundations
-
-This framework draws on three major research streams:
-
-### **Autonomous Agents**
-Adapting "believable agent" logic to navigate semi-structured environments and infer signal relevance from context rather than fixed selectors.
-
-### **Software Reliability Engineering**
-Applying Pareto-focused resilience: reinforcing the "vital few" failure points that cause the majority of pipeline outages.
-
-### **Data Integrity & Reproducibility**
-Implementing tamper-evident lineage, deterministic transformations, and reproducible environments to ensure long-term auditability.
-
----
-**Core Innovation: Semantic Schema Mapping**
-The primary technical contribution of this framework is the move from rigid, key-value matching to Semantic Reconciliation. Unlike traditional pipelines that rely on brittle regex patterns or static mapping tables, this framework utilizes a BERT-based Semantic Translator.
-
-**BERT-Driven Self-Healing**
-
--**Mechanism:** The system converts incoming unknown telemetry tags (e.g., pulse_ox_fingertip ) into high-
-dimensional vector embeddings.
-
--**Reconciliation:** The "Autonomous Repair" agent calculates the cosine similarity between the unknown tag and
-the "Gold Standard" schema (e.g., Heart Rate ).
-
--**Zero-Shot Adaptability:** This allows the pipeline to ingest data from entirely new hardware vendors or clinical
-sensors without manual code changes or retraining, provided the semantic meaning of the tag remains
-consistent.
-
----
 
 ## Repository Structure
+
 ```
 resilient-rap-framework/
-│
-├── modules/
-│   ├── base_ingestor.py        # The Abstract Interface
-│   ├── translator.py           # Semantic Reconciliation Engine (BERT)
-│   └── f1_telemetry_logger.py  # High-Frequency Telemetry Simulator (50Hz IMU + GPS)
-│
-├── adapters/
-│   ├── pricing/                # Economic Data Adapter
-│   ├── sports/                 # Telemetry Adapter (Active Demo)
-│   ├── openf1/                 # OpenF1 API Adapter (Real-time F1 Data)
-│   └── clinical/               # FHIR Adapter (Planned)
-│
-├── reporting/
-│   └── pdf_report.py           # PDF Report Generation Module (ReportLab)
-│
-├── tools/
-│   ├── tui_replayer.py         # Visualization Dashboard (The "Screen")
-│   ├── generate_f1_telemetry.py # Full-Grid Telemetry Generator
-│   ├── demo_openf1.py          # OpenF1 API Demo
-│   ├── demo_pdf_report.py      # PDF Report Generation Demo
-│   ├── stress_test_engine_temp.py # Engine Temperature Stress Test Tool
-│   ├── test_translator.py      # Unit tests for Semantic Mapping
-│   └── debug_pipeline.py       # Diagnostic scripts
-│
-├── tests/
-│   ├── test_tui_replayer.py    # TUI Edge Case Tests
-│   ├── test_chaos_ingestion.py # Chaos Engineering Tests
-│   └── test_engine_temp_stress.py # Engine Temperature Stress Tests
-│
-├── data/
-│   ├── engine_temp_stress_test_results.csv # Stress Test Output
-│   ├── reports/
-│   │   └── demo_report.pdf     # Example PDF Report (tracked for demo purposes)
-│   └── f1_synthetic/
-│       └── race_config_grid.json
-│
-├── pytest.ini               # pytest configuration
-├── requirements.txt
-└── README.md
+├── modules/          # Core ingestion and semantic reconciliation
+├── adapters/         # Domain adapters (OpenF1, NHL, Clinical, Sports)
+├── tools/            # Demo and benchmark utilities
+├── tests/            # Test suite
+├── data/             # Audit logs, reports, synthetic data
+├── reporting/        # PDF reporting
+└── src/              # Provenance and analytics
 ```
 
----
+## Licensing
 
-## Quick Start Guides
+This project is licensed under the PolyForm Noncommercial License 1.0.0. Commercial use requires a separate license.
 
-The following guides demonstrate the core capabilities of the Resilient RAP Framework with a focus on academic reproducibility and validation. Each guide includes executable code, expected outputs, and verification approaches suitable for research and publication.
+Contact: tclarke91@proton.me
 
-### QS1: Environment Setup (Reproducible Development Environment)
-
-**Objective:** Establish a reproducible Python environment with pinned dependencies.
-
-**Rationale:** Deterministic execution across time is essential for research reproducibility and audit compliance.
-
-```bash
-# Clone repository
-git clone https://github.com/tarek-clarke/resilient-rap-framework.git
-cd resilient-rap-framework
-
-# Create virtual environment  
-python3.10 -m venv .venv
-source .venv/bin/activate
-
-# Install dependencies with exact versions (reproducible)
-pip install -r requirements.txt
-
-# Verify installation
-python -c "import requests, sentence_transformers; print('✓ Core dependencies installed')"
-```
-
-**Verification:** You should see `✓ Core dependencies installed`. This ensures all experiments use identical library versions.
-
-**Why This Matters for Research:** Pinned dependencies enable your results to be reproduced years later, which is critical for:
-- Academic publication reproducibility
-- Long-term audit trail compliance
-- Validation by independent reviewers
-
----
-
-### QS2: OpenF1 API Adapter - Real Telemetry Ingestion
-
-**Objective:** Ingest real F1 telemetry data from the OpenF1 API and validate semantic field mapping.
-
-**Rationale:** Demonstrates the framework's ability to handle high-velocity, production telemetry with automatic schema reconciliation.
-
-**Use Case:** Validating the framework against real-world, uncontrolled data (not synthetic/simulated).
-
-```bash
-# Run the OpenF1 adapter with a specific F1 session (2024 Abu Dhabi GP)
-PYTHONPATH="." python tools/demo_openf1.py --session 9158 --driver 1
-
-# Expected Output:
-# ✓ Connected to OpenF1 API
-# ✓ Fetched 360 telemetry records for Driver 1
-# ✓ Semantic reconciliation complete (6 field mappings)
-# ✓ Audit log saved to: data/openf1_audit.json
-```
-
-**Verification Steps:**
-
-1. **Check raw telemetry:** Open `data/openf1_audit.json` and inspect the `raw_samples` field to see actual API response.
-
-2. **Verify field mappings:**
-   ```python
-   import json
-   with open('data/openf1_audit.json') as f:
-       audit = json.load(f)
-   
-   print("Field Mappings (with confidence scores):")
-   for mapping in audit['semantic_mappings']:
-       print(f"  {mapping['raw_field']} → {mapping['gold_standard']}: {mapping['confidence']:.1%}")
-   ```
-
-3. **Validate audit trail integrity:**
-   ```bash
-   # Compute SHA-256 hash to verify audit log hasn't been tampered with
-   python -c "
-   import json, hashlib
-   with open('data/openf1_audit.json') as f:
-       data = json.load(f)
-   signature = data['sha256_signature']
-   del data['sha256_signature']
-   recomputed = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
-   print(f'Stored:     {signature}')
-   print(f'Recomputed: {recomputed}')
-   print(f'Match: {signature == recomputed}')
-   "
-   ```
-
-**Research Implications:**
-
-- This demonstrates **reproducible telemetry ingestion** from a public API
-- The audit log provides **tamper-evident lineage** suitable for compliance and publication
-- Field mapping confidence scores can be reported as part of methodology
-- OpenF1 data is freely available for academic and research use
-
-**Related Code:** [`adapters/openf1/ingestion_openf1.py`](adapters/openf1/ingestion_openf1.py), [`modules/base_ingestor.py`](modules/base_ingestor.py)
-
----
-
-### QS3: Schema Drift Detection - BERT-Based Semantic Reconciliation
-
-**Objective:** Demonstrate automatic detection and reconciliation of schema drift using semantic embeddings.
-
-**Rationale:** This is the core innovation—moving from brittle regex to semantic understanding of field meaning.
-
-**Use Case:** Testing the framework's ability to handle vendor schema changes without code modifications.
-
-```python
-import json
-from adapters.openf1 import OpenF1Adapter
-
-# Initialize adapter for F1 session 9158 (Abu Dhabi 2024)
-adapter = OpenF1Adapter(session_key=9158, driver_number=1)
-adapter.connect()
-
-# Run full pipeline: extract → parse → validate → normalize → semantic reconciliation
-report = adapter.run()
-
-# Report schema drift events
-print(f"\nSchema Drift Events Detected: {len(report.schema_drifts)}")
-for drift in report.schema_drifts:
-    print(f"\n  Field: {drift.field_name}")
-    print(f"  Expected Type: {drift.expected_type}")
-    print(f"  Observed Type: {drift.observed_type}")
-    print(f"  Action: {drift.action_taken}")
-
-# Export audit log for inspection
-adapter.export_audit_log("data/my_audit.json")
-```
-
-**Verification:**
-
-The schema drift detection uses BERT embeddings (sentence-transformers/all-MiniLM-L6-v2) to compute cosine similarity between observed fields and expected fields:
-
-```python
-# Inspect semantic mapping details
-import json
-with open('data/my_audit.json') as f:
-    audit = json.load(f)
-
-print("\nSemantic Mapping Details:")
-for event in audit.get('semantic_mappings', []):
-    print(f"  Raw: {event['raw_field']}")
-    print(f"  Mapped: {event['gold_standard']}")
-    print(f"  Confidence: {event['confidence']:.1%}")
-    print()
-```
-
-**Why This Matters for Research:**
-
-- Demonstrates **zero-shot schema adaptation** (no retraining required)
-- Provides **confidence scores** for downstream error analysis
-- Audit trail documents every semantic decision, enabling peer review
-- Reproducible across domains (F1, Clinical, Pricing)
-
-**Academic Citation:** The embedding approach is based on utilizing pre-trained BERT models for semantic understanding. Confidence scores quantify the reliability of each mapping decision.
-
-**Related Code:** [`modules/translator.py`](modules/translator.py) (BERT-based semantic translation), [`modules/base_ingestor.py`](modules/base_ingestor.py) (reconciliation logic)
-
----
-
-### QS4: Auditable Lineage Tracking
-
-**Objective:** Inspect the complete pipeline lineage to verify data provenance and transformation integrity.
-
-**Rationale:** Lineage tracking is essential for compliance, reproducibility, and scientific validity.
-
-```python
-import json
-from datetime import datetime
-
-# Load audit log from previous step
-with open('data/my_audit.json') as f:
-    audit = json.load(f)
-
-# Print pipeline timeline
-print("Pipeline Execution Timeline:")
-print(f"  Started: {audit['started_at']}")
-print(f"  Ended: {audit['ended_at']}")
-print()
-
-# Print all stage checkpoints
-print("Pipeline Stage Completions:")
-for stage in audit.get('pipeline_stages', []):
-    print(f"  {stage['stage']}: {stage['timestamp']}")
-print()
-
-# Print error log (if any)
-if audit.get('error_log'):
-    print("Noted Issues (Schema Drift, Validation Errors):")
-    for error in audit['error_log']:
-        print(f"  - {error['error_type']}: {error['message']}")
-else:
-    print("✓ No errors recorded")
-
-# Verify audit signature
-import hashlib
-stored_sig = audit['sha256_signature']
-del audit['sha256_signature']
-computed_sig = hashlib.sha256(json.dumps(audit, sort_keys=True).encode()).hexdigest()
-print(f"\n✓ Audit Integrity: {stored_sig == computed_sig}")
-```
-
-**Expected Output:**
-```
-Pipeline Execution Timeline:
-  Started: 2026-02-09T01:11:57.123456
-  Ended: 2026-02-09T01:12:03.456789
-
-Pipeline Stage Completions:
-  connect: 2026-02-09T01:11:57.200001
-  extract: 2026-02-09T01:11:58.300002
-  parse: 2026-02-09T01:11:59.400003
-  validate: 2026-02-09T01:12:00.500004
-  normalize: 2026-02-09T01:12:01.600005
-  semantic_reconciliation: 2026-02-09T01:12:02.700006
-
-Noted Issues (Schema Drift, Validation Errors):
-  - schema_drift: Field 'vehicle_speed' mapped to 'Speed (km/h)' with 89% confidence
-
-✓ Audit Integrity: True
-```
-
-**Why This Matters for Research:**
-
-- **Reproducibility:** Exact timestamps and stage completions allow reconstruction
-- **Compliance:** Tamper-evident signatures (SHA-256) prove audit trail integrity
-- **Publication:** Lineage can be included in methodology sections
-- **Validation:** Reviewers can verify data transformation order and decisions
-
-**Related Code:** [`modules/base_ingestor.py`](modules/base_ingestor.py) (audit generation), cryptographic signing in audit export
-
----
-
-### QS5: PDF Report Generation
-
-**Objective:** Generate a professional, publication-ready PDF report summarizing pipeline execution.
-
-**Rationale:** Enables sharing reproducible results in a standardized, auditable format.
-
-```bash
-# Generate a PDF report from real OpenF1 data
-PYTHONPATH="." python tools/demo_pdf_report.py
-
-# Expected Output:
-# ✓ PDF report generated successfully!
-# → data/reports/demo_report.pdf
-```
-
-**Programmatic Usage:**
-
-```python
-from adapters.openf1 import OpenF1Adapter
-from reporting.pdf_report import generate_pdf_report
-
-# Run pipeline to generate report
-adapter = OpenF1Adapter(session_key=9158, driver_number=1)
-adapter.connect()
-report = adapter.run()
-
-# Generate PDF
-generate_pdf_report(report, "data/my_report.pdf")
-print(f"✓ Report saved to: data/my_report.pdf")
-```
-
-**Report Contents (for academic use):**
-
-The PDF includes:
-- **Run Summary:** Source, timestamps, record counts, final status
-- **Schema Drift Events:** Field name, expected/observed types, severity, action (with confidence scores)
-- **Failure Log:** Error types, messages, timestamps
-- **Resilience Actions:** Auto-repair events, component, outcome
-- **Audit Summary:** Total events processed, tamper-evident status, anomalies detected
-
-**Why This Matters for Research:**
-
-- **Publication-Ready:** Professional formatting suitable for appendices or supplementary materials
-- **Reproducible Artifacts:** PDF embeds the audit trail for long-term archival
-- **Shareable:** Can be distributed alongside academic papers without privacy concerns
-- **Traceable:** Includes all transformation decisions with timestamps and confidence scores
-
-**Related Code:** [`reporting/pdf_report.py`](reporting/pdf_report.py), [`tools/demo_pdf_report.py`](tools/demo_pdf_report.py)
-
----
-
-### QS6: Resilience & Self-Healing in Action
-
-**Objective:** Validate the framework's ability to detect and automatically repair schema drift in real-time.
-
-**Rationale:** Tests core hypothesis that semantic reconciliation enables autonomous repair without human intervention.
-
-**Test Scenario:** Inject non-standard field names and observe automatic semantic inference.
-
-```bash
-# Run chaos engineering test with schema drift injection
-PYTHONPATH="." python -m pytest tests/test_chaos_ingestion.py::TestChaos2_VariableCountSpike -v
-
-# Expected Output:
-# test_chaos_ingestion.py::TestChaos2_VariableCountSpike PASSED
-# 
-# Schema Drift Detected (13 unexpected fields)
-# ✓ Field 'accel_x_g' → 'acceleration_x' (87% confidence)
-# ✓ Field 'track_temp_c' → 'track_temperature' (92% confidence)
-# ✓ All 13 fields reconciled without manual intervention
-```
-
-**Programmatic Validation:**
-
-```python
-# Run a minimal chaos test
-from adapters.sports import SportsAdapter
-import random
-
-adapter = SportsAdapter()
-adapter.connect()
-
-# Inject chaos: rename 5 fields mid-stream
-original_fields = ['speed', 'rpm', 'throttle', 'brake', 'drs']
-chaos_fields = ['vel_kmh', 'engine_speed', 'accel_pct', 'brk_status', 'drag_reduction']
-
-# Simulate injection
-adapter._schema_overrides = {orig: chaos for orig, chaos in zip(original_fields, chaos_fields)}
-
-# Run pipeline and check resilience
-report = adapter.run()
-
-print(f"\nResilience Test Results:")
-print(f"  Schema Drifts Detected: {len(report.schema_drifts)}")
-print(f"  Auto-Repairs: {len(report.resilience_actions)}")
-print(f"  Final Status: {report.status}")  # Should be 'success'
-print(f"  ✓ Pipeline Resilient: {report.status == 'success'}")
-```
-
-**Metrics to Report:**
-
-When publishing results, include:
-- **Detection Latency:** How quickly drift is detected (records until detection)
-- **Repair Success Rate:** Percentage of drifted fields that are auto-mapped with confidence > 70%
-- **End-to-End Throughput:** Records/second during normal vs. chaos injection
-- **False Positive Rate:** Instances where semantic mapping was incorrect
-
-**Why This Matters for Research:**
-
-- **Validates Core Hypothesis:** Demonstrates semantic reconciliation works in practice
-- **Quantifies Resilience:** Provides metrics for comparison with baseline approaches
-- **Reproducible Testing:** Chaos tests can be re-run to validate variations or improvements
-- **Safety-Critical Validation:** Essential for clinical applications where schema changes could cause patient safety issues
-
-**Related Code:** [`tests/test_chaos_ingestion.py`](tests/test_chaos_ingestion.py) (comprehensive chaos scenarios), [`modules/base_ingestor.py`](modules/base_ingestor.py) (resilience logic)
-
----
-
-## Testing & CI/CD
-
-### Running Tests Locally
-
-The framework includes a comprehensive pytest test suite focused on edge cases and resilience scenarios:
-
-```bash
-# Install test dependencies
-pip install pytest
-
-# Run the full test suite
-pytest tests/ -v
-
-# Run specific test file (TUI Replayer edge cases)
-pytest tests/test_tui_replayer.py -v
-```
-
-### Test Coverage
-
-#### TUI Replayer Tests (7 tests)
-The test suite includes edge case validation for the terminal interface:
-- **Empty Streams:** Validates handling of empty telemetry data
-- **Malformed JSON:** Tests behavior with missing IMU/GPS keys or None values
-- **High-Frequency Spikes:** Validates extreme values (e.g., 1000G accelerations)
-- **Panel Creation:** Ensures resilience and chaos panels render correctly with edge case data
-
-#### Chaos Ingestion Tests (5 comprehensive chaos engineering scenarios)
-
-The framework includes advanced resilience validation through chaos engineering tests that stress-test the self-healing ingestion layer:
-
-**1. TestChaos1_MalformedTelemetry** - Null/Missing Field Recovery
-- **Scenario:** Mechanical (brake temp, steering) and biometric (heart rate) fields are null/missing
-- **Validation:** Verifies semantic reconciliation triggered and field mappings created
-- **Success Criteria:** Self-healing layer maps messy field aliases to gold standard
-
-**2. TestChaos2_VariableCountSpike** - Dynamic Field Proliferation
-- **Scenario:** Sudden injection of 13+ unexpected kinematic & environmental fields mid-stream
-- **Domains:** Kinematic (accel_x_g, accel_y_g, lateral_g), Environmental (track_temp_c, air_humidity_pct)
-- **Validation:** Pipeline handles field explosion without crashing
-- **Success Criteria:** All new fields mapped or gracefully ignored with resilient schema
-
-**3. TestChaos3_MissingTimestamps** - Temporal Discontinuity Recovery
-- **Scenario:** Records with missing/null/invalid/backward-leaping timestamps
-- **Validation:** Pipeline processes data without temporal ordering
-- **Success Criteria:** Missing timestamps don't crash ingestion; synthetic timestamps assigned if needed
-
-**4. TestChaos4_MixedDomainChaos** - Cross-Domain Resilience
-- **Scenario:** Clinical adapter receives mixed chaos (biometric + mechanical + environmental fields)
-- **Domains:** Biometric (heart rate, SpO2), Mechanical (brake pressure), Environmental (track temperature)
-- **Validation:** Adapter prioritizes relevant fields for domain and ignores others gracefully
-- **Success Criteria:** Biometric fields preserved; mechanical fields mapped or ignored without error
-
-**5. TestChaos5_ExtremeKinematicEnvironmental** - Extreme Values + Corrupted Field Names
-- **Scenario:** Extreme values (10G forces, -99°C temps, 150% humidity) + unicode/typo field names
-- **Examples:** `a_x`, `accelY`, `g_y`, `gforce_x_axis`, `accel_z_g` (corrupted), extreme values
-- **Validation:** BERT semantic layer maps corrupted fields despite unicode and extreme values
-- **Success Criteria:** Multiple kinematic fields resolved with confidence scores > 0.45
-
-#### Engine Temperature Stress Tests (19 comprehensive validation scenarios)
-
-The framework includes dedicated stress tests that validate resilience under sustained engine temperature monitoring with injected anomalies:
-
-**Test Categories:**
-1. **Data Generation (3 tests):** Validates 100-row telemetry generation, anomaly injection frequency (every 10 rows), and anomaly type distribution
-2. **Pipeline Resilience (4 tests):** Ensures pipeline doesn't crash with anomalies, verifies anomalies are logged not ignored, confirms conversion to NaN, and validates valid temps preserved
-3. **Semantic Layer (1 test):** Verifies BERT-based field mapping applies successfully
-4. **Data Integrity (2 tests):** Validates DataFrame structure and error type logging
-5. **Lineage & Recovery (3 tests):** Confirms lineage recorded for all stages, validates stress test summary statistics, and tests recovery after anomalies
-6. **Anomaly Detection (4 tests):** Validates detection of NaN, string, impossible high temps (>200°C), and impossible low temps (<-50°C)
-7. **Integration Tests (2 tests):** Full pipeline run and resilience metric calculation
-
-**Anomaly Types Injected:**
-- **NaN values:** Simulates sensor failures
-- **String corruption:** Non-numeric data (e.g., "ERROR", "N/A")
-- **Impossible highs:** Temperatures >200°C
-- **Impossible lows:** Temperatures <-50°C
-
-**Running Engine Temperature Stress Tests:**
-```bash
-# Run all engine temperature stress tests
-pytest tests/test_engine_temp_stress.py -v
-
-# Run stress test tool standalone (generates CSV results)
-python tools/stress_test_engine_temp.py
-
-# Run only integration tests
-pytest tests/test_engine_temp_stress.py -m integration -v
-```
-
-**Stress Test Output:**
-The standalone tool generates a CSV file (`data/engine_temp_stress_test_results.csv`) with detailed metrics including anomaly counts, recovery rates, and data quality statistics.
-
-**Running Chaos Tests:**
-```bash
-# Run all chaos tests
-pytest tests/test_chaos_ingestion.py -v
-
-# Run a specific chaos scenario
-pytest tests/test_chaos_ingestion.py::TestChaos1_MalformedTelemetry -v
-
-# Run all tests (TUI + Chaos + Engine Temp Stress)
-pytest tests/ -v
-```
-
-**Chaos Test Architecture:**
-Each chaos test creates a custom ingestor subclass that inherits from the domain adapter and overrides specific methods to inject failures. This validates that the base framework's `apply_semantic_layer()` method and audit lineage recording work correctly under stress:
-- **Semantic Alignment:** Uses BERT (all-MiniLM-L6-v2) with 0.45 confidence threshold
-- **Audit Trail:** Records all schema drift events with timestamps and confidence scores
-- **Self-Healing:** Automatically maps unrecognized fields to gold standard schema
-
-### GitHub Actions CI Pipeline
-
-The repository includes an automated CI/CD workflow that:
-1. **Triggers** on every push to `main`
-2. **Verifies** repository structure and basic integrity
-3. **Reports** results directly in GitHub
-
-The workflow file is located at [`.github/workflows/ci.yml`](.github/workflows/ci.yml). You can monitor pipeline status in the [Actions tab](https://github.com/tarek-clarke/resilient-rap-framework/actions) of the repository.
-
-### Release Pipeline
-
-The repository includes an automated release workflow that triggers on version tags:
-
-**To create a new release:**
-```bash
-# Tag the commit with semantic versioning
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-**The release workflow automatically:**
-1. [PASS] **Runs full test suite** - All 31 tests (TUI, Chaos, Engine Temperature)
-2. [DOCKER] **Builds Docker image** - Pushes to GitHub Container Registry
-3. [PACKAGE] **Creates GitHub Release** - Auto-generated changelog and build artifacts
-4. [DOCS] **Generates release notes** - Commit history since last tag
-
-**Artifacts included:**
-- Docker image: `ghcr.io/tarek-clarke/resilient-rap-framework:v1.0.0`
-- Docker image tarball: `resilient-rap-framework-v1.0.0.tar.gz`
-- Full changelog between versions
-
-The workflow file is located at [`.github/workflows/release.yml`](.github/workflows/release.yml).
-
----
-
-## Tamper-Evident Audit Logging
-
-### Cryptographic Signing for Audit Logs
-
-As of February 2026, the framework implements cryptographic signing (SHA-256) for all audit logs exported by the ingestion interface. This ensures tamper evidence and integrity verification for all pipeline lineage and error logs.
-
-- Each audit log JSON file now includes a `sha256_signature` field, which is a SHA-256 hash of the audit log contents.
-- This signature allows downstream users, auditors, or researchers to verify that the audit trail has not been altered since export.
-
-**Example:**
-```json
-{
-  "framework_version": "1.0-resilient",
-  "source": "openf1",
-  "lineage_trail": [...],
-  "error_log": [...],
-  "sha256_signature": "c1a2b3..."
-}
-```
-
-**How to verify:**
-- Recompute the SHA-256 hash of the audit log (excluding the `sha256_signature` field) and compare it to the stored signature.
-- If the hashes match, the log is tamper-free.
-
-**Location:** Audit logs are saved in the `data/` directory (e.g., `data/openf1_audit.json`, `data/reproducibility_audit.json`).
-
----
-
-## PDF Report Generation
-
-The framework includes **professional PDF report generation** for pipeline runs, failures, and resilience metrics. This feature provides a publication-ready export of audit logs, schema drift events, and data quality metrics.
-
-### Features
-
-- **Automated Reporting:** Generates comprehensive PDF reports from `RunReport` objects
-- **Detailed Metrics:** Includes records processed, schema drifts, failures, and resilience actions
-- **Visual Clarity:** Professional layout with headers, sections, and formatted tables
-- **Audit Integration:** Works seamlessly with the tamper-evident audit logging system
-
-### Usage
-
-The PDF report feature is integrated into the `BaseIngestor` class. After running a pipeline, call `generate_pdf_report()` to export a PDF:
-
-```python
-from adapters.clinical import ClinicalIngestor
-
-# Run pipeline
-adapter = ClinicalIngestor()
-adapter.connect()
-adapter.run()
-
-# Generate PDF report
-adapter.generate_pdf_report("data/reports/my_report.pdf")
-```
-
-### Standalone Demo
-
-Run the PDF report demo to see an example report:
-
-```bash
-# Generate a demo PDF report
-python tools/demo_pdf_report.py
-
-# View the report (opens in default PDF viewer)
-open data/reports/demo_report.pdf
-```
-
-**Example Report:** See [data/reports/demo_report.pdf](data/reports/demo_report.pdf) for a live report showing real OpenF1 API data processing with 18,026 F1 telemetry records. The report demonstrates automatic schema drift reconciliation, including mappings like `vehicle_speed` → "Speed (km/h)", `engine_rpm` → "RPM", and `throttle_pct` → "Throttle (%)".
-
-### Report Contents
-
-Each PDF report includes:
-1. **Run Summary:** Run ID, source, status, timestamps
-2. **Metrics:** Records processed, failed, success rate
-3. **Schema Drift Events:** Field name, expected/observed types, severity, action taken
-4. **Failure Log:** Timestamps, error types, and error messages
-5. **Resilience Actions:** Auto-repair events with confidence scores
-
-### Implementation
-
-- **Module:** [`reporting/pdf_report.py`](reporting/pdf_report.py)
-- **Demo Script:** [`tools/demo_pdf_report.py`](tools/demo_pdf_report.py)
-- **Output Directory:** `data/reports/`
-
----
-
-## Citation & Context
-
-This software was developed by **Tarek Clarke** as an independent research prototype. While informed by challenges in Official Statistics (Producer Prices), this is **not** an official Statistics Canada product.
-
-If you use this framework in your research, please cite:
-
-```yaml
-cff-version: 1.2.0
-authors:
-  - family-names: "Clarke"
-    given-names: "Tarek"
-    affiliation: "Independent Researcher"
-title: "Resilient RAP Framework: A Self-Healing Analytical Pipeline"
-date-released: 2026-02-03
-url: "[https://github.com/tarek-clarke/resilient-rap-framework](https://github.com/tarek-clarke/resilient-rap-framework)"
-```
-
----
-
-## Contact & Collaboration
-
-I am currently developing this framework as part of a doctoral research proposal.
-
-If you are interested in applying the Resilient RAP framework to your telemetry stack or discussing research opportunities:
-
-* **Email:** [tclarke91@proton.me](mailto:tclarke91@proton.me)
-* **LinkedIn:** https://www.linkedin.com/in/tarekclarke
-
----
-
-## Commercial Licensing & Enterprise Use
-
-**Academic and research use is fully permitted under the PolyForm Noncommercial License.** However, any commercial deployment or for-profit application requires an explicit commercial license.
-
-### Examples of Commercial Use Requiring Licensing
-
-Commercial licensing is required for:
-
-- **Enterprise deployments** of the framework within organizations for operational use
-- **Sports analytics platforms** or telemetry systems sold to teams, leagues, or broadcasters
-- **Healthcare/clinical systems** integrated into patient monitoring or diagnostic workflows
-- **Real-time systems** providing paid services to paying customers
-- **SaaS or cloud-based offerings** built on or incorporating the framework
-- **Consulting services** that derive value from the framework for fee-paying clients
-- **Any use where the framework is part of a revenue-generating product or service**
-
-### Licensing Inquiries
-
-If you are interested in:
-- Using the framework in a commercial or enterprise context
-- Building a proprietary or paid product based on this code
-- Licensing the source code for a for-profit organization
-- Obtaining a commercial license for sports or clinical applications
-
-**Please contact:** [tclarke91@proton.me](mailto:tclarke91@proton.me)
-
-Include details about your intended use case, deployment scale, and timeline in your inquiry.
-
----
-
-## License & IP Protection
-
-**Copyright (c) 2026 Tarek Clarke. All rights reserved.**
-
-This project is licensed under the **PolyForm Noncommercial License 1.0.0**. 
-
-- **Academic Use:** Fully permitted for research, publication, and dissertation work.
-- **Commercial Use:** Prohibited without explicit written permission from the copyright holder.
-- **Derivative Works:** Academic derivatives are permitted under the same license; commercial derivatives require licensing.
-
-For commercial licensing inquiries or permission to use this software in for-profit contexts, please contact tclarke91@proton.me.
-
-See [LICENSE](./LICENSE) and [CONTRIBUTING.md](./CONTRIBUTING.md) for full details.
+See LICENSE and CONTRIBUTING.md for details.
 
 <img src="https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd&source=launch_Feb05" referrerpolicy="no-referrer-when-downgrade" />
-
----
