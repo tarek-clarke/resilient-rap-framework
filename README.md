@@ -28,7 +28,7 @@ Designed for high-velocity data streams (sports telemetry, clinical data) with b
 
 ```bash
 # Clone repository
-git clone <repo-url>
+git clone https://github.com/tarek-clarke/resilient-rap-framework
 cd resilient-rap-framework
 
 # Create virtual environment
