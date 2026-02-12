@@ -1,85 +1,142 @@
 # Resilient RAP Framework
 
-[![Status](https://img.shields.io/badge/Status-Prototype-blue)](https://img.shields.io/badge/Status-Prototype-blue)
+![Status](https://img.shields.io/badge/Status-Production-green)
 ![License](https://img.shields.io/badge/License-PolyForm%20Noncommercial-red.svg)
-![Python](https://img.shields.io/badge/Python-3.10%2B-yellow)
-[![Analytics](https://img.shields.io/badge/Analytics-Tracked_via_Scarf-blue)](https://about.scarf.sh)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 
-A production-oriented framework for autonomous schema drift resolution in high-velocity sports telemetry (F1, NHL) and health telemetry (ICU).
+**A production-grade framework for Reproducible Analytical Pipelines (RAPs) with autonomous schema drift resolution.** Built for PhD research in data engineering and trustworthy analytics.
 
-## Production Capabilities
+Designed for high-velocity data streams (sports telemetry, clinical data) with built-in semantic reconciliation, tamper-evident audit trails, and human-in-the-loop validation.
 
-- Semantic reconciliation for schema drift using a BERT-based translator.
-- Tamper-evident lineage and audit logging (SHA-256 linked records).
-- HITL analytics for intervention cost and learning curves.
-- Adapter-based ingestion for F1 telemetry, NHL play-by-play, and ICU streams.
-- Deterministic, reproducible runs with run IDs and lineage checkpoints.
+## Production-Ready Features
 
-## Requirements
+- **Semantic Schema Reconciliation**: BERT-based drift detection and field mapping for evolving data schemas
+- **Tamper-Evident Lineage**: SHA-256 linked audit records with full provenance tracking
+- **Reproducible Ingestion**: Deterministic pipeline execution with run IDs and checkpointing
+- **Multi-Domain Adapters**: Pre-built connectors for F1 telemetry, NHL play-by-play, and clinical streams
+- **HITL Analytics**: Human-in-the-loop feedback integration with learning curve analysis
+- **Production Logging**: Structured audit trails for regulatory compliance and forensic analysis
 
-- Python 3.10+
-- Dependencies in requirements.txt
+## Quick Start
 
-Optional:
-- Docker (for containerized deployment)
+### Prerequisites
 
-## Install
+- Python 3.10 or higher
+- macOS, Linux, or Windows with WSL2
+
+### Installation
 
 ```bash
+# Clone repository
+git clone <repo-url>
+cd resilient-rap-framework
+
+# Create virtual environment
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-## Configuration
+### Basic Usage
 
-- Audit logs: data/reproducibility_audit.json
-- Provenance log: data/provenance_log.jsonl
-- Reports: data/reports/
-
-Environment variables are not required for core operation. External API calls rely on network access.
-
-## Run Pipelines
-
-### OpenF1
+#### Example 1: OpenF1 Telemetry Pipeline
 
 ```bash
 PYTHONPATH="." python tools/demo_openf1.py --session 9158 --driver 1
 ```
 
-### NHL
-
-```bash
-PYTHONPATH="." python tools/demo_nhl.py --game 2024020001
-```
-
-### Clinical (ICU Stream Generator)
+#### Example 2: Clinical Data Stream Processing
 
 ```python
 from adapters.clinical.ingestion_clinical import ClinicalIngestor
 
+# Initialize ingestor with synthetic stream
 ingestor = ClinicalIngestor(
     use_stream_generator=True,
     stream_vendor="GE",
     stream_batch_size=25,
 )
 
+# Execute pipeline
 ingestor.connect()
 df = ingestor.run()
+
+# Export audit trail
+ingestor.export_audit_log("data/clinical_audit.json")
 print(df.head())
 ```
 
-## Provenance and Auditability
+#### Example 3: Hockey Play-by-Play Analytics
 
-Every semantic alignment writes a tamper-evident record (input hash -> output hash) to data/provenance_log.jsonl. Audit logs can be exported from any adapter:
-
-```python
-adapter.export_audit_log("data/openf1_audit.json")
+```bash
+PYTHONPATH="." python tools/demo_nhl.py --game 2024020001
 ```
 
-## HITL Analytics
+## Key Directories
 
-Human-in-the-loop analytics are available via the orchestrator summary:
+```
+resilient-rap-framework/
+├── adapters/           # Domain-specific data ingestion (F1, NHL, Clinical)
+├── modules/            # Core framework (ingestion, reconciliation, lineage)
+├── src/                # Provenance tracking and analytics utilities
+├── tools/              # Production pipelines and utilities
+├── tests/              # Test suite (unit and integration)
+├── data/               # Audit logs, reports, and synthetic datasets
+├── reporting/          # PDF report generation
+└── docs/               # Extended documentation
+```
+
+## Configuration & Output
+
+**Audit & Provenance Logs** (Automatic)
+- `data/reproducibility_audit.json` - Full execution audit trail
+- `data/provenance_log.jsonl` - Lineage records (input → output hashing)
+- `data/reports/` - Generated analysis reports
+
+**Environment Setup**
+No external environment variables required for baseline operation. Network access needed for upstream API calls (OpenF1, NHL).
+
+## Testing
+
+Run the full test suite:
+
+```bash
+pytest tests/ -v
+```
+
+Run specific test module:
+
+```bash
+pytest tests/test_semantic_reconciliation.py -v
+```
+
+## Core Concepts for PhD Research
+
+### Schema Drift Resolution
+
+The framework detects and resolves schema changes in real-time:
+
+1. **Detection**: Field addition, deletion, type changes captured via semantic hashing
+2. **Reconciliation**: BERT embeddings map old schema to new schema
+3. **Validation**: HITL feedback refines mappings for future runs
+4. **Audit**: Full lineage maintained for publication and reproduction
+
+### Reproducibility & Auditability
+
+Every ingestion step is logged:
+
+```python
+# Access audit trail programmatically
+audit_log = ingestor.export_audit_log()
+for record in audit_log:
+    print(f"Input: {record['input_hash']} → Output: {record['output_hash']}")
+```
+
+### Human-in-the-Loop Integration
+
+Validate semantic mappings interactively:
 
 ```python
 from modules.hitl_orchestrator import HumanInTheLoopOrchestrator
@@ -88,39 +145,46 @@ orchestrator = HumanInTheLoopOrchestrator()
 orchestrator.display_feedback_summary()
 ```
 
-## Benchmarks
+## Running Benchmarks
 
-Run baseline comparators against drift simulation:
+Evaluate performance against synthetic data with known drift:
 
 ```bash
 PYTHONPATH="." python tools/benchmark_semantic_layer.py
 ```
 
-## Testing
+## Documentation
 
-```bash
-pytest tests/ -v
+- [LEARN.md](LEARN.md) - Detailed system architecture and concepts
+- [QUICK_REFERENCE.md](QUICK_REFERENCE.md) - Common operations
+- [HITL_RETRAINING_GUIDE.md](HITL_RETRAINING_GUIDE.md) - Human feedback integration
+- [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Implementation details
+
+## Publication & Citation
+
+If you use this framework in published research, please cite:
+
+```bibtex
+@software{clarke2025resilientrap,
+  author = {Clarke, Tarek},
+  title = {Resilient RAP: Production-Grade Framework for Semantic Schema Resolution},
+  year = {2025},
+  url = {https://github.com/yourusername/resilient-rap-framework}
+}
 ```
 
-## Repository Structure
+See [CITATION.cff](CITATION.cff) for additional formats.
 
-```
-resilient-rap-framework/
-├── modules/          # Core ingestion and semantic reconciliation
-├── adapters/         # Domain adapters (OpenF1, NHL, Clinical, Sports)
-├── tools/            # Demo and benchmark utilities
-├── tests/            # Test suite
-├── data/             # Audit logs, reports, synthetic data
-├── reporting/        # PDF reporting
-└── src/              # Provenance and analytics
-```
+## Licensing & Contact
 
-## Licensing
+**License**: PolyForm Noncommercial 1.0.0 (see [LICENSE](LICENSE))
 
-This project is licensed under the PolyForm Noncommercial License 1.0.0. Commercial use requires a separate license.
+- Academic use: Fully permitted
+- Commercial use: Requires separate licensing agreement
+- Contact: tclarke91@proton.me
 
-Contact: tclarke91@proton.me
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
-See LICENSE and CONTRIBUTING.md for details.
+---
 
-<img src="https://static.scarf.sh/a.png?x-pxid=a8f24add-7f46-4868-90bb-4c804a75e3fd&source=launch_Feb05" referrerpolicy="no-referrer-when-downgrade" />
+**Maintained for the PhD program in Reproducible Data Engineering**

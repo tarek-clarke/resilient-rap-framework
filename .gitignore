@@ -1,30 +1,58 @@
-# --- Virtual Environments & Python Internals ---
+# Python environments
 .venv/
 venv/
+env/
+ENV/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
 
-# --- Data & Scraped Content (Keep the repo clean) ---
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-*
+
+# Data and artifacts (sensitive/large)
 data/
-user_data/
-scraped_data.csv
-urls.txt
 *.csv
-!tests/tui_replayer_tests.csv
-_targets/
+*.json
+user_data/
+scraped_data/
+outputs/
 
-# --- Large Binary & Virtualization Files ---
+# Binary files
 *.vhdx
 *.tar
-*.vhdx
+*.tar.gz
+*.zip
 
-# --- Research/Build Artifacts ---
-*.png
-*.html
-*.json
-!requirements.txt
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Build artifacts
+*.pdf
+
+# Keep configuration templates
+!config/
 !config/schema.json
 
-# Allow demo PDF report example to be tracked
-!data/reports/demo_report.pdf
-!data/reports/semantic_layer_benchmark_*.pdf
+# Keep essential demo data (if needed)
+!data/f1_synthetic/
+!data/f1_synthetic/**
+
+# Development/temporary
+*.log
+.env.local
+node_modules/

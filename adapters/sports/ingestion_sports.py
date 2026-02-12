@@ -7,11 +7,29 @@ F1 Sports Adapter (Final Simulation Version)
 """
 import json
 import random
+from typing import Optional, Callable, List
 import polars as pl
 from modules.base_ingestor import BaseIngestor
 
 class SportsIngestor(BaseIngestor):
-    def __init__(self, source_name="F1_Telemetry_Feed", target_schema=None):
+    def __init__(
+        self,
+        source_name="F1_Telemetry_Feed",
+        target_schema=None,
+        data_path: str = "data/f1_synthetic/race_config_grid.json",
+        openf1_source: Optional[Callable] = None,
+        spoofed_data: Optional[List[dict]] = None,
+    ):
+        """
+        Initialize F1 Sports Adapter.
+        
+        Args:
+            source_name: Identifier for telemetry feed
+            target_schema: Standard schema field names
+            data_path: Path to synthetic race config JSON
+            openf1_source: Optional callable that fetches OpenF1 API data
+            spoofed_data: Optional pre-generated list of F1 records
+        """
         # 1. Define the "Gold Standard" Schema (What we WANT the columns to be)
         if not target_schema:
             target_schema = [
@@ -24,20 +42,43 @@ class SportsIngestor(BaseIngestor):
         
         # Initialize the Resilient Base
         super().__init__(source_name, target_schema)
-        self.data_path = "data/f1_synthetic/race_config_grid.json"
+        self.data_path = data_path
+        self.openf1_source = openf1_source
+        self.spoofed_data = spoofed_data or []
+        self.grid_config = {}
 
     def connect(self):
         """Load the driver grid to act as our 'Authentication' step."""
+        # Priority 1: OpenF1 API source
+        if self.openf1_source:
+            try:
+                self.grid_config = self.openf1_source()
+                self.record_lineage("connected_to_openf1_api")
+                return
+            except Exception as e:
+                print(f"Warning: OpenF1 source failed ({e}). Falling back to file.")
+        
+        # Priority 2: Spoofed data
+        if self.spoofed_data:
+            self.grid_config = self.spoofed_data
+            self.record_lineage("connected_to_spoofed_data")
+            return
+        
+        # Priority 3: Load from JSON file
         try:
             with open(self.data_path, 'r') as f:
                 self.grid_config = json.load(f)
-            self.record_lineage("connected_to_grid")
+            self.record_lineage("connected_to_config_file")
         except FileNotFoundError:
             print(f"Warning: Grid config not found at {self.data_path}. Using fallback.")
             self.grid_config = {}
 
     def extract_raw(self):
-        """Return the raw grid data."""
+        """Return the raw grid data from priority-ordered source."""
+        # If spoofed data provided after init, use it
+        if self.spoofed_data and not self.grid_config:
+            self.record_lineage("extracting_spoofed_data")
+            return self.spoofed_data
         return self.grid_config
 
     def parse(self, raw):
