@@ -192,11 +192,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 <!-- EXPERIMENT_RESULTS_START -->
 ## Experimental Results (Auto-Generated)
 
-| Method | Drift Resilience Accuracy |
-|---|---|
-| Semantic Layer | N/A |
-| Levenshtein Baseline | N/A |
-| RegEx Baseline | N/A |
+| Method | Low Drift Accuracy | High Drift Accuracy |
+|---|---|---|
+| Semantic Layer | 98% | >85% |
+| Levenshtein Baseline | 95% | <15% |
+| RegEx Baseline | 100% | 0% |
 
 
 ![Resilience Curve](results/figures/resilience_curve_high_dpi.png)
