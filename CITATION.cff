@@ -6,9 +6,9 @@ authors:
   affiliation: "Independent Researcher"
 title: "Resilient RAP Framework: A Self-Healing Analytical Pipeline"
 version: 0.1.0-alpha
-date-released: 2026-02-03
+date-released: 2026-02-11
 url: "https://github.com/tarek-clarke/resilient-rap-framework"
-license: MIT
+license: PolyForm
 keywords:
   - "data-engineering"
   - "telemetry"
@@ -18,3 +18,5 @@ abstract: >-
   A domain-agnostic framework for ensuring data integrity in high-velocity 
   telemetry environments, developed as a research prototype for autonomous 
   schema drift resolution.
+
+Cite as: Clarke, T. (2026). Engineering Resilient RAP Frameworks. engrXiv. https://doi.org/10.31224/6466
