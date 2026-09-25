@@ -39,10 +39,10 @@ def load_rows(path: Path, split: str, limit: int):
     return rows
 
 
-def cuda_hardware():
+def accelerator_hardware():
     import torch
     if not torch.cuda.is_available():
-        raise RuntimeError("CUDA is unavailable; refusing CPU fallback")
+        raise RuntimeError("Accelerator is unavailable; refusing CPU fallback")
     devices = []
     for i in range(torch.cuda.device_count()):
         p = torch.cuda.get_device_properties(i)
@@ -52,7 +52,7 @@ def cuda_hardware():
             "memory_gb": round(p.total_memory / 1024**3, 2),
             "compute_capability": list(torch.cuda.get_device_capability(i)),
         })
-    return {"torch": torch.__version__, "cuda": torch.version.cuda, "devices": devices}
+    return {"torch": torch.__version__, "cuda": torch.version.cuda, "hip": torch.version.hip, "devices": devices}
 
 
 def run_method(engine, method, rows):
@@ -75,10 +75,15 @@ def main():
     p.add_argument("--chunk-size", type=int, default=16)
     p.add_argument("--max-records", type=int, default=0)
     p.add_argument("--output-dir", default="")
+    p.add_argument("--hardware-profile", choices=("auto", "cuda", "rocm"), default="auto")
     a = p.parse_args()
     if a.repetitions < 1 or a.chunk_size < 1:
         raise SystemExit("--repetitions and --chunk-size must be positive")
-    hardware = cuda_hardware()
+    hardware = accelerator_hardware()
+    profile = a.hardware_profile
+    if profile == "auto":
+        import torch
+        profile = "rocm" if torch.version.hip else "cuda"
     oracle = (REPO_ROOT / a.oracle).resolve()
     rows = load_rows(oracle, a.split, a.max_records)
     tag = hardware["devices"][0]["name"].lower().replace(" ", "_")
@@ -89,7 +94,7 @@ def main():
     started = time.perf_counter()
     try:
         tracker.start()
-        engine = ReconciliationEngine(hardware_profile="cuda", batch_size=a.chunk_size)
+        engine = ReconciliationEngine(hardware_profile=profile, batch_size=a.chunk_size)
         for repetition in range(1, a.repetitions + 1):
             for method in a.methods:
                 if method == "qwen_1_5b":

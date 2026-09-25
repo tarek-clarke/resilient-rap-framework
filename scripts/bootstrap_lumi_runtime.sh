@@ -32,9 +32,11 @@ find "$TARGET" -maxdepth 1 -type d \( \
 # the container's validated ROCm build.  These are pure Python/tokenizer
 # compatibility updates required by Gemma4.  Gemma4 support landed in the
 # Transformers 5.5 release series.
-singularity run "$LUMI_SIF" python -m pip install \
+singularity exec --bind "$TARGET:$TARGET" "$LUMI_SIF" python -m pip install \
     --upgrade --no-deps --target "$TARGET" \
     "python-Levenshtein>=0.23.0,<1.0.0" \
+    "Levenshtein==0.27.4" \
+    "rapidfuzz>=3.9.0,<4.0.0" \
     "transformers==4.57.1" \
     "tokenizers==0.22.1" \
     "huggingface-hub==0.34.4" \
@@ -42,7 +44,7 @@ singularity run "$LUMI_SIF" python -m pip install \
 
 PYTHONPATH="$TARGET${PYTHONPATH:+:$PYTHONPATH}" \
 SINGULARITYENV_PYTHONPATH="$TARGET${PYTHONPATH:+:$PYTHONPATH}" \
-singularity run "$LUMI_SIF" python - <<'PY'
+singularity exec --bind "$TARGET:$TARGET" "$LUMI_SIF" python - <<'PY'
 import Levenshtein
 import transformers
 print(

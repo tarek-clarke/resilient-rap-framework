@@ -279,6 +279,12 @@ def main() -> None:
     parser.add_argument("--methods", nargs="+", default=["levenshtein", "regex", "schema_registry", "minilm", "qwen_1_5b", "bge", "cross_encoder", "cohere_embed_v4"])
     parser.add_argument("--rate-pps", type=float, default=0.0, help="0 means saturation replay")
     parser.add_argument("--consumer-batch-size", type=int, default=16)
+    parser.add_argument(
+        "--llm-batch-size",
+        type=int,
+        default=4,
+        help="Maximum concurrent Qwen generations; kept small to avoid GPU OOM.",
+    )
     parser.add_argument("--queue-capacity", type=int, default=22500)
     parser.add_argument("--hardware-profile", choices=("auto", "cpu", "cuda", "rocm"), default="auto")
     parser.add_argument("--require-accelerator", action="store_true")
@@ -292,7 +298,13 @@ def main() -> None:
     parser.add_argument("--energy-sample-seconds", type=float, default=1.0)
     parser.add_argument("--output-dir", required=True)
     args = parser.parse_args()
-    if args.rate_pps < 0 or args.consumer_batch_size < 1 or args.queue_capacity < 1 or args.repetitions < 1:
+    if (
+        args.rate_pps < 0
+        or args.consumer_batch_size < 1
+        or args.llm_batch_size < 1
+        or args.queue_capacity < 1
+        or args.repetitions < 1
+    ):
         raise SystemExit("rate must be non-negative and batch/queue sizes must be positive")
     if args.shard_count < 1 or not 0 <= args.shard_index < args.shard_count:
         raise SystemExit("shard-index must be in [0, shard-count)")
@@ -332,7 +344,10 @@ def main() -> None:
     for method in args.methods:
         for repetition in range(1, args.repetitions + 1):
             print(f"[{method} rep {repetition}] replaying {len(events):,} events at {'saturation' if args.rate_pps == 0 else f'{args.rate_pps:g} pps'}", flush=True)
-            engine = ReconciliationEngine(hardware_profile=profile, batch_size=args.consumer_batch_size)
+            engine_batch_size = (
+                args.llm_batch_size if method == "qwen_1_5b" else args.consumer_batch_size
+            )
+            engine = ReconciliationEngine(hardware_profile=profile, batch_size=engine_batch_size)
             warmup_events = [event for event in events if event["is_drifted"]][:args.warmup_drift_packets]
             warmup_started = time.perf_counter()
             if warmup_events:
@@ -420,6 +435,7 @@ def main() -> None:
         "hardware_profile": profile,
         "rate_pps": args.rate_pps,
         "consumer_batch_size": args.consumer_batch_size,
+        "llm_batch_size": args.llm_batch_size,
         "repetitions": args.repetitions,
         "warmup_drift_packets": args.warmup_drift_packets,
         "cohere_cross_batch_cache": args.allow_cohere_cache,

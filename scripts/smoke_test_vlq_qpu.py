@@ -173,12 +173,19 @@ def build_bell_circuit():
 
 
 def build_vqc_circuit():
-    """Build a bound instance of the canonical v2 12-qubit paper circuit."""
+    """Build a bound instance of the current canonical 13-qubit v9 circuit."""
     import numpy as np
-    from src.routing.canonical_vqc import bind_features, build_measured_circuit
+    from src.routing.canonical_vqc import (
+        bind_features,
+        build_measured_circuit,
+        build_unitary_circuit,
+    )
 
     features = np.random.default_rng(20260723).uniform(0, np.pi, 10)
-    qc, feature_params, _ = build_measured_circuit(weights=np.zeros(24))
+    # Derive the expected parameter count from the canonical circuit so this
+    # smoke test cannot silently drift when the ansatz evolves.
+    _, _, weight_params, _ = build_unitary_circuit()
+    qc, feature_params, _ = build_measured_circuit(weights=np.zeros(len(weight_params)))
     bound = bind_features(qc, feature_params, features)
     return bound, features
 
@@ -273,7 +280,10 @@ def main():
     from qaas.client import QProvider, QBackend
     try:
         t0 = time.time()
-        provider = QProvider(token, PROJECT)
+        # QaaS 0.4.x takes the LEXIS project first and the access token as a
+        # keyword argument. Passing the legacy 0.3.x positional order causes
+        # the JWT to be interpreted as the project/resource identifier.
+        provider = QProvider(PROJECT, token=token)
         # Pass the resource name explicitly to bypass a bug in the QaaS SDK project-auto-detect loop
         backend: QBackend = provider.get_backend(RESOURCE)
         elapsed = time.time() - t0
@@ -299,8 +309,11 @@ def main():
 
         results["backend_connect"] = "PASS"
     except Exception as e:
-        print(f"  ✗ Backend connection failed: {e}")
-        results["backend_connect"] = f"FAIL: {e}"
+        # Never print a cached bearer token if a dependency includes its
+        # argument value in an exception message.
+        error_text = str(e).replace(token, "<redacted-token>") if token else str(e)
+        print(f"  ✗ Backend connection failed: {error_text}")
+        results["backend_connect"] = f"FAIL: {error_text}"
         sys.exit(1)
 
     # ── Step 4: Bell state smoke circuit ─────────────────────────────────────
@@ -329,8 +342,8 @@ def main():
         import traceback; traceback.print_exc()
         results["bell_smoke"] = f"FAIL: {e}"
 
-    # ── Step 5: VQC-shaped circuit (12-qubit) ─────────────────────────────────
-    header("Step 5 — VQC circuit (12 qubits, matches shadow log shape)")
+    # ── Step 5: VQC-shaped circuit (13-qubit) ─────────────────────────────────
+    header("Step 5 — VQC circuit (13 qubits, matches v9 experiment shape)")
     try:
         from qiskit import transpile
         qc_vqc, features = build_vqc_circuit()

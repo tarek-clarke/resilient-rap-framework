@@ -28,7 +28,10 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 PROJECT_ROOT="$(readlink -f "$PROJECT_ROOT")"
 cd "$PROJECT_ROOT"
 source "$PROJECT_ROOT/scripts/lumi_cache_env.sh"
-RAP_LUMI_PYTHON="${RAP_LUMI_PYTHON:-$PROJECT_ROOT/.runtime/gemma4-venv/bin/python}"
+# Empty means: use the validated container Python and the scratch site-
+# packages layer prepared by bootstrap_lumi_runtime.sh.  Do not default to a
+# project-local venv that may not exist on a fresh LUMI checkout.
+RAP_LUMI_PYTHON="${RAP_LUMI_PYTHON:-}"
 export RAP_LUMI_PYTHON
 
 ORACLE="${ORACLE:-data/training/router_oracle_22500_${VQC_TAG}_10pct_${PROFILE//-/_}.jsonl}"

@@ -718,10 +718,52 @@ def init_vlq():
     # Reuse the compatibility layer maintained by the project backend adapter.
     from src.routing.quantum_backends import VLQBackend
 
+    configure_vlq_upload_retries()
     load_env_file(REPO_ROOT / ".env.vlq")
     backend_wrapper = VLQBackend(batch_size=1)
     backend_wrapper._init()
     return backend_wrapper, backend_wrapper._backend
+
+
+def configure_vlq_upload_retries() -> None:
+    """Retry a transient HEAppE TLS disconnect without duplicating a QPU job.
+
+    QaaS creates a HEAppE job and then uploads one OpenQASM file per bound
+    circuit.  A failed upload occurs before the final queue-submission call, so
+    retrying that individual file is safe and avoids abandoning a 2,100-circuit
+    v9 payload because of a single dropped HTTPS connection.
+    """
+    from qaas.client.client import QClient
+    from requests.exceptions import ConnectionError as RequestsConnectionError
+    from requests.exceptions import SSLError, Timeout
+
+    if getattr(QClient, "_rap_upload_retries_enabled", False):
+        return
+
+    original_upload = QClient._circuit_upload_to_cluster
+    attempts = max(1, int(os.environ.get("RAP_VLQ_UPLOAD_ATTEMPTS", "6")))
+    backoff_seconds = max(
+        0.0, float(os.environ.get("RAP_VLQ_UPLOAD_BACKOFF_SECONDS", "1.5"))
+    )
+
+    def upload_with_retries(self, circuit, target_file_name, job_info):
+        for attempt in range(1, attempts + 1):
+            try:
+                return original_upload(self, circuit, target_file_name, job_info)
+            except (SSLError, RequestsConnectionError, Timeout) as exc:
+                if attempt == attempts:
+                    raise
+                delay = backoff_seconds * (2 ** (attempt - 1))
+                print(
+                    f"[VLQ] transient upload failure for {target_file_name}; "
+                    f"retrying {attempt + 1}/{attempts} in {delay:.1f}s: {exc}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                time.sleep(delay)
+
+    QClient._circuit_upload_to_cluster = upload_with_retries
+    QClient._rap_upload_retries_enabled = True
 
 
 def coerce_qaas_job(submission):
@@ -1515,7 +1557,10 @@ def build_parser() -> argparse.ArgumentParser:
     submit_vlq.add_argument("--run-dir", required=True)
     submit_vlq.add_argument("--transpile-trials", type=int, default=16)
     submit_vlq.add_argument("--transpile-seed", type=int, default=20260723)
-    submit_vlq.add_argument("--walltime-seconds", type=int, default=36_000)
+    # VLQ's HEAppE task template currently enforces a two-hour maximum per
+    # QaaS submission.  This is independent of the project-wide QPU-second
+    # allocation and is sufficient for the matched v9 workload.
+    submit_vlq.add_argument("--walltime-seconds", type=int, default=7_200)
     submit_vlq.add_argument("--result-timeout-seconds", type=int, default=36_000)
     submit_vlq.add_argument("--wait", action="store_true")
     submit_vlq.add_argument("--allow-resubmit", action="store_true")

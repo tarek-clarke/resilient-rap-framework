@@ -1,0 +1,37 @@
+diff --git a/cmake/FindPybind11.cmake b/cmake/FindPybind11.cmake
+--- a/cmake/FindPybind11.cmake
++++ b/cmake/FindPybind11.cmake
+@@ -91,6 +91,6 @@ function(basic_pybind11_add_module target_name)
+     set_target_properties(${target_name} PROPERTIES CXX_VISIBILITY_PRESET "hidden")
+     set_target_properties(${target_name} PROPERTIES CUDA_VISIBILITY_PRESET "hidden")
+     set_target_properties(${target_name} PROPERTIES
+-        CXX_STANDARD 14
++        CXX_STANDARD 17
+         LINKER_LANGUAGE CXX)
+     # Warning: Do not merge PROPERTIES when one of the variables can be empty, it breaks
+diff --git a/src/simulators/statevector/chunk/thrust_kernels.hpp b/src/simulators/statevector/chunk/thrust_kernels.hpp
+--- a/src/simulators/statevector/chunk/thrust_kernels.hpp
++++ b/src/simulators/statevector/chunk/thrust_kernels.hpp
+@@ -26,6 +26,22 @@ DISABLE_WARNING_POP
+ 
+ #include "misc/wrap_thrust.hpp"
+ 
++// CUDA 13's Thrust removed these pre-C++17 compatibility base classes.
++// Aer 0.17.2 still derives a few local function objects from them.
++namespace thrust {
++template <typename Arg, typename Result> struct unary_function {
++  using argument_type = Arg;
++  using result_type = Result;
++};
++
++template <typename Arg1, typename Arg2, typename Result>
++struct binary_function {
++  using first_argument_type = Arg1;
++  using second_argument_type = Arg2;
++  using result_type = Result;
++};
++} // namespace thrust
++
+ #include <algorithm>
+ #include <array>
+ #include <cmath>

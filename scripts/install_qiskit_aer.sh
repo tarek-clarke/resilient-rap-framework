@@ -68,12 +68,16 @@ else
             exit 1
         fi
         export QISKIT_AER_CUDA_MAJOR="$CUDA_MAJOR"
-        CUDA_CAPABILITY="$($PYTHON_BIN - <<'PY'
+        if [ -n "${RAP_AER_CUDA_ARCH:-}" ]; then
+            CUDA_CAPABILITY="$RAP_AER_CUDA_ARCH"
+        else
+            CUDA_CAPABILITY="$($PYTHON_BIN - <<'PY'
 import torch
 major, minor = torch.cuda.get_device_capability(0)
 print(f"{major}.{minor}")
 PY
 )"
+        fi
         export AER_CUDA_ARCH="${RAP_AER_CUDA_ARCH:-$CUDA_CAPABILITY}"
         BUILD_ARGS+=("-DAER_CUDA_ARCH=$AER_CUDA_ARCH")
         # Aer 0.17.1's architecture extraction assumes two-digit SM names.

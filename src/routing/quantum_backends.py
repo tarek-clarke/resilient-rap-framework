@@ -304,7 +304,10 @@ class VLQBackend(QuantumBackend):
             ) from exc
 
         self._token = self._authenticate()
-        provider = QProvider(self._token, self._project)
+        # QaaS 0.4.x takes the project as the first argument and the OAuth
+        # token by keyword.  The legacy positional order makes the JWT look
+        # like a project identifier and fails before any VLQ job is created.
+        provider = QProvider(self._project, token=self._token)
         self._backend = provider.get_backend(self._resource)
         print(
             f"[VLQBackend] Connected to resource '{self._resource}' "
