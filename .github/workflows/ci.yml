@@ -1,110 +1,28 @@
-# Resilient RAP Framework CI Pipeline
-# Runs on every push and PR to validate the full pipeline.
-
-name: CI — Tests & Stress
-
+name: v9 reproducibility checks
 on:
   push:
-    branches: [main, "feat/**"]
+    branches: [main, tkde, "codex/**"]
   pull_request:
-    branches: [main]
-
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
-
+permissions:
+  contents: read
 jobs:
-  # ── Unit + Integration Tests ────────────────────────────────────────
-  test:
+  offline-tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
-
+        python: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Cache pip
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements-ci.txt') }}
-          restore-keys: ${{ runner.os }}-pip-
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-ci.txt
-
-      - name: Lint (flake8)
-        run: |
-          flake8 src/ tests/ --max-line-length 120 --count --show-source --statistics
-
-      - name: Run test suite with coverage
-        env:
-          PYTHONPATH: "."
-        run: |
-          pytest tests/ -v --tb=short --timeout=120 --cov=src --cov-report=term-missing --cov-fail-under=75
-
-      - name: Upload coverage report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report-${{ matrix.python-version }}
-          path: .coverage
-          retention-days: 14
-
-  # ── Stress Test (chaos injection) ───────────────────────────────────
-  stress:
-    runs-on: ubuntu-latest
-    needs: test                 # only stress-test if unit tests pass
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-ci.txt
-
-      - name: Stress test — 1 000 packets, 15% chaos
-        env:
-          PYTHONPATH: "."
-        timeout-minutes: 10
-        run: |
-          timeout 300 python tools/telemetry_gpu_stress_test.py --packets 1000 --chaos 0.15
-
-      - name: Upload stress-test artefacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: stress-test-results
-          path: |
-            data/stress_*.csv
-            data/stress_*.json
-          retention-days: 30
-
-  # ── Docker build smoke test ─────────────────────────────────────────
-  docker:
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: docker build -t resilient-rap:ci .
-
-      - name: Verify container starts
-        run: |
-          docker run --rm resilient-rap:ci python -c "from src.circuit_breaker import TelemetryCircuitBreaker; print('OK')"
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - run: python -m pip install -r requirements-ci.txt
+      - run: python scripts/restore_v9_artifacts.py
+      - run: python -m compileall -q src scripts tests
+      - run: python -m pytest -q
+      - name: Check shell syntax
+        run: find scripts -type f \( -name '*.sh' -o -name '*.slurm' \) -exec bash -n {} \;
+      - run: python scripts/build_frozen_telemetry_stream.py
+      - name: Offline CPU smoke test
+        run: python scripts/run_frozen_telemetry_stream.py --methods levenshtein regex schema_registry --hardware-profile cpu --limit 100 --output-dir data/reports/ci-smoke

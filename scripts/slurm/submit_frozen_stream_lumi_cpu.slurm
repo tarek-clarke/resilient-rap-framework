@@ -38,7 +38,8 @@ METHODS="${RAP_STREAM_METHODS:-levenshtein regex schema_registry}"
 OUTPUT="${RAP_STREAM_OUTPUT_DIR:-data/reports/frozen_stream_lumi_cpu_${SLURM_JOB_ID}}"
 
 if [ ! -f "$STREAM" ]; then
-    singularity exec "$LUMI_SIF" python scripts/build_v9_replay.py --output "$STREAM"
+    echo "Missing frozen stream: $STREAM. Restore the oracle and run scripts/build_frozen_telemetry_stream.py before submission." >&2
+    exit 1
 fi
 
 # shellcheck disable=SC2086

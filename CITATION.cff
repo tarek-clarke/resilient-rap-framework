@@ -1,22 +1,14 @@
 cff-version: 1.2.0
-message: "If you use this software in your research or systems, please cite it as below."
+message: "Please cite the software revision used in your experiment."
+type: software
+title: "Resilient RAP: v9 Schema-Reconciliation Research Artifact"
 authors:
-- family-names: "Clarke"
-  given-names: "Tarek"
-  affiliation: "Independent Researcher"
-title: "Resilient RAP Framework: A Self-Healing Analytical Pipeline"
-version: 0.1.0-alpha
-date-released: 2026-02-11
+  - family-names: "Clarke"
+    given-names: "Tarek"
+repository-code: "https://github.com/tarek-clarke/resilient-rap-framework"
 url: "https://github.com/tarek-clarke/resilient-rap-framework"
-license: PolyForm
 keywords:
-  - "data-engineering"
-  - "telemetry"
-  - "resilience"
-  - "schema-inference"
-abstract: >-
-  A domain-agnostic framework for ensuring data integrity in high-velocity 
-  telemetry environments, developed as a research prototype for autonomous 
-  schema drift resolution.
-
-Cite as: Clarke, T. (2026). Engineering Resilient RAP Frameworks. engrXiv. https://doi.org/10.31224/6466
+  - schema reconciliation
+  - reproducible benchmarking
+  - hybrid quantum-classical routing
+  - telemetry

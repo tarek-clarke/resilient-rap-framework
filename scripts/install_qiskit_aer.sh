@@ -81,7 +81,7 @@ PY
         export AER_CUDA_ARCH="${RAP_AER_CUDA_ARCH:-$CUDA_CAPABILITY}"
         BUILD_ARGS+=("-DAER_CUDA_ARCH=$AER_CUDA_ARCH")
         # Aer 0.17.1's architecture extraction assumes two-digit SM names.
-        # CUDA 13 identifies B300/GB300 as sm_103, so retain all digits.
+        # Retain every capability digit when constructing the CUDA target.
         if grep -Fq 'string(REGEX MATCHALL "sm_[0-9][0-9]"' CMakeLists.txt; then
             sed -i.bak \
                 's/string(REGEX MATCHALL "sm_\[0-9\]\[0-9\]"/string(REGEX MATCHALL "sm_[0-9]+"/' \

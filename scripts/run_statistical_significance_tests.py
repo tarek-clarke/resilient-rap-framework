@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -20,10 +21,9 @@ from scipy.stats import binomtest, wilcoxon
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_RUN = REPO_ROOT / "data/reports/qpu_router_20260811_ibm_marrakesh_13q_6route_10rep"
 
 
-def dense_probabilities(model, features: np.ndarray, width: int = 7) -> np.ndarray:
+def dense_probabilities(model, features: np.ndarray, width: int) -> np.ndarray:
     dense = np.zeros((len(features), width), dtype=float)
     raw = np.asarray(model.predict_proba(features), dtype=float)
     for source, label in enumerate(model.classes_):
@@ -47,18 +47,30 @@ def odds_ratio_ci(b: int, c: int) -> tuple[float, list[float]]:
 
 def run_significance_tests(run_dir: Path, output_path: Path, resamples: int, seed: int) -> dict:
     decisions_path = run_dir / "routing_decisions.csv"
-    model_path = run_dir / "quantum_router_v8_qwen_utility_single.safety_rf.joblib"
+    frozen = json.loads((run_dir / "frozen_model.json").read_text())
+    if frozen.get("model_schema_version") != 9 or len(frozen["class_names"]) != 8:
+        raise ValueError("This analysis requires a frozen v9 eight-route model")
+    safety = frozen["metadata"]["selection"]["hybrid_ensemble"]
+    filename = safety["classical_model_filename"]
+    if Path(filename).name != filename:
+        raise ValueError("Expected a safety-model basename within the run directory")
+    model_path = run_dir / filename
     if not decisions_path.exists() or not model_path.exists():
         raise FileNotFoundError("Run directory must contain routing_decisions.csv and its saved RF model")
+    if hashlib.sha256(model_path.read_bytes()).hexdigest() != safety["classical_model_sha256"]:
+        raise ValueError("Saved RF hash does not match the frozen v9 model")
     with decisions_path.open(newline="", encoding="utf-8") as handle:
-        rows = [row for row in csv.DictReader(handle) if row["repetition"] == "ensemble"]
+        all_rows = list(csv.DictReader(handle))
+    rows = [row for row in all_rows if row["repetition"] == "ensemble"]
     if not rows or len({row["record_id"] for row in rows}) != len(rows):
         raise RuntimeError("Expected exactly one aggregate ensemble decision per record")
 
     labels = np.asarray([int(row["oracle_label"]) for row in rows])
     qpu_predictions = np.asarray([int(row["selected_label"]) for row in rows])
     features = np.asarray([[float(row[f"feature_{i}"]) for i in range(10)] for row in rows])
-    rf_predictions = np.argmax(dense_probabilities(joblib.load(model_path), features), axis=1)
+    rf_predictions = np.argmax(dense_probabilities(
+        joblib.load(model_path), features, len(frozen["class_names"])
+    ), axis=1)
     qpu_correct, rf_correct = qpu_predictions == labels, rf_predictions == labels
     a = int(np.sum(qpu_correct & rf_correct))
     b = int(np.sum(qpu_correct & ~rf_correct))
@@ -79,10 +91,11 @@ def run_significance_tests(run_dir: Path, output_path: Path, resamples: int, see
 
     result = {
         "analysis_version": "packet_paired_physical_qpu_v1",
-        "comparison": "IBM physical-QPU aggregate ensemble vs saved RandomForest safety model",
+        "comparison": "Saved physical-QPU run selected-route ensemble vs frozen RandomForest safety model",
+        "decision_column": "selected_label from repetition=ensemble rows; no re-blending performed",
         "run_directory": str(run_dir),
         "unit_of_analysis": "one held-out packet; only repetition=ensemble rows",
-        "technical_repetitions_excluded": 10,
+        "technical_repetitions_excluded": len({row["repetition"] for row in all_rows if row["repetition"] != "ensemble"}),
         "n_packets": len(rows),
         "qpu_aggregate_accuracy": float(qpu_correct.mean()),
         "random_forest_accuracy": float(rf_correct.mean()),
@@ -109,12 +122,13 @@ def run_significance_tests(run_dir: Path, output_path: Path, resamples: int, see
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--run-dir", type=Path, default=DEFAULT_RUN)
-    parser.add_argument("--output", type=Path, default=REPO_ROOT / "data/reports/statistical_significance_recomputed_20260816.json")
+    parser.add_argument("--run-dir", type=Path, required=True)
+    parser.add_argument("--output", type=Path)
     parser.add_argument("--resamples", type=int, default=100_000)
     parser.add_argument("--seed", type=int, default=20260816)
     args = parser.parse_args()
-    print(json.dumps(run_significance_tests(args.run_dir, args.output, args.resamples, args.seed), indent=2))
+    output = args.output or args.run_dir / "paired_statistics.json"
+    print(json.dumps(run_significance_tests(args.run_dir, output, args.resamples, args.seed), indent=2))
 
 
 if __name__ == "__main__":

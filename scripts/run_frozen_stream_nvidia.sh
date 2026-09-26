@@ -1,5 +1,5 @@
 #!/bin/bash
-# Deterministic one-GPU stream replay for GH200/B300/other CUDA hosts.
+# Deterministic one-GPU stream replay for CUDA hosts, including GH200.
 set -euo pipefail
 
 PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
@@ -7,8 +7,6 @@ cd "$PROJECT_ROOT"
 
 if [ -x .venv-accelerator/bin/python ]; then
     PYTHON=.venv-accelerator/bin/python
-elif [ -x .venv-spheron/bin/python ]; then
-    PYTHON=.venv-spheron/bin/python
 else
     echo "ERROR: no accelerator environment; run bash scripts/bootstrap_accelerator_env.sh" >&2
     exit 1

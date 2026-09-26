@@ -1,2 +1,0 @@
-phase,api,chaos_method,reconciler,iteration,seed,accuracy,hosseini_resilience,avg_latency_ms,min_latency_ms,max_latency_ms,throughput_pps,total_time_ms,packets_processed,packets_clean,packets_drifted,fast_path_latency_ms,gpu_latency_ms,batch_size,drift_event_count
-quantum,openf1,qwen,quantum_routed,1,3260074454,0.2905886482994917,0.2905886482994917,0.012270331326253216,0.0,0.0546669998584548,22.534532227169972,110940.84291599983,2500,2334,166,0.6919170000401209,110914.30387500032,4,1660

@@ -404,28 +404,6 @@ class EnergyTracker:
             logger.error(f"Failed to write to energy CSV: {e}")
         return metrics
 
-    def calculate_carbon_offset_mg(self, total_drifted_packets: int) -> float:
-        """
-        Calculate estimated carbon offset in mg comparing actual energy consumption
-        against a pure-Gemma baseline where ALL drifted packets are run on the heavy LLM.
-        """
-        if total_drifted_packets <= 0:
-            return 0.0
-        
-        # Heavy baseline: Gemma 4B takes ~600ms at 200W GPU power draw
-        baseline_gemma_latency = 0.6
-        baseline_gemma_power = 200.0
-        
-        baseline_energy_joules = total_drifted_packets * baseline_gemma_latency * baseline_gemma_power
-        actual_energy_joules = self.gpu_joules + self.cpu_joules
-        
-        saved_joules = max(0.0, baseline_energy_joules - actual_energy_joules)
-        saved_kwh = saved_joules / 3.6e6
-        
-        # Carbon offset in mg = gCO2e * 1000
-        offset_mg = saved_kwh * self.grid_intensity_g * 1000.0
-        return round(offset_mg, 2)
-
     def stop(self):
         """Clean teardown of measurement drivers and wrappers."""
         metrics = self.get_metrics()  # final update

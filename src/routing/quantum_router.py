@@ -34,7 +34,6 @@ class QuantumRouter:
     drifted packet.
 
     Uses VQC (per-packet classification) or QAOA (batch optimization).
-    Gemma is supported but disabled by default (too slow per MI250X benchmarks).
 
     Parameters
     ----------
@@ -45,10 +44,6 @@ class QuantumRouter:
     mode : str
         ``"vqc"`` for per-packet classification, ``"qaoa"`` for batch
         optimisation (QAOA support is planned).
-    enable_gemma : bool
-        When *True* the fourth reconciler class (``gemma_e2b``) is
-        enabled.  Disabled by default because MI250X benchmarks showed
-        unacceptable latency.
     shots : int
         Number of measurement shots per circuit execution.
     feature_count : int
@@ -70,16 +65,12 @@ class QuantumRouter:
         self,
         backend: str = "aer_simulator",
         mode: str = "vqc",
-        enable_gemma: bool = False,
-        enable_nemotron: bool = False,
         shots: int = 1024,
         feature_count: int = 10,
         model_params_path: Optional[str] = None,
     ) -> None:
         self.backend_name: str = backend
         self.mode: str = mode
-        self.enable_gemma: bool = enable_gemma
-        self.enable_nemotron: bool = enable_nemotron
         self.shots: int = shots
         self.feature_count: int = feature_count
         
@@ -210,7 +201,7 @@ class QuantumRouter:
     # ------------------------------------------------------------------
 
     def _build_vqc_circuit(self, features: np.ndarray) -> object:
-        """Build the canonical shallow 12-qubit VQC used during training.
+        """Build the canonical shallow 13-qubit VQC used during training.
 
         The ``features`` argument is retained for API compatibility; values are
         bound by :meth:`_bind_features`.  Legacy ZZFeatureMap artifacts are
@@ -656,7 +647,7 @@ class QuantumRouter:
             Feature matrix of shape ``(N, feature_count)``.
         y_train : np.ndarray
             Integer label vector of shape ``(N,)`` with values in
-            ``{0, 1, 2}`` (or ``{0, 1, 2, 3}`` if Gemma is enabled).
+            The eight canonical route labels, integers from 0 through 7.
         maxiter : int
             Maximum number of COBYLA optimiser iterations.
         callback : callable | None
@@ -733,7 +724,7 @@ class QuantumRouter:
         -------
         dict
             Keys include ``backend``, ``mode``, ``num_classes``,
-            ``feature_count``, ``shots``, ``enable_gemma``,
+            ``feature_count``, ``shots``,
             ``is_trained``, and ``total_qubits``.
         """
         return {
@@ -742,7 +733,6 @@ class QuantumRouter:
             "num_classes": self.num_classes,
             "feature_count": self.feature_count,
             "shots": self.shots,
-            "enable_gemma": self.enable_gemma,
             "is_trained": self.trained_params is not None,
             "total_qubits": self.feature_count + self.num_output_qubits,
         }

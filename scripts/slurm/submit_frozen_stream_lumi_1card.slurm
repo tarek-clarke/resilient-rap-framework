@@ -16,7 +16,7 @@ PROJECT_ROOT="${PROJECT_ROOT:-${SLURM_SUBMIT_DIR:?submit from the project direct
 cd "$PROJECT_ROOT"
 OUTPUT="${RAP_STREAM_OUTPUT_DIR:-data/reports/frozen_stream_mi250x_1card_${SLURM_JOB_ID}}"
 export PROJECT_ROOT RAP_STREAM_OUTPUT_DIR="$OUTPUT"
-export RAP_STREAM_METHODS="${RAP_STREAM_METHODS:-minilm qwen_1_5b bge}"
+export RAP_STREAM_METHODS="${RAP_STREAM_METHODS:-minilm qwen_1_5b bge cross_encoder}"
 export RAP_STREAM_BATCH_SIZE="${RAP_STREAM_BATCH_SIZE:-256}"
 export RAP_STREAM_REPETITIONS="${RAP_STREAM_REPETITIONS:-3}"
 

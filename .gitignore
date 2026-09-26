@@ -55,3 +55,13 @@ data/replay/
 .runtime/
 .cache/
 .conan-aer/
+.conda*/
+.pytest_cache/
+*.out
+*.err
+*.pem
+.env.*
+!.env.example
+data/archive/
+data/paper_*/
+configs/*v[1-8]*

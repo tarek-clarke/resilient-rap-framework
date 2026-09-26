@@ -21,6 +21,11 @@ sys.path.insert(0, str(REPO_ROOT))
 
 
 def _rows(path: Path):
+    # The committed API snapshot is a JSON array; the oracle is JSONL.
+    text = path.read_text(encoding="utf-8").lstrip()
+    if text.startswith("["):
+        yield from json.loads(text)
+        return
     with path.open(encoding="utf-8") as stream:
         for line_number, line in enumerate(stream, 1):
             if line.strip():
@@ -41,7 +46,7 @@ def _digest(value: object) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--packets", default="data/ingested/telemetry_real_api_22500_v1.json")
-    parser.add_argument("--oracle", default="data/training/router_oracle_22500_v9_eight_route_10pct.jsonl")
+    parser.add_argument("--oracle", default="data/training/router_oracle_22500_v9_eight_route_10pct_single.jsonl")
     parser.add_argument("--output", default="data/replay/telemetry_frozen_22500_v9.jsonl")
     parser.add_argument("--limit", type=int, default=0, help="Development-only prefix limit")
     parser.add_argument("--overwrite", action="store_true")
@@ -143,7 +148,7 @@ def main() -> None:
         "oracle_sha256": hashlib.sha256(oracle_path.read_bytes()).hexdigest(),
         "workload_path": str(output_path),
         "workload_sha256": workload_hash.hexdigest(),
-        "ordering": "original ingested JSONL line order",
+        "ordering": "original ingested record order",
         "counts": dict(counts),
         "chaos_counts": dict(sorted(chaos_counts.items())),
         "development_limit": args.limit or None,

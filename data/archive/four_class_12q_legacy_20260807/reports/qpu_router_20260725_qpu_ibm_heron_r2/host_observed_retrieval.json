@@ -1,9 +1,0 @@
-{
-  "event": "retrieve_ibm",
-  "host": "Mac",
-  "max_resident_set_kib": 184860672,
-  "observed_at": "2026-07-25T16:38:31.316665+00:00",
-  "process_cpu_seconds": 0.6396069999999999,
-  "scope": "client host only; excludes remote QPU energy and carbon",
-  "wall_seconds": 4.744418144226074
-}

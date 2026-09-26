@@ -1,9 +1,0 @@
-Component_Type,Model_Architecture,MI250X_Lat_ms,GH200_Lat_ms,B300_Lat_ms,MI250X_Throughput,GH200_Throughput,B300_Throughput,B300_vs_MI250X_Speedup,B300_vs_GH200_Speedup
-Reconciler,Levenshtein,0.34,0.255,0.1658,2917.3,3880.0,5975.2,2.05x,1.54x
-Reconciler,Regex,0.62,0.465,0.3023,1606.3,2136.4,3290.1,2.05x,1.54x
-Reconciler,BERT (1-GPU),36.75,27.5625,17.9156,27.2,36.2,55.7,2.05x,1.54x
-Reconciler,BERT (Multi-GPU),4.59,3.4425,2.2376,217.7,289.5,445.8,2.05x,1.54x
-Reconciler,BGE (1-GPU),38.53,28.8975,18.7834,26.0,34.6,53.3,2.05x,1.54x
-Reconciler,BGE (Multi-GPU),4.82,3.615,2.3498,207.6,276.1,425.2,2.05x,1.54x
-Reconciler,Cohere Embed,453.35,340.0125,221.0081,2.2,2.9,4.5,2.05x,1.54x
-Reconciler,Gemma4-E2B (1-GPU),3613.8,2710.35,1761.7275,0.3,0.4,0.6,2.05x,1.54x

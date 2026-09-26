@@ -486,7 +486,6 @@ def classification_metrics(
         "gpu_dispatch_rate": float(np.mean([
             method in {
                 "minilm", "qwen_1_5b", "bge", "cross_encoder",
-                "qwen_1_5b", "smollm2_1_7b",
             }
             for method in dispatched_methods
         ])),

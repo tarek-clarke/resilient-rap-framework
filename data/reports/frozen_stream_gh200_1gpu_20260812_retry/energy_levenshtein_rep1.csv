@@ -1,4 +1,0 @@
-timestamp,elapsed_seconds,hardware_tier,power_draw_w,gpu_power_w,cpu_power_w,temperature_c,cumulative_kwh,estimated_gCO2e,gpu_energy_draw_joules,cpu_energy_draw_joules,gpu_power_source,cpu_power_source,measurement_quality,assigned_gpu_id,amd_device_path,amd_target_device_path,amd_sensor_relation,gpu_measurement_scope,energy_sensor_owner
-2026-08-12T13:31:41Z,1.0,NVIDIA,71.02,71.02,0.0,35,2e-05,0.0059,71.31,0.0,nvml,unavailable,partial_measured,,,,,accelerator_device,True
-2026-08-12T13:31:42Z,2.01,NVIDIA,71.22,71.22,0.0,35,4e-05,0.0119,142.78,0.0,nvml,unavailable,partial_measured,,,,,accelerator_device,True
-2026-08-12T13:31:43Z,3.01,NVIDIA,71.07,71.07,0.0,35,5.9e-05,0.0178,214.13,0.0,nvml,unavailable,partial_measured,,,,,accelerator_device,True

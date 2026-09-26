@@ -1,0 +1,694 @@
+{
+  "circuit_id": "rap-tree-vqc-13q-v9-eight-route",
+  "class_names": [
+    "levenshtein",
+    "regex",
+    "schema_registry",
+    "minilm",
+    "qwen_1_5b",
+    "bge",
+    "cross_encoder",
+    "cohere_embed_v4"
+  ],
+  "feature_count": 10,
+  "logical_qubits": 13,
+  "metadata": {
+    "optimizer": {
+      "final_loss": 0.735932297352165,
+      "function_evaluations": 221,
+      "maxiter": 600,
+      "message": "Return from COBYLA because the trust region radius reaches its lower bound.",
+      "name": "COBYLA",
+      "rhobeg": 0.5,
+      "success": true,
+      "tolerance": 0.001
+    },
+    "selection": {
+      "candidate_count": 10,
+      "candidate_ranking": [
+        {
+          "rank_tuple": [
+            0.8695917549132086,
+            0.7198067632850241,
+            -0.07132893037624496,
+            0.06305718634485757,
+            -0.3719806763285024
+          ],
+          "start_index": 5
+        },
+        {
+          "rank_tuple": [
+            0.8688469884075727,
+            0.7294685990338164,
+            -0.07207369688188102,
+            0.03529411764705882,
+            -0.3671497584541063
+          ],
+          "start_index": 2
+        },
+        {
+          "rank_tuple": [
+            0.8686859578117594,
+            0.7198067632850241,
+            -0.07223472747769423,
+            0.03418803418803419,
+            -0.391304347826087
+          ],
+          "start_index": 1
+        },
+        {
+          "rank_tuple": [
+            0.8683840254446096,
+            0.7198067632850241,
+            -0.07253665984484399,
+            0.05354993076029662,
+            -0.38164251207729466
+          ],
+          "start_index": 9
+        },
+        {
+          "rank_tuple": [
+            0.8665925600661877,
+            0.714975845410628,
+            -0.07432812522326589,
+            0.03434019164356243,
+            -0.3864734299516908
+          ],
+          "start_index": 7
+        },
+        {
+          "rank_tuple": [
+            0.8659685665074116,
+            0.7246376811594203,
+            -0.07495211878204205,
+            0.05761102844421411,
+            -0.3333333333333333
+          ],
+          "start_index": 4
+        },
+        {
+          "rank_tuple": [
+            0.8656263764913085,
+            0.7101449275362319,
+            -0.07529430879814512,
+            0.05046018407362945,
+            -0.4057971014492754
+          ],
+          "start_index": 0
+        },
+        {
+          "rank_tuple": [
+            0.8646601929164294,
+            0.7053140096618358,
+            -0.07626049237302435,
+            0.04562569213732004,
+            -0.4106280193236715
+          ],
+          "start_index": 3
+        },
+        {
+          "rank_tuple": [
+            0.8645192911450926,
+            0.7101449275362319,
+            -0.0764013941443609,
+            0.038070911634130025,
+            -0.38164251207729466
+          ],
+          "start_index": 8
+        },
+        {
+          "rank_tuple": [
+            0.8598658729047179,
+            0.6859903381642513,
+            -0.08105481238473565,
+            0.05663348701323385,
+            -0.4106280193236715
+          ],
+          "start_index": 6
+        }
+      ],
+      "hybrid_ensemble": {
+        "calibration_split": "validation",
+        "classical_model": "RandomForestClassifier",
+        "classical_model_filename": "quantum_router_v9_eight_route_single.safety_rf.joblib",
+        "classical_model_sha256": "4f364a758f9e7dab680608aa51a25eb43f86c9e523fcc132877a6e4815fcbdf4",
+        "classical_weight": 0.22499999999999998,
+        "fit_split": "train",
+        "min_samples_leaf": 2,
+        "n_estimators": 100,
+        "qpu_weight": 0.775
+      },
+      "oracle_path": "/pfs/lustrep1/scratch/project_465002996/clarketa/resilient-rap-v9-20260820/data/training/router_oracle_22500_v9_eight_route_10pct_single.jsonl",
+      "oracle_sha256": "95217de42aa0086be1ed3f6401545cb787c56f06a128bc534765d3e307e39a67",
+      "qpu_only_test_metrics": {
+        "abstain_rate": 0.0,
+        "acceptable_route_rate": 0.7047619047619048,
+        "accuracy": 0.05238095238095238,
+        "balanced_accuracy": 0.12894610557401257,
+        "confusion_matrix": [
+          [
+            0,
+            3,
+            0,
+            37,
+            0,
+            9,
+            0,
+            45
+          ],
+          [
+            0,
+            3,
+            0,
+            3,
+            0,
+            4,
+            0,
+            15
+          ],
+          [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            26
+          ],
+          [
+            0,
+            0,
+            0,
+            5,
+            0,
+            0,
+            0,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            3,
+            0,
+            2,
+            0,
+            38
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            8,
+            0,
+            1
+          ]
+        ],
+        "gpu_dispatch_rate": 0.3619047619047619,
+        "label_counts": {
+          "0": 94,
+          "1": 25,
+          "2": 30,
+          "3": 8,
+          "5": 43,
+          "6": 1,
+          "7": 9
+        },
+        "macro_f1": 0.05408592675979105,
+        "mean_accuracy_regret": 0.07474578241716677,
+        "mean_confidence": 0.48359375,
+        "mean_oracle_latency_ms": 10.365686881358712,
+        "mean_oracle_reconciliation_accuracy": 0.9495690023923491,
+        "mean_selected_latency_ms": 94.30206065048142,
+        "mean_selected_reconciliation_accuracy": 0.8750302593126563,
+        "n_samples": 210,
+        "prediction_counts": {
+          "1": 6,
+          "3": 53,
+          "5": 23,
+          "7": 128
+        },
+        "present_class_macro_f1": 0.061812487725475485,
+        "sla_compliance_rate": 0.5904761904761905
+      },
+      "qpu_only_validation_metrics": {
+        "abstain_rate": 0.0,
+        "acceptable_route_rate": 0.7198067632850241,
+        "accuracy": 0.057971014492753624,
+        "balanced_accuracy": 0.14325531342480494,
+        "confusion_matrix": [
+          [
+            0,
+            3,
+            0,
+            48,
+            0,
+            2,
+            0,
+            42
+          ],
+          [
+            0,
+            2,
+            0,
+            4,
+            0,
+            2,
+            0,
+            17
+          ],
+          [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            7
+          ],
+          [
+            0,
+            0,
+            0,
+            8,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            4,
+            0,
+            2,
+            0,
+            53
+          ],
+          [
+            0,
+            0,
+            0,
+            2,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            0,
+            4,
+            0,
+            0
+          ]
+        ],
+        "gpu_dispatch_rate": 0.391304347826087,
+        "label_counts": {
+          "0": 95,
+          "1": 25,
+          "2": 11,
+          "3": 9,
+          "5": 59,
+          "6": 3,
+          "7": 5
+        },
+        "macro_f1": 0.04891304347826087,
+        "mean_accuracy_regret": 0.07398593520716283,
+        "mean_confidence": 0.4871985394021739,
+        "mean_oracle_latency_ms": 9.544761036846062,
+        "mean_oracle_reconciliation_accuracy": 0.9406791393957338,
+        "mean_selected_latency_ms": 85.06936211908598,
+        "mean_selected_reconciliation_accuracy": 0.8669347500822908,
+        "n_samples": 207,
+        "prediction_counts": {
+          "1": 5,
+          "3": 71,
+          "5": 10,
+          "7": 121
+        },
+        "present_class_macro_f1": 0.055900621118012424,
+        "sla_compliance_rate": 0.5990338164251208
+      },
+      "quality_gate": {
+        "accuracy_sla": 0.95,
+        "accuracy_tolerance": 0.01,
+        "max_accuracy_regret": 0.05,
+        "min_acceptable_route_rate": 0.8,
+        "min_reconciliation_accuracy": 0.9,
+        "passed": true
+      },
+      "selected_at": "2026-08-21T19:58:58.643699+00:00",
+      "selected_start_index": 5,
+      "selection_rule": "validation reconciliation accuracy, acceptable-route rate, lower accuracy regret, present-class macro-F1, then maximum validation-safe VQC probability weight in the CPU safety ensemble",
+      "test_evaluation": {
+        "backend": "aer_gpu",
+        "device": {
+          "available_devices": [
+            "GPU"
+          ],
+          "backend": "aer_gpu",
+          "gpu_names": [],
+          "gpu_scope": "all_scheduler_visible_devices",
+          "shots": 2048,
+          "visible_gpu_count": 1
+        },
+        "n_records": 210,
+        "shots": 2048
+      },
+      "test_metrics": {
+        "abstain_rate": 0.0,
+        "acceptable_route_rate": 0.8809523809523809,
+        "accuracy": 0.28095238095238095,
+        "balanced_accuracy": 0.4364496595273439,
+        "confusion_matrix": [
+          [
+            6,
+            5,
+            0,
+            36,
+            0,
+            7,
+            0,
+            40
+          ],
+          [
+            0,
+            8,
+            0,
+            3,
+            0,
+            2,
+            0,
+            12
+          ],
+          [
+            0,
+            0,
+            2,
+            2,
+            0,
+            0,
+            0,
+            26
+          ],
+          [
+            0,
+            0,
+            0,
+            8,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            3,
+            0,
+            26,
+            0,
+            14
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            9
+          ]
+        ],
+        "gpu_dispatch_rate": 0.4142857142857143,
+        "label_counts": {
+          "0": 94,
+          "1": 25,
+          "2": 30,
+          "3": 8,
+          "5": 43,
+          "6": 1,
+          "7": 9
+        },
+        "macro_f1": 0.2190282634032634,
+        "mean_accuracy_regret": 0.025966937545884913,
+        "mean_confidence": 0.41476887301268234,
+        "mean_oracle_latency_ms": 10.365686881358712,
+        "mean_oracle_reconciliation_accuracy": 0.9495690023923491,
+        "mean_selected_latency_ms": 75.93956489268402,
+        "mean_selected_reconciliation_accuracy": 0.9238091041839384,
+        "n_samples": 210,
+        "prediction_counts": {
+          "0": 6,
+          "1": 14,
+          "2": 2,
+          "3": 52,
+          "5": 35,
+          "7": 101
+        },
+        "present_class_macro_f1": 0.2503180153180153,
+        "sla_compliance_rate": 0.6523809523809524
+      },
+      "validation_metrics": {
+        "abstain_rate": 0.0,
+        "acceptable_route_rate": 0.8164251207729468,
+        "accuracy": 0.24154589371980675,
+        "balanced_accuracy": 0.36125743222977835,
+        "confusion_matrix": [
+          [
+            3,
+            4,
+            0,
+            48,
+            0,
+            2,
+            0,
+            38
+          ],
+          [
+            0,
+            7,
+            0,
+            3,
+            0,
+            1,
+            0,
+            14
+          ],
+          [
+            0,
+            0,
+            2,
+            2,
+            0,
+            0,
+            0,
+            7
+          ],
+          [
+            0,
+            1,
+            0,
+            7,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0,
+            4,
+            0,
+            27,
+            0,
+            26
+          ],
+          [
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            4
+          ]
+        ],
+        "gpu_dispatch_rate": 0.463768115942029,
+        "label_counts": {
+          "0": 95,
+          "1": 25,
+          "2": 11,
+          "3": 9,
+          "5": 59,
+          "6": 3,
+          "7": 5
+        },
+        "macro_f1": 0.19945729631524176,
+        "mean_accuracy_regret": 0.039833240312779954,
+        "mean_confidence": 0.41774290894101157,
+        "mean_oracle_latency_ms": 9.544761036846062,
+        "mean_oracle_reconciliation_accuracy": 0.9406791393957338,
+        "mean_selected_latency_ms": 68.08613398247893,
+        "mean_selected_reconciliation_accuracy": 0.9010874449766737,
+        "n_samples": 207,
+        "prediction_counts": {
+          "0": 3,
+          "1": 15,
+          "2": 2,
+          "3": 66,
+          "5": 30,
+          "7": 91
+        },
+        "present_class_macro_f1": 0.22795119578884768,
+        "sla_compliance_rate": 0.6086956521739131
+      }
+    },
+    "training": {
+      "accuracy_sla": 0.95,
+      "accuracy_tolerance": 0.01,
+      "backend": "aer_gpu",
+      "cost_penalty": 0.05,
+      "device": {
+        "available_devices": [
+          "GPU"
+        ],
+        "backend": "aer_gpu",
+        "gpu_names": [],
+        "gpu_scope": "all_scheduler_visible_devices",
+        "shots": 1024,
+        "visible_gpu_count": 1
+      },
+      "duration_seconds": 979.9906096458435,
+      "label_counts": {
+        "0": 847,
+        "1": 222,
+        "2": 131,
+        "3": 75,
+        "5": 466,
+        "6": 13,
+        "7": 79
+      },
+      "objective": "acceptable-route mass plus accuracy-regret and cost penalties",
+      "oracle_path": "/pfs/lustrep1/scratch/project_465002996/clarketa/resilient-rap-v9-20260820/data/training/router_oracle_22500_v9_eight_route_10pct_single.jsonl",
+      "oracle_sha256": "95217de42aa0086be1ed3f6401545cb787c56f06a128bc534765d3e307e39a67",
+      "records": 1833,
+      "regret_penalty": 2.0,
+      "shots": 1024
+    }
+  },
+  "model_schema_version": 9,
+  "num_classes": 8,
+  "reps": 2,
+  "trained_params": [
+    -1.021039825309564,
+    -0.6862268685650759,
+    1.6441427520614464,
+    0.8783709117691436,
+    0.06204432041413526,
+    0.07545843943218054,
+    1.1914708344834153,
+    0.12589538198870812,
+    0.075728076651173,
+    0.03634628927926079,
+    1.2050324789760336,
+    0.250774177459119,
+    0.13107938161647104,
+    0.020908448766407153,
+    -0.02462535427252849,
+    -0.12343372378235758,
+    0.26175600053365794,
+    0.33967837015851093,
+    0.09453779474079906,
+    -0.17429953512522497,
+    0.2683019521674181,
+    0.16468597601592425,
+    0.32924588385270026,
+    1.1959314938117638,
+    0.6562395795185296,
+    0.04874565379262509
+  ]
+}

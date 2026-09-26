@@ -1,3 +1,0 @@
-timestamp,elapsed_seconds,hardware_tier,power_draw_w,temperature_c,cumulative_kwh,estimated_gCO2e
-2026-07-25T08:03:34Z,1490.37,CPU,95.0,0.0,0.039329,11.7988
-2026-07-25T08:05:21Z,1493.47,CPU,95.0,0.0,0.039411,11.8233

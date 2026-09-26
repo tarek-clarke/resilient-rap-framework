@@ -139,7 +139,7 @@ def validate_torch(
         cuda_major = int(str(cuda_build).split(".")[0]) if cuda_build else 0
         if cuda_major < 13:
             raise RuntimeError(
-                "B300/GB300-class compute capability requires a CUDA 13+ PyTorch build; "
+                "Compute capability 10.3 requires a CUDA 13+ PyTorch build; "
                 f"this environment reports CUDA {cuda_build}"
             )
     nvml_report = None

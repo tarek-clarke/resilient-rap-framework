@@ -1237,7 +1237,6 @@ def metrics_for_rows(rows: Sequence[dict]) -> Dict[str, object]:
             np.mean([
                 row.get("dispatched_method") in {
                     "minilm", "qwen_1_5b", "bge", "cross_encoder",
-                    "qwen_1_5b", "smollm2_1_7b",
                 }
                 for row in rows
             ])
@@ -1525,7 +1524,7 @@ def build_parser() -> argparse.ArgumentParser:
         default="data/training/router_oracle_22500_v9_eight_route_10pct_single.jsonl",
     )
     prepare.add_argument(
-        "--model", default="configs/quantum_router_v8_qwen_utility_single.json"
+        "--model", default="configs/quantum_router_v9_eight_route_single.json"
     )
     prepare.add_argument("--split", choices=["validation", "test"], default="test")
     prepare.add_argument("--run-name", default="heldout_3rep")

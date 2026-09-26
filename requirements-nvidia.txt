@@ -9,4 +9,4 @@ nvidia-ml-py>=12.570.0,<14.0.0
 # bitsandbytes>=0.46.0,<1.0.0
 
 # Install/validate CUDA Aer with scripts/install_qiskit_aer.sh. The PyPI GPU
-# wheel is x86_64-only and may not target B300/GB300 or ARM Grace systems.
+# wheel is x86_64-only; ARM Grace systems require a compatible source build.

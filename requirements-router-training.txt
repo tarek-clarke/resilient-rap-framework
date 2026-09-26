@@ -2,7 +2,8 @@
 # independent of the LLM/embedding inference environment on LUMI.
 numpy>=1.26.0,<3.0.0
 scipy>=1.11.0,<2.0.0
-scikit-learn>=1.3.0,<2.0.0
+# Must match the serialized v9 random-forest safety model.
+scikit-learn==1.9.0
 psutil>=5.9.0,<8.0.0
 qiskit>=1.2.4,<3.0.0
 qiskit-machine-learning>=0.8.2,<1.0.0

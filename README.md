@@ -1,193 +1,148 @@
-# Resilient RAP Framework
+# Resilient RAP: v9 paper artifact
 
-Resilient API Adaptation Protocol (RAP) is a two-stage schema-reconciliation framework. Clean records use a CPU fast path. Structurally drifted records are routed to one of eight CPU, local-accelerator, or cloud reconciliation methods by a 13-qubit VQC.
+This branch contains the reproducible v9 schema-reconciliation experiment:
+a frozen corpus of 22,500 real API records, eight reconciliation routes,
+a 13-qubit hybrid router, CPU baselines, and MI250X/GH200 benchmarking tools.
+It is a research artifact, not a production streaming service.
 
-## Active publication protocol (v9)
+`main` is the canonical branch. The cleaned `tkde` branch starts from the
+same revision. Multilingual/agentic follow-up work remains on its separate
+branch and is not part of the v9 paper.
 
-The v9 corpus is an immutable snapshot of exactly 22,500 real API records: 2,500 distinct payloads from each source. Mock records, repeated padding, API fallback data, and silently partial pulls are forbidden.
+## Protocol and scope
 
-| Source ID | Public API data |
-|---|---|
-| `openf1` | Historical Formula 1 car data |
-| `binance_market` | Historical BTC/USDT minute bars |
-| `noaa_space_weather` | NOAA SWPC solar-wind plasma observations |
-| `openmeteo_weather` | Historical hourly weather observations |
-| `openfda_adverse_events` | FDA adverse-event reports (FAERS; not ICU telemetry) |
-| `hockey_nhl` | NHL play-by-play events |
-| `aviation_opensky` | OpenSky aircraft state vectors |
-| `football_openligadb` | OpenLigaDB football matches |
-| `smartcity_mbta` | MBTA transit stop records |
+- Nine sources, 2,500 records each: OpenF1, Binance, NOAA space weather,
+  Open-Meteo, openFDA adverse events, NHL, OpenSky, OpenLigaDB, and MBTA.
+- Frozen oracle: 2,250 drift cases, including 210 held-out test cases.
+  The remaining 20,250 events take the clean-schema fast path during replay.
+- Fixed route order: Levenshtein, Regex, Schema Registry, MiniLM,
+  Qwen2.5-1.5B-Instruct, BGE, Cross Encoder, and Cohere Embed v4.
+- VQC: 10 feature qubits, 3 output qubits, two repetitions, 26 trainable
+  parameters. All eight measured output states represent routes.
+- The selected hybrid includes a saved random-forest safety model. Report
+  standalone QPU and hybrid results separately; neither is a claim of
+  quantum advantage.
 
-The API snapshot is historical/frozen and is replayed as a stream. It is not represented as nine simultaneously captured live feeds. OpenFDA is a pharmacovigilance source and must not be described as ICU monitoring.
+Paper results must be traced to their own workload, model, provider, and
+hardware manifests. New runs are new measurements, not replacements for
+historical measurements without an explicit comparison.
 
-Ten percent of records are selected deterministically for drift. The `json_manip` and `schema_alter` families are seeded rule-based transformations. The `qwen` family is generated once on LUMI-G by `Qwen/Qwen2.5-1.5B-Instruct`, validated, saved, and reused. Duplicate model-proposed field names are deterministically disambiguated and recorded in each artifact row and manifest; incomplete or malformed mappings still fail loudly. Qwen is never rerun independently on each hardware platform.
+## Quickstart: restore and verify the frozen inputs
 
-All eight three-bit states are used:
-
-| Bits | Route | Tier |
-|---|---|---|
-| `000` | `levenshtein` | CPU |
-| `001` | `regex` | CPU |
-| `010` | `schema_registry` | CPU |
-| `011` | `minilm` | Local GPU |
-| `100` | `qwen_1_5b` | Local GPU |
-| `101` | `bge` | Local GPU |
-| `110` | `cross_encoder` | Local GPU |
-| `111` | `cohere_embed_v4` | External API |
-
-The VQC remains 13 logical qubits: ten feature qubits and three measured output qubits. Abstention is an optional confidence threshold applied after decoding; it does not consume an output state.
-
-## Stage 1 — pull and freeze the real API corpus
-
-Run this once on a networked workstation. `OPENFDA_API_KEY` is optional but improves FDA rate limits. The command refuses to overwrite an existing snapshot unless `--overwrite` is supplied.
+Python 3.11 or 3.12 is sufficient for the offline checks below. The physical
+VLQ client uses a separate Python 3.12 environment.
 
 ```bash
-git clone --branch tkde git@github.com:tarek-clarke/resilient-rap-framework.git
+git clone --branch main https://github.com/tarek-clarke/resilient-rap-framework.git
 cd resilient-rap-framework
-
-python3 scripts/pull_real_api_snapshot.py \
-  --output data/ingested/telemetry_real_api_22500_v1.json
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-ci.txt
+python scripts/restore_v9_artifacts.py
+python -m pytest -q
+python scripts/build_frozen_telemetry_stream.py
 ```
 
-The adjacent manifest records record counts, per-source uniqueness, source IDs, and the snapshot SHA-256. A publication run is valid only when `publication_ready` is `true` and every source has 2,500 distinct IDs and payload hashes.
+The restore command checks SHA-256 hashes before using the corpus, oracle,
+or saved safety model. It refuses to overwrite a changed oracle.
+The replay builder copies drifted payloads from that oracle. It does not
+call an API or regenerate Qwen output. Copy the resulting JSONL and its
+manifest to each machine and verify the same workload hash there.
+Manifest timestamps and local paths are provenance, not replay content.
 
-The independently captured openFDA component is stored as:
+The archived oracle preserves the measured route metrics and frozen
+labels. The snapshot, compressed oracle, selected model, and selection
+metadata are committed. Large generated reports, full model weights,
+credentials, and manuscript drafts are not.
 
-```text
-data/ingested/openfda_adverse_events_2500_v1.json
-data/ingested/openfda_adverse_events_2500_v1.manifest.json
-```
-
-## Stage 2 — LUMI-G Qwen drift, oracle, and MI250X runs
-
-Copy the immutable corpus to LUMI scratch; do not store model caches or benchmark data in `$HOME`.
+## CPU and cloud replay
 
 ```bash
-# On the Mac
-scp data/ingested/telemetry_real_api_22500_v1.json* \
-  clarketa@lumi.csc.fi:/scratch/project_465002996/clarketa/resilient-rap-tkde-aer-20260722/data/ingested/
+python scripts/run_frozen_telemetry_stream.py \
+  --methods levenshtein regex schema_registry --hardware-profile cpu \
+  --repetitions 3 --output-dir data/reports/cpu_v9
 
-# Connect to LUMI
-ssh -i ~/.ssh/id_ed25519 clarketa@lumi.csc.fi
-cd /scratch/project_465002996/clarketa/resilient-rap-tkde-aer-20260722
-git pull --ff-only origin tkde
-bash scripts/bootstrap_lumi_runtime.sh
+python scripts/run_classical_router_v9.py --help
 ```
 
-Generate model-backed Qwen chaos once on a scheduler-bound MI250X GCD:
+The CPU router benchmark is separate from the reconciler replay. Preserve
+CPU model, thread count, split, and scoring policy in every report.
+
+Cohere requires a locally supplied `COHERE_API_KEY` and consumes credits:
 
 ```bash
-sbatch scripts/slurm/generate_qwen_chaos_v9.slurm
+python scripts/run_frozen_telemetry_stream.py \
+  --methods cohere_embed_v4 --hardware-profile cpu \
+  --repetitions 3 --output-dir data/reports/cohere_v9
 ```
 
-Check that it completed before training:
+Cohere timings describe the client/API path, not GPU performance.
+Check the current provider configuration before a paid run.
+
+## LUMI-G and JUPITER
+
+Build the frozen replay once before submitting jobs. Stage model weights
+and configure the site-specific paths described in
+[the HPC run guide](docs/HPC_V9.md).
+
+LUMI uses one process per GCD. One physical MI250X card is two GCDs;
+four cards are eight GCDs. JUPITER uses one or four GH200 GPUs.
+These launchers implement data-parallel workload sharding, not model
+tensor parallelism.
 
 ```bash
-sacct -j JOB_ID --format=JobID,State,Elapsed,ExitCode
-cat data/training/qwen_model_chaos_22500_v1.manifest.json
+# On LUMI, from this repository:
+sbatch scripts/slurm/submit_frozen_stream_lumi_1card.slurm
+sbatch scripts/slurm/submit_frozen_stream_lumi_4card.slurm
+
+# On JUPITER, after setting RAP_STREAM_FILE to the staged frozen JSONL:
+sbatch scripts/slurm/submit_frozen_stream_jupiter_1card.slurm
+sbatch scripts/slurm/submit_frozen_stream_jupiter_4card.slurm
 ```
 
-The stream launchers build `data/replay/telemetry_frozen_22500_v9.jsonl`
-automatically from the real snapshot and this frozen Qwen artifact when the
-replay is absent. They do not call Qwen or any source API during benchmarking.
+These commands spend HPC allocation. They are examples, not part of setup.
+Do not run GPU workloads on login nodes. Aer simulation has separate
+platform-specific environments and launchers; it must not silently fall
+back to CPU.
 
-Run the eight-method oracle and ten independent VQC training starts. Cohere is a route, so load its key without echoing or writing it to disk:
+## Physical quantum experiments
 
-```bash
-read -rs COHERE_API_KEY
-export COHERE_API_KEY
-export ORACLE_METHODS="levenshtein regex schema_registry minilm qwen_1_5b bge cross_encoder cohere_embed_v4"
-LUMI_GPU_PROFILE=single bash scripts/slurm/submit_qpu_training_pipeline.sh
-unset COHERE_API_KEY
-```
+See [the v9 QPU workflow](docs/QPU_SINGLE_JOB_WORKFLOW.md) for preparation,
+submission, retrieval, and paired statistics. Preparation is local;
+submission to IBM or VLQ requires credentials and consumes QPU allocation.
 
-After the oracle is complete, build the one frozen replay used everywhere:
+## Rebuilding instead of replaying
 
-```bash
-python scripts/build_frozen_telemetry_stream.py \
-  --packets data/ingested/telemetry_real_api_22500_v1.json \
-  --oracle data/training/router_oracle_22500_v9_eight_route_10pct_single.jsonl \
-  --output data/replay/telemetry_frozen_22500_v9.jsonl
-```
+The ingestion, Qwen-chaos generation, oracle measurement, and VQC training
+scripts are retained for methodological reproducibility. Re-querying live
+APIs or regenerating model output will create a different dataset.
+For comparison with the paper, use the committed frozen inputs.
 
-Run CPU routes on a CPU allocation and accelerator routes on MI250X. CPU fallback and missing GPU telemetry fail loudly.
+Use `--help` on:
 
-```bash
-sbatch scripts/slurm/submit_frozen_stream_lumi_cpu.slurm
-sbatch scripts/slurm/submit_frozen_stream_lumi.slurm
-```
+- `scripts/pull_real_api_snapshot.py` and `scripts/ingest_openfda.py`
+- `scripts/build_qwen_chaos_snapshot.py`
+- `scripts/build_router_oracle.py` and `scripts/merge_router_oracle_shards.py`
+- `scripts/train_qpu_router.py`
+- `scripts/build_v9_replay.py` (requires the original standalone Qwen snapshot)
 
-The default local-GPU methods are MiniLM, Qwen, BGE, and the cross-encoder. For a four-card/8-GCD data-parallel measurement, use the sharded launcher and label it separately from the one-GCD run:
+## Repository layout
 
-```bash
-RAP_STREAM_FILE=data/replay/telemetry_frozen_22500_v9.jsonl \
-RAP_STREAM_METHODS="minilm qwen_1_5b bge cross_encoder" \
-RAP_STREAM_OUTPUT_DIR=data/reports/v9_mi250x_4card \
-sbatch --export=ALL,RAP_STREAM_FILE,RAP_STREAM_METHODS,RAP_STREAM_OUTPUT_DIR \
-  scripts/slurm/submit_frozen_stream_lumi_4card.slurm
-```
+- `src/`: canonical circuit, routing, reconciliation, chaos, telemetry.
+- `scripts/`: ingestion, replay, training, evaluation, and Slurm launchers.
+- `configs/`: selected v9 model and its hash-linked RF safety model.
+- `data/ingested/`: frozen real API corpus and capture manifest.
+- `data/training/`: compressed v9 oracle and original capture metadata.
+- `tests/`: offline protocol, mapping, artifact, and utility checks.
+- `docs/`: v9 execution and artifact-scope documentation.
 
-## Stage 3 — GH200 and B300 on Spheron
+## Archived material and licensing
 
-Use the same repository commit, frozen JSONL, manifest, model artifact, batch size, repetitions, and software versions on both NVIDIA machines. Do not regenerate chaos or repull APIs.
+Pre-v9 datasets, obsolete hardware matrices, generated legacy reports,
+unused service code, and manuscript-patching utilities were removed from
+the active tree. They remain recoverable from the archive tags described
+in [artifact scope](docs/ARTIFACT_SCOPE.md). No research history was erased.
 
-```bash
-# On each Spheron instance
-git clone --branch tkde git@github.com:tarek-clarke/resilient-rap-framework.git
-cd resilient-rap-framework
-bash scripts/bootstrap_accelerator_env.sh
-```
-
-Copy the frozen workload from the Mac or LUMI results download:
-
-```bash
-# On the Mac; replace HOST and USER as needed
-scp data/replay/telemetry_frozen_22500_v9.jsonl* USER@HOST:/path/to/resilient-rap-framework/data/replay/
-```
-
-Run one GPU per instance:
-
-```bash
-# GH200
-RAP_HARDWARE_TAG=gh200 \
-RAP_STREAM_BATCH_SIZE=256 \
-RAP_STREAM_REPETITIONS=3 \
-bash scripts/run_frozen_stream_nvidia.sh
-
-# B300
-RAP_HARDWARE_TAG=b300 \
-RAP_STREAM_BATCH_SIZE=256 \
-RAP_STREAM_REPETITIONS=3 \
-bash scripts/run_frozen_stream_nvidia.sh
-```
-
-CPU methods must be run separately and identified by host CPU; their values are not GPU measurements. Cohere is also run separately because it measures client/network behavior, not GH200, B300, or MI250X compute.
-
-## Publication checks
-
-Every publishable run must contain:
-
-- the same frozen-workload SHA-256;
-- exactly 22,500 events and 2,250 deterministic drift cases;
-- explicit device and host identities;
-- no CPU fallback for GPU methods;
-- three or more repetitions with identical configuration;
-- latency, throughput, accuracy, queueing, and host-observed energy provenance;
-- a complete status marker and generated CSV/JSON/LaTeX summaries.
-
-All v8 results derived from `telemetry_clean_bench_22500.json` are archived and must not be mixed with v9 tables. The manuscript must be updated from six routes plus abstention to eight routes, replace the old nine-domain list, remove ICU claims, and regenerate every accuracy, routing-distribution, statistical, energy, and hardware-comparison table from v9 outputs.
-
-## Active files
-
-```text
-src/benchmark_protocol.py                         # source contract
-src/routing/canonical_vqc.py                     # 13q / eight-route VQC
-scripts/pull_real_api_snapshot.py                # strict real API snapshot
-scripts/build_qwen_chaos_snapshot.py             # one-time model-backed chaos
-scripts/build_router_oracle.py                   # eight-method oracle
-scripts/build_frozen_telemetry_stream.py          # immutable replay
-scripts/run_frozen_telemetry_stream.py            # hardware benchmark
-scripts/slurm/generate_qwen_chaos_v9.slurm       # LUMI Qwen generation
-scripts/slurm/submit_frozen_stream_lumi.slurm     # MI250X
-scripts/run_frozen_stream_nvidia.sh               # GH200/B300
-```
+See [LICENSE](LICENSE) and [CONTRIBUTING.md](CONTRIBUTING.md).
+The software license does not replace upstream API/data or model licenses.
+`CITATION.cff` describes the software artifact, not publication acceptance.

@@ -1,6 +1,0 @@
-{
-  "openf1": "https://api.openf1.org/v1/car_data?session_key=latest&driver_number=1",
-  "finnhub": "https://finnhub.io/api/v1/quote?symbol=AAPL",
-  "spacex": "https://api.spacexdata.com/v4/launches/latest",
-  "openmeteo": "https://api.open-meteo.com/v1/forecast?latitude=59.4370&longitude=24.7536&current_weather=true"
-}

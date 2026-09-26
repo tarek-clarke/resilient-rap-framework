@@ -30,8 +30,7 @@ find "$TARGET" -maxdepth 1 -type d \( \
 # Keep the vendor ROCm stack immutable.  In particular, never let pip
 # resolve ``torch`` here: a generic wheel would pull a CUDA build and shadow
 # the container's validated ROCm build.  These are pure Python/tokenizer
-# compatibility updates required by Gemma4.  Gemma4 support landed in the
-# Transformers 5.5 release series.
+# compatibility updates for the v9 Qwen and embedding workloads.
 singularity exec --bind "$TARGET:$TARGET" "$LUMI_SIF" python -m pip install \
     --upgrade --no-deps --target "$TARGET" \
     "python-Levenshtein>=0.23.0,<1.0.0" \

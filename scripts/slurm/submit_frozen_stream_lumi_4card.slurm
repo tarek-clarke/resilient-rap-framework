@@ -25,12 +25,8 @@ export RAP_STREAM_REPETITIONS="${RAP_STREAM_REPETITIONS:-3}"
 mkdir -p "$OUTPUT/shards"
 
 if [ ! -f "$STREAM" ]; then
-    source "$PROJECT_ROOT/scripts/lumi_cache_env.sh"
-    module purge
-    module use /appl/local/laifs/modules
-    module load lumi-aif-singularity-bindings
-    LUMI_SIF="${LUMI_SIF:-/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260731_122833/lumi-multitorch-full-u24r70f21m50t210-20260731_122833.sif}"
-    singularity exec "$LUMI_SIF" python scripts/build_v9_replay.py --output "$STREAM"
+    echo "Missing frozen stream: $STREAM. Restore the oracle and run scripts/build_frozen_telemetry_stream.py before submission." >&2
+    exit 1
 fi
 
 srun --ntasks=8 --gpus-per-task=1 "$PROJECT_ROOT/scripts/slurm/run_frozen_stream_lumi_shard.sh"
