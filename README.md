@@ -20,7 +20,9 @@ the current `main` development line.
   contains the 100-case ablation output. The paper's Table 1 is the specified
   24-case subset listed in `data/PAPER_ARTIFACT_MANIFEST.json`.
 
-No author, institution, or contact metadata is included in this branch.
+No author, institution, or contact metadata is included in the working tree.
+The existing Git history is preserved; use a history-scrubbed export if the
+publication will inspect commit metadata as well as the files.
 
 ## Environment and commands
 
