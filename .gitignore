@@ -1,35 +1,8 @@
-# Python
 __pycache__/
 *.py[cod]
-*$py.class
 *.so
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
-.venv
 .venv/
-venv/
-ENV/
-
-# Project Specific
-chaos_generator/datasets/
-matrix_state.json
-.initialized
-
-# Large Telemetry Streams
-logs/**/*_stream.csv
-logs/**/*_stream.json
-
+build/
+dist/
+*.egg-info/
+results/

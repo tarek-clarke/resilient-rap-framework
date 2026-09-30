@@ -1,13 +1,7 @@
-httpx
-setuptools
-wheel
-numpy
-pandas
-requests
-python-dotenv
-tqdm
-scikit-learn
-sentence-transformers
-transformers @ git+https://github.com/huggingface/transformers.git
-accelerate
+torch
+transformers
 huggingface-hub
+safetensors
+numpy
+psutil
+pybind11

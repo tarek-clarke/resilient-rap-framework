@@ -1,13 +1,12 @@
 """Semantic Translation Benchmark Pipeline.
 
-Executes schema reconciliation evaluation across Levenshtein, Regex, BERT, and
-Gemma reconcilers using streaming .jsonl datasets. Outputs raw granular NDJSON telemetry rows.
+Executes schema reconciliation evaluation across Levenshtein, Regex, and BERT
+reconcilers using streaming .jsonl datasets. Outputs per-packet NDJSON telemetry.
 """
 
 import os
 import sys
 import json
-import csv
 import time
 import subprocess
 from typing import Dict, List, Any
@@ -25,9 +24,8 @@ root_dir = os.path.dirname(script_dir)
 if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 
-from semantic_benchmark.model_loaders import StrictBERTModel, StrictGemmaModel, run_preflight_validation
-from semantic_benchmark.reconcilers import LevenshteinReconciler, RegexReconciler, BERTReconciler, GemmaReconciler
-import resilience_metrics
+from semantic_benchmark.model_loaders import StrictBERTModel, run_preflight_validation
+from semantic_benchmark.reconcilers import LevenshteinReconciler, RegexReconciler, BERTReconciler
 
 def get_git_commit() -> str:
     """Retrieve current git commit hash dynamically."""
@@ -60,14 +58,14 @@ def determine_mutated_key(original: Dict[str, Any], mutated: Dict[str, Any]) -> 
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="TKDE Semantic Reconciliation Benchmark")
+    parser = argparse.ArgumentParser(description="Resilient RAP NGISE paper artifact benchmark")
     parser.add_argument("--dataset-path", required=True, help="Path to static dataset JSONL")
-    parser.add_argument("--output-dir", default="results", help="Directory to save TKDE evaluation outputs")
-    parser.add_argument("--methods", default="regex,levenshtein,bert,gemma", help="Comma-separated methods")
+    parser.add_argument("--output-dir", default="results", help="Directory for per-packet telemetry outputs")
+    parser.add_argument("--methods", default="regex,levenshtein,bert", help="Comma-separated methods")
     args = parser.parse_args()
 
     print("================================================================================")
-    print(" STARTING SEMANTIC TRANSLATION BENCHMARK (TKDE PRIMARY PATH)")
+    print(" STARTING SEMANTIC RECONCILIATION BENCHMARK")
     print("================================================================================\n")
 
     enabled_methods = [m.strip().lower() for m in args.methods.split(",")]
@@ -107,7 +105,6 @@ def main():
     
     print("[*] Initialising local models...")
     bert_model = StrictBERTModel(require_local=True) if "bert" in enabled_methods else None
-    gemma_model = StrictGemmaModel(require_local=True) if "gemma" in enabled_methods else None
     
     reconcilers = {}
     if "regex" in enabled_methods:
@@ -116,8 +113,6 @@ def main():
         reconcilers["levenshtein"] = LevenshteinReconciler()
     if "bert" in enabled_methods and bert_model is not None:
         reconcilers["bert"] = BERTReconciler(bert_model)
-    if "gemma" in enabled_methods and gemma_model is not None:
-        reconcilers["gemma"] = GemmaReconciler(gemma_model)
 
     pipeline_version = get_git_commit()
     

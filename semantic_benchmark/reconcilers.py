@@ -1,11 +1,10 @@
-"""Reconcilers (Regex, Levenshtein, BERT, Gemma) for schema reconciliation.
+"""Reconcilers (Regex, Levenshtein, and BERT) for schema reconciliation.
 
 Provides matching, confidence score, latency tracking, and fallback details
 for each method.
 """
 
 import time
-import os
 import re
 from typing import List, Dict, Any
 
@@ -191,59 +190,3 @@ class BERTReconciler:
             "fallback_triggered": fallback_used,
             "fallback_reason": f"cosine_similarity={max_similarity:.4f} < 0.5" if fallback_used else None
         }
-
-class GemmaReconciler:
-    def __init__(self, gemma_model):
-        self.gemma = gemma_model
-        self._prediction_cache = {}
-
-    def clear_caches(self) -> None:
-        self._prediction_cache.clear()
-
-    def reconcile(self, canonical_keys: List[str], query_key: str) -> Dict[str, Any]:
-        start_time = time.perf_counter()
-
-        cache_key = (tuple(canonical_keys), str(query_key))
-        disable_cache = (
-            os.environ.get("DISABLE_CACHE", "").strip().lower() in ("1", "true", "yes") or
-            os.environ.get("GEMMA_DISABLE_CACHE", "").strip().lower() in ("1", "true", "yes")
-        )
-        cached_result = None if disable_cache else self._prediction_cache.get(cache_key)
-        if cached_result is not None:
-            cached_copy = dict(cached_result)
-            cached_copy["syntactic_parse_time_ms"] = None
-            cached_copy["semantic_inference_time_ms"] = (time.perf_counter() - start_time) * 1000.0
-            return cached_copy
-        
-        result = self.gemma.predict_semantic_match(canonical_keys, query_key)
-        
-        elapsed_ms = (time.perf_counter() - start_time) * 1000.0
-        
-        match_val = result.get("match", "unknown")
-        confidence = float(result.get("confidence", 0.5))
-        
-        fallback_used = False
-        fallback_reason = None
-        
-        if match_val not in canonical_keys and canonical_keys:
-            match_val = canonical_keys[0]
-            confidence = 0.1
-            fallback_used = True
-            fallback_reason = "Gemma returned field not in canonical keys list"
-        elif confidence < 0.5:
-            fallback_used = True
-            fallback_reason = f"Gemma confidence={confidence:.4f} < 0.5"
-            
-        final_result = {
-            "match": match_val,
-            "confidence_raw": confidence,
-            "fallback_triggered": fallback_used,
-            "fallback_reason": fallback_reason
-        }
-        
-        self._prediction_cache[cache_key] = final_result
-        
-        ret_val = dict(final_result)
-        ret_val["syntactic_parse_time_ms"] = None
-        ret_val["semantic_inference_time_ms"] = elapsed_ms
-        return ret_val
