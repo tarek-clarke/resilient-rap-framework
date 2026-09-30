@@ -6,3 +6,9 @@ build/
 dist/
 *.egg-info/
 results/
+
+# Generated benchmark state and reports. The checked-in JSON summaries under
+# data/reports/ are the paper evidence and remain tracked.
+data/*.sqlite
+data/*.sqlite-*
+data/reports/**

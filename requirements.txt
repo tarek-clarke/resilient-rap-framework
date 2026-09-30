@@ -1,7 +1,8 @@
-torch
-transformers
-huggingface-hub
-safetensors
 numpy
-psutil
-pybind11
+scipy
+rich
+sentence-transformers
+torch
+
+# Optional: only needed when the Kafka transport is enabled.
+kafka-python
