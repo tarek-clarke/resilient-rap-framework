@@ -20,6 +20,16 @@
     "rtx5090": "NVIDIA RTX 5090",
     "rtxb6000": "NVIDIA RTX PRO 6000"
   },
+  "reported_hardware_metadata": {
+    "rtxb6000": {
+      "reported_devices": [
+        "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+        "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition"
+      ],
+      "reported_vram_gb": 94.97,
+      "note": "The committed reports are Blackwell evidence; no separate 48 GB Ada report was found in the archived branches."
+    }
+  },
   "table_1_source": "data/reports/misc/solo/other/standard/100hz/Base/ablation_study_results.json",
   "table_1_selection": [
     "velocity_kph",

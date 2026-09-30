@@ -67,15 +67,21 @@ summaries rather than raw packet streams, so they make the reported results
 auditable without adding generated databases or unrelated logs to the
 publication artifact.
 
+The branch does not contain the original raw 3.6-million-packet streams,
+per-run configuration manifests, a committed random seed or chaos-profile
+JSON, or a locked software environment. Those inputs are required for an
+independent bit-for-bit rerun.
+
 The historical runner and reports were recovered from the repository's
 archived benchmark line and placed here as a compact paper artifact. The
 following points are recorded for an accurate reading of the evidence:
 
 1. The three selected GH200 reports record approximately 12% injected chaos,
    while the paper's nominal protocol states 5%.
-2. The selected RTX PRO 6000 report identifies the device as an approximately
-   95 GB Blackwell Workstation Edition; the paper's hardware table describes a
-   48 GB Ada RTX PRO 6000.
+2. The three `rtxb6000` reports identify Blackwell hardware: the base run says
+   `RTX PRO 6000 Blackwell Workstation Edition`, while Runs 2 and 3 say
+   `RTX PRO 6000 Blackwell Max-Q Workstation Edition`; each reports about
+   94.97 GB. The paper's 48 GB Ada label is a different RTX 6000 product.
 3. The runner uses runtime random draws and does not load a committed seed or
    deterministic JSON injection profile. A rerun therefore will not recreate
    the committed summaries bit-for-bit.
