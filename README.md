@@ -1,6 +1,6 @@
 # Resilient RAP NGISE paper artifact
 
-This branch is the double-blind code and evidence artifact for **Engineering
+This branch is the code and evidence artifact for **Engineering
 Resilient Reproducible Analytical Pipelines (RAP): Semantic-Based Self-Healing
 for High-Velocity Heterogeneous Data Streams**. It is frozen separately from
 the current `main` development line.
@@ -15,14 +15,14 @@ the current `main` development line.
 - `src/` contains the runner's circuit breaker, edge buffer, geofence, audit,
   chaos-plan, tracing, and SLO dependencies.
 - `data/reports/` contains the 27 selected per-run JSON reports used for the
-  nine-platform Tables 4 and 5.
+  nine-platform Tables 4 and 5. The GH200 entries use the three-run
+  2026-10-07 rerun.
+- The GH200 folder also includes its per-session summaries, GPU metric and
+  timing summaries, event-level timing samples, and run logs. The artifact
+  manifest maps each item to its run and records the UTC timestamps.
 - `data/reports/misc/solo/other/standard/100hz/Base/ablation_study_results.json`
-  contains the 100-case ablation output. The paper's Table 1 is the specified
+  contains the 100-case ablation output. The paper's Table 1 is the reported
   24-case subset listed in `data/PAPER_ARTIFACT_MANIFEST.json`.
-
-No author, institution, or contact metadata is included in the working tree.
-The existing Git history is preserved; use a history-scrubbed export if the
-publication will inspect commit metadata as well as the files.
 
 ## Environment and commands
 
@@ -55,9 +55,8 @@ PYTHONPATH=. python tools/reconciliation_ablation_study.py
 ```
 
 The committed ablation report records 100 cases and 30 latency trials per
-case. Table 1 reports the pre-registered 24-case selection from that report;
-the manifest records the selection so the table is not confused with the
-100-case aggregate.
+case. Table 1 reports a 24-case sample from that report; the manifest records
+the selected cases so the table is not confused with the 100-case aggregate.
 
 ## Evidence and provenance
 
@@ -68,23 +67,31 @@ auditable without adding generated databases or unrelated logs to the
 publication artifact.
 
 The branch does not contain the original raw 3.6-million-packet streams,
-per-run configuration manifests, a committed random seed or chaos-profile
-JSON, or a locked software environment. Those inputs are required for an
-independent bit-for-bit rerun.
+generated SQLite state, a committed RNG seed or deterministic chaos-profile
+JSON, or a locked software environment. The GH200 run logs record the balanced
+profile, random strategy, and default plan, but not a seed; exact bit-for-bit
+reruns are therefore not guaranteed.
 
-The historical runner and reports were recovered from the repository's
-archived benchmark line and placed here as a compact paper artifact. The
-following points are recorded for an accurate reading of the evidence:
+The GH200 table rows use the three 2026-10-07 reports. Each run processed
+3,600,000 packets. Their observed injected-chaos rates were 4.9944%, 4.9992%,
+and 5.0047%; their summary JSONs yield mean SDR 1.0000, RC 0.1731, ADR
+0.8234, and PAR 0.9575. The previous 2026-05-04 GH200 reports recorded about
+12% chaos and are superseded in the table mapping; the prior commit preserves
+that earlier evidence.
 
-1. The three selected GH200 reports record approximately 12% injected chaos,
-   while the paper's nominal protocol states 5%.
+The following points are recorded for an accurate reading of the evidence:
+
+1. The GH200 report metadata labels the device "NVIDIA GH200 120GB" and
+   reports 95.0 GB of VRAM. The hardware table uses nominal GH200 product
+   specifications; confirm the precise platform label before finalizing it.
 2. The three `rtxb6000` reports identify Blackwell hardware: the base run says
    `RTX PRO 6000 Blackwell Workstation Edition`, while Runs 2 and 3 say
    `RTX PRO 6000 Blackwell Max-Q Workstation Edition`; each reports about
-   94.97 GB. The paper's 48 GB Ada label is a different RTX 6000 product.
+   94.97 GB. These are distinct from the 48 GB RTX 6000 Ada Generation.
 3. The runner uses runtime random draws and does not load a committed seed or
    deterministic JSON injection profile. A rerun therefore will not recreate
    the committed summaries bit-for-bit.
 
-These are provenance limitations of the historical evidence, not changes to
-the reported summary values. They should remain visible to reviewers.
+The 2026-10-07 GH200 evidence supersedes the prior GH200 row values; the other
+platform summaries remain the selected historical reports listed in the
+manifest.

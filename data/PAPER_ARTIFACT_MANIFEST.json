@@ -57,7 +57,7 @@
     "brk_frnt_psi",
     "max_v_ms"
   ],
-  "table_1_selection_note": "The committed ablation output contains 100 cases; the paper's Table 1 metrics are calculated from these 24 named cases.",
+  "table_1_selection_note": "The committed ablation output contains 100 cases; the paper reports a 24-case sample from those 100 cases, listed here.",
   "table_4_table_5_reports": [
     "data/reports/12600k/solo/weekend/standard/100hz/Base/telemetry_gpu_stress_test_report_weekend_12600K.json",
     "data/reports/12600k/solo/weekend/standard/100hz/Run2/telemetry_gpu_stress_test_report_weekend_12600K_Run2.json",
@@ -65,9 +65,9 @@
     "data/reports/7900xt/solo/weekend/standard/100hz/Base/telemetry_gpu_stress_test_report_weekend_7900XT.json",
     "data/reports/7900xt/solo/weekend/standard/100hz/Run2/telemetry_gpu_stress_test_report_weekend_7900XT_Run2.json",
     "data/reports/7900xt/solo/weekend/standard/100hz/Run3/telemetry_gpu_stress_test_report_weekend_7900XT_Run3.json",
-    "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_stress_test_report_weekend_100hz_run1_GH200.json",
-    "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_stress_test_report_weekend_100hz_run2_GH200.json",
-    "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_stress_test_report_weekend_100hz_run3_GH200.json",
+    "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_stress_test_report_weekend_standard_100hz_run1_GH200.json",
+    "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_stress_test_report_weekend_standard_100hz_run2_GH200.json",
+    "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_stress_test_report_weekend_standard_100hz_run3_GH200.json",
     "data/reports/b200/solo/weekend/standard/100hz/Base/telemetry_gpu_stress_test_report_weekend_B200.json",
     "data/reports/b200/solo/weekend/standard/100hz/Run2/telemetry_gpu_stress_test_report_weekend_B200_Run2.json",
     "data/reports/b200/solo/weekend/standard/100hz/Run3/telemetry_gpu_stress_test_report_weekend_B200_Run3.json",
@@ -86,5 +86,161 @@
     "data/reports/rtxb6000/solo/weekend/standard/100hz/Base/telemetry_gpu_stress_test_report_weekend_RTXB6000.json",
     "data/reports/rtxb6000/solo/weekend/standard/100hz/Run2/telemetry_gpu_stress_test_report_weekend_RTXB6000_Run2.json",
     "data/reports/rtxb6000/solo/weekend/standard/100hz/Run3/telemetry_gpu_stress_test_report_weekend_RTXB6000_Run3.json"
-  ]
+  ],
+  "gh200_rerun": {
+    "rerun_label": "ngise-gh200-rerun-d7659a0-20261007",
+    "run_date_utc": "2026-10-07",
+    "profile": {
+      "threshold_profile": "gpu_speed",
+      "semantic_threshold": 0.4,
+      "anomaly_sigma_threshold": 3.5,
+      "breaker_failure_threshold": 8,
+      "breaker_recovery_timeout_seconds": 1.0,
+      "chaos_profile": "balanced",
+      "chaos_strategy": "random",
+      "chaos_plan": "default",
+      "chaos_modes": [
+        "null_value",
+        "string_in_numeric",
+        "bit_flip_high",
+        "bit_flip_low",
+        "schema_drift",
+        "duplicate_timestamp",
+        "sensor_dropout"
+      ],
+      "rng_seed_recorded": false
+    },
+    "formulas": {
+      "SDR": "semantic_recovered / schema_drift",
+      "RC": "semantic_recovered / total_anomaly_detections",
+      "ADR": "total_anomaly_detections / total_chaos",
+      "PAR": "accepted / packets",
+      "observed_chaos_rate": "total_chaos / packets"
+    },
+    "aggregate_mean_unrounded_ratios": {
+      "SDR": 1.0,
+      "RC": 0.17308902125666759,
+      "ADR": 0.8233591809336219,
+      "PAR": 0.9574553703703704,
+      "observed_chaos_rate": 0.049994166666666666
+    },
+    "runs": [
+      {
+        "run": 1,
+        "report_json": "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_stress_test_report_weekend_standard_100hz_run1_GH200.json",
+        "gpu_metrics_json": "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_metrics_weekend_standard_100hz_run1_GH200.json",
+        "per_session_summary_csv": "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_stress_test_results_weekend_standard_100hz_run1_GH200.csv",
+        "event_timing_summary_json": "data/reports/GH200/solo/weekend/100hz/Standard/gpu_resilience_timing_report_weekend_standard_100hz_run1_GH200.json",
+        "event_timing_samples_csv": "data/reports/GH200/solo/weekend/100hz/Standard/gpu_resilience_timing_report_weekend_standard_100hz_run1_GH200.csv",
+        "run_log": "data/reports/GH200/solo/weekend/100hz/Standard/run_log_weekend_standard_100hz_run1_GH200.txt",
+        "started_at_utc": "2026-10-07T04:28:14.774997Z",
+        "ended_at_utc": "2026-10-07T04:42:38.020620Z",
+        "device_name_reported": "NVIDIA GH200 120GB",
+        "vram_gb_reported": 95.0,
+        "packets": 3600000,
+        "accepted": 3446994,
+        "total_chaos": 179798,
+        "schema_drift": 25582,
+        "semantic_recovered": 25582,
+        "total_anomaly_detections": 148121,
+        "derived_metrics": {
+          "observed_chaos_rate": 0.04994388888888889,
+          "SDR": 1.0,
+          "RC": 0.17271014913482896,
+          "ADR": 0.823818952379893,
+          "PAR": 0.9574983333333333,
+          "breaker_process_p95_ms": 0.005
+        },
+        "event_timing_diagnostics": {
+          "detection_count": 179798,
+          "detection_rate": 0.9978698317000189,
+          "detection_p95_ms": 0.008,
+          "repair_count": 200,
+          "repair_recovered": 62,
+          "repair_rate": 0.31,
+          "repair_p95_ms": 0.0312,
+          "sample_size": 179998
+        }
+      },
+      {
+        "run": 2,
+        "report_json": "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_stress_test_report_weekend_standard_100hz_run2_GH200.json",
+        "gpu_metrics_json": "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_metrics_weekend_standard_100hz_run2_GH200.json",
+        "per_session_summary_csv": "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_stress_test_results_weekend_standard_100hz_run2_GH200.csv",
+        "event_timing_summary_json": "data/reports/GH200/solo/weekend/100hz/Standard/gpu_resilience_timing_report_weekend_standard_100hz_run2_GH200.json",
+        "event_timing_samples_csv": "data/reports/GH200/solo/weekend/100hz/Standard/gpu_resilience_timing_report_weekend_standard_100hz_run2_GH200.csv",
+        "run_log": "data/reports/GH200/solo/weekend/100hz/Standard/run_log_weekend_standard_100hz_run2_GH200.txt",
+        "started_at_utc": "2026-10-07T04:42:51.448750Z",
+        "ended_at_utc": "2026-10-07T04:56:18.405507Z",
+        "device_name_reported": "NVIDIA GH200 120GB",
+        "vram_gb_reported": 95.0,
+        "packets": 3600000,
+        "accepted": 3446754,
+        "total_chaos": 179971,
+        "schema_drift": 25561,
+        "semantic_recovered": 25561,
+        "total_anomaly_detections": 148104,
+        "derived_metrics": {
+          "observed_chaos_rate": 0.04999194444444444,
+          "SDR": 1.0,
+          "RC": 0.17258818127802086,
+          "ADR": 0.8229325835829105,
+          "PAR": 0.9574316666666667,
+          "breaker_process_p95_ms": 0.005
+        },
+        "event_timing_diagnostics": {
+          "detection_count": 179971,
+          "detection_rate": 0.9978663229075796,
+          "detection_p95_ms": 0.0081,
+          "repair_count": 200,
+          "repair_recovered": 57,
+          "repair_rate": 0.285,
+          "repair_p95_ms": 0.0306,
+          "sample_size": 180171
+        }
+      },
+      {
+        "run": 3,
+        "report_json": "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_stress_test_report_weekend_standard_100hz_run3_GH200.json",
+        "gpu_metrics_json": "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_metrics_weekend_standard_100hz_run3_GH200.json",
+        "per_session_summary_csv": "data/reports/GH200/solo/weekend/100hz/Standard/telemetry_gpu_stress_test_results_weekend_standard_100hz_run3_GH200.csv",
+        "event_timing_summary_json": "data/reports/GH200/solo/weekend/100hz/Standard/gpu_resilience_timing_report_weekend_standard_100hz_run3_GH200.json",
+        "event_timing_samples_csv": "data/reports/GH200/solo/weekend/100hz/Standard/gpu_resilience_timing_report_weekend_standard_100hz_run3_GH200.csv",
+        "run_log": "data/reports/GH200/solo/weekend/100hz/Standard/run_log_weekend_standard_100hz_run3_GH200.txt",
+        "started_at_utc": "2026-10-07T04:56:31.480819Z",
+        "ended_at_utc": "2026-10-07T05:10:10.397913Z",
+        "device_name_reported": "NVIDIA GH200 120GB",
+        "vram_gb_reported": 95.0,
+        "packets": 3600000,
+        "accepted": 3446770,
+        "total_chaos": 180168,
+        "schema_drift": 25806,
+        "semantic_recovered": 25806,
+        "total_anomaly_detections": 148337,
+        "derived_metrics": {
+          "observed_chaos_rate": 0.05004666666666667,
+          "SDR": 1.0,
+          "RC": 0.17396873335715296,
+          "ADR": 0.8233260068380622,
+          "PAR": 0.9574361111111112,
+          "breaker_process_p95_ms": 0.006
+        },
+        "event_timing_diagnostics": {
+          "detection_count": 180168,
+          "detection_rate": 0.9981683761822299,
+          "detection_p95_ms": 0.0081,
+          "repair_count": 200,
+          "repair_recovered": 62,
+          "repair_rate": 0.31,
+          "repair_p95_ms": 0.0372,
+          "sample_size": 180368
+        }
+      }
+    ],
+    "superseded_run_set": {
+      "run_date_utc": "2026-05-04",
+      "observed_chaos_rate_approx": 0.12,
+      "note": "Superseded by the 2026-10-07 5% rerun for the paper tables. The old report files remain available in the preceding ngise commit history."
+    }
+  }
 }

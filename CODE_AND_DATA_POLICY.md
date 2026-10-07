@@ -10,8 +10,10 @@ The public branch is available at:
 ## Included
 
 - the triple-header benchmark runner and its runtime dependencies;
-- the BERT, Levenshtein, and Regex ablation implementation;
+- the semantic, string-similarity, and Regex ablation implementation;
 - the 27 selected per-run JSON summaries supporting Tables 4 and 5;
+- the three-run GH200 rerun's per-session summaries, event timing samples,
+  timing summaries, and logs;
 - the 100-case ablation report and the manifest for the 24 cases used in Table 1;
 - the manifest mapping artifact files to the reported tables.
 
@@ -24,11 +26,10 @@ random seed or chaos-profile JSON, or a locked software environment. The
 committed JSON files are summary evidence for the reported values, not raw
 packet data. A new run is therefore not expected to reproduce them bit-for-bit.
 
-The nominal protocol specifies 5% chaos, but the three committed GH200 reports
-record approximately 12%. The `rtxb6000` reports identify RTX PRO 6000
-Blackwell Workstation and Max-Q variants with approximately 96 GB of VRAM;
-they are not reports from the separate 48 GB RTX 6000 Ada Generation product.
-
-For double-blind review, use an anonymized repository URL or archive link in
-the manuscript. The existing Git history retains its original metadata even
-though identifying text was removed from the current working tree.
+The three GH200 reports from 2026-10-07 record observed chaos rates of
+4.9944%, 4.9992%, and 5.0047%. They replace the earlier approximately 12%
+GH200 reports in the paper's table mapping. The rerun has no recorded RNG
+seed, so its results are auditable summaries rather than bit-for-bit
+reproducible outputs. The `rtxb6000` reports identify RTX PRO 6000 Blackwell
+Workstation and Max-Q variants with approximately 96 GB of VRAM; they are not
+reports from the separate 48 GB RTX 6000 Ada Generation product.
