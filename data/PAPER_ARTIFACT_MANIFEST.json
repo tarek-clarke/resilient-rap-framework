@@ -27,7 +27,8 @@
         "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition"
       ],
       "reported_vram_gb": 94.97,
-      "note": "The committed reports are Blackwell evidence; no separate 48 GB Ada report was found in the archived branches."
+      "note": "The committed reports are Blackwell evidence; no separate 48 GB Ada report was found in the archived branches.",
+      "paper_table_selection": "Three RTX PRO 6000 Blackwell Max-Q runs: Run2 and Run3 from 2026-03-20, plus Run4 from 2026-10-07. A historical Workstation Edition run is retained but excluded from this Max-Q aggregate."
     }
   },
   "table_1_source": "data/reports/misc/solo/other/standard/100hz/Base/ablation_study_results.json",
@@ -83,9 +84,9 @@
     "data/reports/rtx5090/solo/weekend/standard/100hz/Base/telemetry_gpu_stress_test_report_weekend_GeForceRTX5090.json",
     "data/reports/rtx5090/solo/weekend/standard/100hz/Run2/telemetry_gpu_stress_test_report_weekend_RTX5090_Run2.json",
     "data/reports/rtx5090/solo/weekend/standard/100hz/Run3/telemetry_gpu_stress_test_report_weekend_RTX5090_Run3.json",
-    "data/reports/rtxb6000/solo/weekend/standard/100hz/Base/telemetry_gpu_stress_test_report_weekend_RTXB6000.json",
     "data/reports/rtxb6000/solo/weekend/standard/100hz/Run2/telemetry_gpu_stress_test_report_weekend_RTXB6000_Run2.json",
-    "data/reports/rtxb6000/solo/weekend/standard/100hz/Run3/telemetry_gpu_stress_test_report_weekend_RTXB6000_Run3.json"
+    "data/reports/rtxb6000/solo/weekend/standard/100hz/Run3/telemetry_gpu_stress_test_report_weekend_RTXB6000_Run3.json",
+    "data/reports/rtxb6000/solo/weekend/standard/100hz/Run4/telemetry_gpu_stress_test_report_weekend_RTXB6000_Run4.json"
   ],
   "gh200_rerun": {
     "rerun_label": "ngise-gh200-rerun-d7659a0-20261007",
@@ -242,5 +243,84 @@
       "observed_chaos_rate_approx": 0.12,
       "note": "Superseded by the 2026-10-07 5% rerun for the paper tables. The old report files remain available in the preceding ngise commit history."
     }
+  },
+  "excluded_from_table_4_table_5": [
+    {
+      "report_json": "data/reports/rtxb6000/solo/weekend/standard/100hz/Base/telemetry_gpu_stress_test_report_weekend_RTXB6000.json",
+      "reason": "This report is a Workstation Edition run; excluded so the RTX PRO aggregate uses three Max-Q runs."
+    }
+  ],
+  "rtxb6000_maxq_run4": {
+    "report_json": "data/reports/rtxb6000/solo/weekend/standard/100hz/Run4/telemetry_gpu_stress_test_report_weekend_RTXB6000_Run4.json",
+    "run_date_utc": "2026-10-07",
+    "started_at_utc": "2026-10-07T14:58:10.122707Z",
+    "ended_at_utc": "2026-10-07T15:10:48.652915Z",
+    "source_commit": "cf6abcf3daf5daf551c17d6c0defefab9c09ff2a",
+    "hardware": {
+      "device_name_reported": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+      "vram_gb_reported": 94.97,
+      "nvidia_smi_memory_total_mib": 97887,
+      "driver_version": "595.58.03"
+    },
+    "software": {
+      "python": "3.12.3",
+      "pytorch": "2.14.1+cu130",
+      "sentence_transformers": "6.1.0",
+      "numpy": "2.5.3",
+      "torch_cuda_runtime": "13.0"
+    },
+    "protocol": {
+      "packets_per_session": 240000,
+      "sessions": 15,
+      "total_packets": 3600000,
+      "timestamp_frequency_hz": 100,
+      "nominal_chaos_rate": 0.05,
+      "observed_chaos_rate": 0.049973055555555555,
+      "chaos_profile": "balanced",
+      "chaos_strategy": "random",
+      "chaos_plan": "default",
+      "threshold_profile": "gpu_speed",
+      "semantic_threshold": 0.4,
+      "anomaly_sigma_threshold": 3.5,
+      "breaker_failure_threshold": 8,
+      "breaker_recovery_timeout_seconds": 1.0,
+      "rng_seed_recorded": false,
+      "command": "PYTHONUNBUFFERED=1 PYTHONPATH=. .venv/bin/python tools/telemetry_gpu_stress_test.py --packets 240000 --frequency 100 --chaos 0.05 --chaos-profile balanced --chaos-strategy random --session Weekend --profile-tag Standard --output-suffix _weekend_run4",
+      "run_label": "Run4"
+    },
+    "metrics": {
+      "SDR": 1.0,
+      "RC": 0.1739787179521761,
+      "ADR": 0.8242997615381622,
+      "PAR": 0.9575255555555555,
+      "detection_rate": 0.9977654624992357,
+      "detection_p95_ms": 0.0108,
+      "repair_rate": 0.3,
+      "repair_p95_ms": 0.0684
+    },
+    "counts": {
+      "accepted": 3447092,
+      "total_chaos": 179903,
+      "schema_drift": 25800,
+      "semantic_recovered": 25800,
+      "total_anomaly_detections": 148294,
+      "diagnostic_detection_count": 179903,
+      "diagnostic_repair_count": 200,
+      "diagnostic_repair_recovered": 60
+    },
+    "files": [
+      "data/reports/rtxb6000/solo/weekend/standard/100hz/Run4/telemetry_gpu_stress_test_report_weekend_RTXB6000_Run4.json",
+      "data/reports/rtxb6000/solo/weekend/standard/100hz/Run4/telemetry_gpu_stress_test_results_weekend_RTXB6000_Run4.csv",
+      "data/reports/rtxb6000/solo/weekend/standard/100hz/Run4/telemetry_gpu_metrics_weekend_RTXB6000_Run4.json",
+      "data/reports/rtxb6000/solo/weekend/standard/100hz/Run4/gpu_resilience_timing_report_weekend_RTXB6000_Run4.json",
+      "data/reports/rtxb6000/solo/weekend/standard/100hz/Run4/gpu_resilience_timing_report_weekend_RTXB6000_Run4.csv",
+      "data/reports/rtxb6000/solo/weekend/standard/100hz/Run4/run_log_weekend_RTXB6000_Run4.txt"
+    ]
+  },
+  "rtxb6000_maxq_mean_unrounded_ratios": {
+    "SDR": 1.0,
+    "RC": 0.1738722069858648,
+    "ADR": 0.8226443656655004,
+    "PAR": 0.9575211111111112
   }
 }
